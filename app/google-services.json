@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1072270235606",
+    "project_id": "medi-sheba1",
+    "storage_bucket": "medi-sheba1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1072270235606:android:7fe7d646a3522fcb943677",
+        "android_client_info": {
+          "package_name": "com.example.medi_sheba"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1072270235606-ppku650levdc2f9q1g1jll2jtc9n4d2a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxpDazECXJST81DKJCYsQlHO_KH-D3oNM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1072270235606-ppku650levdc2f9q1g1jll2jtc9n4d2a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

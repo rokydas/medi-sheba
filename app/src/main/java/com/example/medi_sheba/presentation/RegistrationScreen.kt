@@ -114,12 +114,10 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                 .shadow(5.dp, shape = RoundedCornerShape(10.dp))
                 .background(Color.White)
                 .padding(vertical = 15.dp, horizontal = 25.dp)
-
         ) {
 
             var name by rememberSaveable { mutableStateOf("") }
             var email by rememberSaveable { mutableStateOf("") }
-            var designation by rememberSaveable { mutableStateOf("") }
             var mobileNumber by rememberSaveable { mutableStateOf("") }
             var password by rememberSaveable { mutableStateOf("") }
             var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -131,22 +129,6 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                     value = name,
                     onValueChange = { name = it },
                     placeholder = { Text("Name") },
-                    maxLines = 1,
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.White,
-                        cursorColor = Color.Gray,
-                        focusedIndicatorColor = Color.Gray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(15.dp))
-
-                TextField(
-                    modifier = Modifier
-                        .background(Color.White),
-                    value = designation,
-                    onValueChange = { designation = it },
-                    placeholder = { Text("Designation") },
                     maxLines = 1,
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.White,
@@ -225,7 +207,7 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                         .noRippleClickable() {
                             if (
                                 name == "" || email == "" || password == ""
-                                || designation == "" || mobileNumber == ""
+                                || mobileNumber == ""
                             ) {
                                 Toast
                                     .makeText(context, "Fill up all fields", Toast.LENGTH_SHORT)
@@ -242,7 +224,7 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                                             val user = User(
                                                 name = name,
                                                 email = email,
-                                                userType = designation,
+                                                userType = "Patient",
                                                 mobileNumber = mobileNumber
                                             )
 
@@ -270,8 +252,6 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                                         }
                                     }
                             }
-
-
                         }
                         .fillMaxWidth()
                         .padding(8.dp)

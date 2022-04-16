@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost (
                         navController = navController,
-                        startDestination = Screen.AppointmentScreen.route,
+                        startDestination = Screen.AllDoctorsScreen.route,
                     ) {
                         composable(route = Screen.HomeScreen.route) {
                             HomeScreen(navController = navController, auth)
@@ -52,6 +52,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.AppointmentScreen.route) {
                             AppointmentScreen(navController = navController)
+                        }
+                        composable(route = Screen.AllAppointmentsScreen.route) {
+                            AllAppointmentsScreen(navController = navController)
+                        }
+                        composable(route = Screen.AllDoctorsScreen.route) {
+                            AllDoctorsScreen(navController = navController)
                         }
                     }
                 }

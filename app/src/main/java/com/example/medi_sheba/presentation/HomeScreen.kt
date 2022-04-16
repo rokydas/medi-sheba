@@ -1,6 +1,7 @@
 package com.example.medi_sheba.presentation
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -11,11 +12,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.medi_sheba.R
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
@@ -74,6 +78,54 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                             color = PrimaryColor
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(5.dp)
+                                .shadow(5.dp, RoundedCornerShape(10.dp))
+                                .background(Color.White)
+                                .padding(10.dp)
+                        ) {
+                            Image(painter = painterResource(R.drawable.cardiologist), contentDescription = "")
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(text = "Cardiologist")
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(5.dp)
+                                .shadow(5.dp, RoundedCornerShape(10.dp))
+                                .background(Color.White)
+                                .padding(10.dp)
+                        ) {
+                            Image(painter = painterResource(R.drawable.ortho), contentDescription = "")
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(text = "Orthopedic")
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(5.dp)
+                                .shadow(5.dp, RoundedCornerShape(10.dp))
+                                .background(Color.White)
+                                .padding(10.dp)
+                        ) {
+                            Image(painter = painterResource(R.drawable.dentist), contentDescription = "")
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(text = "Dentist")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,

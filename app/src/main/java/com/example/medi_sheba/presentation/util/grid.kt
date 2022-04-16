@@ -9,7 +9,7 @@ fun <T> LazyListScope.gridItems(
     data: List<T>,
     columnCount: Int,
     modifier: Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     itemContent: @Composable BoxScope.(T) -> Unit,
 ) {
     val size = data.count()

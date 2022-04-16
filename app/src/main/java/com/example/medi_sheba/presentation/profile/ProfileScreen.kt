@@ -86,7 +86,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                         }
                 )
                 Icon(
-                    imageVector = Icons.Default.Edit, contentDescription = "undate profile",
+                    imageVector = Icons.Default.Edit, contentDescription = "update profile",
                     modifier = Modifier
                         .clickable {
                             navController.navigate(Screen.UpdateProfileScreen.route)

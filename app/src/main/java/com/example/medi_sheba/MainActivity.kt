@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost (
                         navController = navController,
-                        startDestination = Screen.AllDoctorsScreen.route,
+                        startDestination = Screen.HomeScreen.route
                     ) {
                         composable(route = Screen.HomeScreen.route) {
                             HomeScreen(navController = navController, auth)

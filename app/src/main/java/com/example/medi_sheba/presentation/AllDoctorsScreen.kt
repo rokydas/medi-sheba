@@ -50,6 +50,7 @@ fun AllDoctorsScreen(navController: NavController) {
         },
     ) {
         LazyColumn(
+            contentPadding = PaddingValues(10.dp),
             modifier = Modifier
                 .background(background)
                 .fillMaxSize()
@@ -81,7 +82,7 @@ fun DoctorCard(doctor: Doctor) {
             contentDescription = "profile_picture",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(60.dp)
+                .size(70.dp)
                 .clip(CircleShape)
                 .border(2.dp, Color.Gray, CircleShape)
         )
@@ -96,7 +97,9 @@ fun DoctorCard(doctor: Doctor) {
             color = Color.Gray
         )
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             Text(
                 text = "৳ " + doctor.price,
@@ -113,9 +116,9 @@ fun DoctorCard(doctor: Doctor) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(16.dp)
                 .background(PrimaryColor)
-                .padding(5.dp)
+                .padding(horizontal = 10.dp, vertical = 5.dp)
                 .clickable {
                     // todo: book now button handler
                 },
@@ -124,7 +127,7 @@ fun DoctorCard(doctor: Doctor) {
             Text(
                 text = "Book Now",
                 color = Color.White,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.body1
             )
         }
     }

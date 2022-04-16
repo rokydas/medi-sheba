@@ -28,7 +28,7 @@ fun IntroScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Trello",
+            text = "Medi Sheba",
             color = PrimaryColor,
             style = MaterialTheme.typography.h3,
             fontWeight = FontWeight.Bold

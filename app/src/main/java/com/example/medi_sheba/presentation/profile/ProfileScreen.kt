@@ -29,7 +29,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
-import com.example.medi_sheba.presentation.Screen
+import com.example.medi_sheba.presentation.screenItem.Screen
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.google.firebase.auth.FirebaseAuth
 

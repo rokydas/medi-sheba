@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.medi_sheba.presentation.*
+import com.example.medi_sheba.presentation.screenItem.Screen
 import com.example.medi_sheba.presentation.profile.ProfileScreen
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -22,15 +23,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             medi_shebaTheme {
                 Surface(
-                    color = MaterialTheme.colors.background
+                    color = MaterialTheme.colors.background,
                 ) {
                     val navController = rememberNavController()
                     NavHost (
                         navController = navController,
-                        startDestination = Screen.HomeScreen.route
+                        startDestination = Screen.MainScreen.route
                     ) {
-                        composable(route = Screen.HomeScreen.route) {
-                            HomeScreen(navController = navController, auth)
+                        composable(route = Screen.MainScreen.route) {
+                            MainScreen(navController = navController, auth)
                         }
                         composable(route = Screen.ProfileScreen.route) {
                             ProfileScreen(navController = navController, auth)
@@ -51,7 +52,7 @@ class MainActivity : ComponentActivity() {
                             UpdateProfile(navController = navController, auth)
                         }
                         composable(route = Screen.AppointmentScreen.route) {
-                            AppointmentScreen(navController = navController)
+                            AppointmentScreen(navController = navController, bottomNavController = null)
                         }
                         composable(route = Screen.AllAppointmentsScreen.route) {
                             AllAppointmentsScreen(navController = navController)

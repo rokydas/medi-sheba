@@ -24,7 +24,10 @@ import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 
 @Composable
-fun AppointmentScreen(navController: NavController) {
+fun AppointmentScreen(
+    navController: NavController,
+    bottomNavController: NavController?
+) {
 
     val scrollState = rememberScrollState()
 

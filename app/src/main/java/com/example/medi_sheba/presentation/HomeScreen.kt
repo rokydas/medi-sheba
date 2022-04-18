@@ -1,12 +1,18 @@
 package com.example.medi_sheba.presentation
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
@@ -24,14 +30,12 @@ import androidx.navigation.NavController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.Doctor
 import com.example.medi_sheba.model.doctors
-import com.example.medi_sheba.presentation.util.gridItems
+import com.example.medi_sheba.presentation.screenItem.Screen
 import com.example.medi_sheba.ui.theme.PrimaryColor
-import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
+fun HomeScreen(navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +89,11 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                                 text = "See all",
                                 style = MaterialTheme.typography.h6,
                                 fontWeight = FontWeight.Bold,
-                                color = PrimaryColor
+                                color = PrimaryColor,
+                                modifier = Modifier
+                                    .clickable {
+                                        navController.navigate(Screen.AllDoctorsScreen.route)
+                                    }
                             )
                         }
 

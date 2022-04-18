@@ -1,7 +1,7 @@
-package com.example.medi_sheba.presentation
+package com.example.medi_sheba.presentation.screenItem
 
 sealed class Screen(val route: String) {
-    object HomeScreen: Screen("home_screen")
+    object MainScreen: Screen("home_screen")
     object ProfileScreen: Screen("profile_screen")
     object SplashScreen: Screen("splash_screen")
     object RegistrationScreen: Screen("registration_screen")

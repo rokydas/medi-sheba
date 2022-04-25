@@ -1,4 +1,4 @@
-package com.example.medi_sheba.presentation
+package com.example.medi_sheba.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.medi_sheba.R
-import com.example.medi_sheba.presentation.screenItem.Screen
+import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.delay
@@ -27,9 +27,9 @@ fun SplashScreen(navController: NavController, auth: FirebaseAuth) {
         val currentUser: FirebaseUser? = auth.currentUser
 
         if(currentUser == null) {
-            navController.navigate(Screen.IntroScreen.route)
+            navController.navigate(ScreenItem.IntroScreenItem.route)
         } else {
-            navController.navigate(Screen.ProfileScreen.route)
+            navController.navigate(ScreenItem.ProfileScreenItem.route)
         }
     }
 

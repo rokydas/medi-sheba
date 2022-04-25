@@ -1,4 +1,4 @@
-package com.example.medi_sheba.presentation
+package com.example.medi_sheba.presentation.screens
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*

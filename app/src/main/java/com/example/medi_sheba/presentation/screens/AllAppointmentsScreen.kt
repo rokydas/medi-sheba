@@ -1,4 +1,4 @@
-package com.example.medi_sheba.presentation
+package com.example.medi_sheba.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,29 +22,33 @@ import com.example.medi_sheba.ui.theme.PrimaryColorLight
 
 @Composable
 fun AllAppointmentsScreen(navController: NavController) {
-    Column {
-        Text(
-            text = "Your Appointments",
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.h5
-        )
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController = navController, title = "Appointments") }
+    ) {
+        Column {
+            Text(
+                text = "Your Appointments",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.h5
+            )
 
-        Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-        if(appointments.isEmpty()) {
-            Column(
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(text = "There is no appointment for you")
-            }
-        }
-        else {
-            LazyColumn {
-                items(appointments) { appointment ->
-                    Image(painter = painterResource(appointment.doctorImage), contentDescription = "")
+            if(appointments.isEmpty()) {
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "There is no appointment for you")
                 }
             }
-        }
+            else {
+                LazyColumn {
+                    items(appointments) { appointment ->
+                        Image(painter = painterResource(appointment.doctorImage), contentDescription = "")
+                    }
+                }
+            }
 
+        }
     }
 }

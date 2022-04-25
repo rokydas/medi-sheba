@@ -8,9 +8,9 @@ import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.medi_sheba.presentation.*
-import com.example.medi_sheba.presentation.screenItem.Screen
-import com.example.medi_sheba.presentation.profile.ProfileScreen
+import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.example.medi_sheba.presentation.screens.ProfileScreen
+import com.example.medi_sheba.presentation.screens.*
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -19,45 +19,48 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
+        val startDest = if(auth.uid != null)
+            ScreenItem.HomeScreenItem.route
+        else ScreenItem.IntroScreenItem.route
 
         setContent {
             medi_shebaTheme {
                 Surface(
-                    color = MaterialTheme.colors.background,
+                    color = MaterialTheme.colors.background
                 ) {
                     val navController = rememberNavController()
                     NavHost (
                         navController = navController,
-                        startDestination = Screen.MainScreen.route
+                        startDestination = startDest
                     ) {
-                        composable(route = Screen.MainScreen.route) {
-                            MainScreen(navController = navController, auth)
+                        composable(route = ScreenItem.HomeScreenItem.route) {
+                            HomeScreen(navController = navController, auth)
                         }
-                        composable(route = Screen.ProfileScreen.route) {
+                        composable(route = ScreenItem.ProfileScreenItem.route) {
                             ProfileScreen(navController = navController, auth)
                         }
-                        composable(route = Screen.SplashScreen.route) {
+                        composable(route = ScreenItem.SplashScreenItem.route) {
                             SplashScreen(navController = navController, auth)
                         }
-                        composable(route = Screen.IntroScreen.route) {
+                        composable(route = ScreenItem.IntroScreenItem.route) {
                             IntroScreen(navController = navController)
                         }
-                        composable(route = Screen.RegistrationScreen.route) {
+                        composable(route = ScreenItem.RegistrationScreenItem.route) {
                             RegistrationScreen(navController = navController, auth)
                         }
-                        composable(route = Screen.LoginScreen.route) {
+                        composable(route = ScreenItem.LoginScreenItem.route) {
                             LoginScreen(navController = navController, auth)
                         }
-                        composable(route = Screen.UpdateProfileScreen.route) {
+                        composable(route = ScreenItem.UpdateProfileScreenItem.route) {
                             UpdateProfile(navController = navController, auth)
                         }
-                        composable(route = Screen.AppointmentScreen.route) {
+                        composable(route = ScreenItem.AppointmentScreenItem.route) {
                             AppointmentScreen(navController = navController, bottomNavController = null)
                         }
-                        composable(route = Screen.AllAppointmentsScreen.route) {
+                        composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
                             AllAppointmentsScreen(navController = navController)
                         }
-                        composable(route = Screen.AllDoctorsScreen.route) {
+                        composable(route = ScreenItem.AllDoctorsScreenItem.route) {
                             AllDoctorsScreen(navController = navController)
                         }
                     }

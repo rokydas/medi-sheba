@@ -1,4 +1,4 @@
-package com.example.medi_sheba.presentation
+package com.example.medi_sheba.presentation.screens
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.medi_sheba.R
-import com.example.medi_sheba.presentation.screenItem.Screen
+import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
 
@@ -58,7 +58,7 @@ fun IntroScreen(navController: NavController) {
             textColor = Color.White,
             borderColor = Color.Transparent,
             onClick = {
-                navController.navigate(Screen.LoginScreen.route)
+                navController.navigate(ScreenItem.LoginScreenItem.route)
             }
         )
 
@@ -71,7 +71,7 @@ fun IntroScreen(navController: NavController) {
             textColor = PrimaryColor,
             borderColor = PrimaryColor,
             onClick = {
-                navController.navigate(Screen.RegistrationScreen.route)
+                navController.navigate(ScreenItem.RegistrationScreenItem.route)
             }
         )
     }

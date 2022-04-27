@@ -74,7 +74,7 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
                 )
                 Spacer(modifier = Modifier.width(20.dp))
                 Text(
-                    text = "SIGN UP",
+                    text = "SIGN IN",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.h6
                 )

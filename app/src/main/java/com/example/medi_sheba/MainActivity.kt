@@ -8,6 +8,7 @@ import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
 import com.example.medi_sheba.presentation.screens.*
@@ -52,7 +53,8 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(navController = navController, auth)
                         }
                         composable(route = ScreenItem.UpdateProfileScreenItem.route) {
-                            UpdateProfile(navController = navController, auth)
+                            val userDetails = navController.previousBackStackEntry?.arguments?.getParcelable<User>("user")
+                            UpdateProfileScreen(navController = navController, auth, userDetails!!)
                         }
                         composable(route = ScreenItem.AppointmentScreenItem.route) {
                             AppointmentScreen(navController = navController, bottomNavController = null)

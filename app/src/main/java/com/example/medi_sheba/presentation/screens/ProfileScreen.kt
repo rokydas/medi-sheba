@@ -93,6 +93,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                         imageVector = Icons.Default.Edit, contentDescription = "update profile",
                         modifier = Modifier
                             .clickable {
+                                navController.currentBackStackEntry?.arguments?.putParcelable("user", user.value)
                                 navController.navigate(ScreenItem.UpdateProfileScreenItem.route)
                             }
                     )
@@ -138,7 +139,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = _user.mobileNumber,
+                        text = "Mobile: " + _user.mobileNumber,
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -153,7 +154,37 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = _user.email,
+                        text = "Email: " + _user.email,
+                        style = MaterialTheme.typography.body1
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier
+                        .padding(start = 30.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Call, contentDescription = "",
+                        tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(30.dp))
+                    Text(
+                        text = "Age: " + _user.age,
+                        style = MaterialTheme.typography.body1
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier
+                        .padding(start = 30.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Call, contentDescription = "",
+                        tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(30.dp))
+                    Text(
+                        text = "Address: " + _user.address,
                         style = MaterialTheme.typography.body1
                     )
                 }

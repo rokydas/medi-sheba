@@ -1,11 +1,14 @@
 package com.example.medi_sheba.presentation.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -283,7 +286,8 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                                                     }
                                                 }
                                                 .addOnFailureListener {
-                                                    Toast.makeText(context,"Something went wrong. Please try again.", Toast.LENGTH_SHORT).show()
+                                                    isLoading = false
+                                                    Toast.makeText(context, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show()
                                                 }
                                         } else {
                                             isLoading = false
@@ -315,7 +319,12 @@ fun displayGenderRadio(gender: MutableState<String>){
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            RadioButton(selected = gender.value == "Male", onClick = { gender.value = "Male" })
+            RadioButton(
+                selected = gender.value == "Male", onClick = { gender.value = "Male" },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = PrimaryColor
+                )
+            )
             Text(
                 text = "Male",
                 modifier = Modifier
@@ -323,7 +332,12 @@ fun displayGenderRadio(gender: MutableState<String>){
                     .padding(start = 4.dp)
             )
             Spacer(modifier = Modifier.size(4.dp))
-            RadioButton(selected = gender.value == "Female", onClick = { gender.value = "Female" })
+            RadioButton(
+                selected = gender.value == "Female", onClick = { gender.value = "Female" },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = PrimaryColor
+                )
+            )
             Text(
                 text = "Female",
                 modifier = Modifier
@@ -334,7 +348,12 @@ fun displayGenderRadio(gender: MutableState<String>){
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            RadioButton(selected = gender.value == "Other", onClick = { gender.value = "Other" })
+            RadioButton(
+                selected = gender.value == "Other", onClick = { gender.value = "Other" },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = PrimaryColor
+                )
+            )
             Text(
                 text = "Other",
                 modifier = Modifier

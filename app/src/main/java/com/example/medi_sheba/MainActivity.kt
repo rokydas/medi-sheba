@@ -8,6 +8,7 @@ import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
@@ -68,8 +69,9 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.ChatUserListScreenItem.route) {
                             ChatUserListScreen(navController = navController)
                         }
-                        composable(route = ScreenItem.ChatScreenItem.route) {
-                            ChatScreen(navController = navController)
+                        composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}") { navBackStack ->
+                            val receiverUid = navBackStack.arguments?.getString("receiverUid")
+                            ChatScreen(navController = navController, receiverUid = receiverUid)
                         }
                     }
                 }

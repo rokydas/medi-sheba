@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class User(
+    val uid: String = "",
     val name: String = "",
     val userType: String = "",
     val email: String = "",
@@ -24,11 +25,13 @@ data class User(
         source.readString()!!,
         source.readString()!!,
         source.readString()!!,
+        source.readString()!!,
     )
 
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
+        writeString(uid)
         writeString(name)
         writeString(userType)
         writeString(email)

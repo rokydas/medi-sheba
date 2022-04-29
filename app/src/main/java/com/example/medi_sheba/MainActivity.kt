@@ -65,6 +65,12 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.AllDoctorsScreenItem.route) {
                             AllDoctorsScreen(navController = navController)
                         }
+                        composable(route = ScreenItem.ChatUserListScreenItem.route) {
+                            ChatUserListScreen(navController = navController)
+                        }
+                        composable(route = ScreenItem.ChatScreenItem.route) {
+                            ChatScreen(navController = navController)
+                        }
                     }
                 }
             }

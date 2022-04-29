@@ -30,7 +30,7 @@ import androidx.navigation.NavController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
-import com.example.medi_sheba.presentation.viewmodels.ProfileViewModel
+import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.google.firebase.auth.FirebaseAuth
 
@@ -38,19 +38,19 @@ import com.google.firebase.auth.FirebaseAuth
 fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
 
     val userId = auth.uid
-    val viewModel = ProfileViewModel()
+    val profileController = ProfileController()
 
     var isLoading by rememberSaveable { mutableStateOf(true) }
     var _user by rememberSaveable { mutableStateOf(User()) }
 
-    val user = viewModel.user.observeAsState()
+    val user = profileController.user.observeAsState()
     if(user.value != null) {
         isLoading = false
         _user = user.value!!
     }
 
     if(userId != null) {
-        viewModel.getUser(userId)
+        profileController.getUser(userId)
     }
 
     Scaffold(

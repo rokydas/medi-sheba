@@ -1,4 +1,4 @@
-package com.example.medi_sheba.presentation.viewmodels
+package com.example.medi_sheba.controllers
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +9,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
-class ProfileViewModel() : ViewModel() {
+class ProfileController() : ViewModel() {
 
     val db = Firebase.firestore
 
@@ -27,5 +27,4 @@ class ProfileViewModel() : ViewModel() {
                 }
             }
     }
-
 }

@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.medi_sheba.R
@@ -17,8 +19,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.delay
 
+
 @Composable
-fun SplashScreen(navController: NavController, auth: FirebaseAuth) {
+fun SplashScreen(navController: NavController = NavController(LocalContext.current), auth: FirebaseAuth) {
 
     LaunchedEffect(key1 = true) {
         delay(1000)
@@ -43,3 +46,4 @@ fun SplashScreen(navController: NavController, auth: FirebaseAuth) {
     }
 
 }
+

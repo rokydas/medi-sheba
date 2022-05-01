@@ -2,14 +2,12 @@
 
 package com.example.medi_sheba.presentation.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,24 +18,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.Doctor
 import com.example.medi_sheba.model.doctors
+import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
+import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.collection.LLRBNode
 
 @Composable
 fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController, title = "Home") }
+        bottomBar = { BottomNavigationBar(navController = navController,
+            title = "Home") }
     ) {
         LazyColumn(
             modifier = Modifier
@@ -105,57 +113,44 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                             Row(
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(horizontal = 7.dp)
-                                        .shadow(5.dp, RoundedCornerShape(10.dp))
-                                        .background(Color.White)
-                                ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.cardiologist),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .width(70.dp)
-                                            .padding(vertical = 10.dp)
-                                    )
-                                    Text(text = "Cardiologist", modifier = Modifier.padding(bottom = 5.dp))
-                                }
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(horizontal = 7.dp)
-                                        .shadow(5.dp, RoundedCornerShape(10.dp))
-                                        .background(Color.White)
-                                ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.ortho),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .width(70.dp)
-                                            .padding(vertical = 10.dp)
-                                    )
-                                    Text(text = "Orthopedic", modifier = Modifier.padding(bottom = 5.dp))
-                                }
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(horizontal = 7.dp)
-                                        .shadow(5.dp, RoundedCornerShape(10.dp))
-                                        .background(Color.White)
-                                ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.dentist),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .width(70.dp)
-                                            .padding(vertical = 10.dp)
-                                    )
-                                    Text(text = "Dentist", modifier = Modifier.padding(bottom = 5.dp))
-                                }
+//                                Column(
+//                                    horizontalAlignment = Alignment.CenterHorizontally,
+//                                    modifier = Modifier
+//                                        .weight(1f)
+//                                        .padding(horizontal = 7.dp)
+//                                        .shadow(5.dp, RoundedCornerShape(10.dp))
+//                                        .background(Color.White)
+//                                ) {
+//                                    Image(
+//                                        painter = painterResource(R.drawable.cardiologist),
+//                                        contentDescription = "",
+//                                        modifier = Modifier
+//                                            .width(60.dp)
+//                                            .padding(vertical = 10.dp)
+//                                    )
+//                                    Text(text = "Cardiologist",
+//                                        modifier = Modifier.padding(bottom = 5.dp),
+//                                    style = TextStyle(fontSize = 14.sp)
+//                                    )
+//                                }
+
+                                CategoryCard(
+                                    modifier = Modifier.weight(1f),
+                                    name =  "Cardiologist",
+                                    contentName =  "Cardiologist",
+                                    painter = painterResource(R.drawable.cardiologist))
+
+                                CategoryCard(
+                                    modifier = Modifier.weight(1f),
+                                    name =  "Orthopedic",
+                                    contentName =  "Orthopedic",
+                                    painter = painterResource(R.drawable.ortho))
+
+                                CategoryCard(
+                                    modifier = Modifier.weight(1f),
+                                    name =  "Dentist",
+                                    contentName =  "Dentist",
+                                    painter = painterResource(R.drawable.dentist))
                             }
 
                             Spacer(modifier = Modifier.height(25.dp))
@@ -225,7 +220,8 @@ fun DoctorHorizontalCard(doctor: Doctor) {
                 Column {
                     Text(
                         text = doctor.name,
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = doctor.designation,
@@ -243,26 +239,39 @@ fun DoctorHorizontalCard(doctor: Doctor) {
                 horizontalAlignment = Alignment.End
             ) {
                 Row {
-                    Icon(imageVector = Icons.Default.Star, contentDescription = "star")
+                    Icon(imageVector = Icons.Default.Star,
+                        contentDescription = "star")
                     Text(
                         text = doctor.rating.toString(),
                         style = MaterialTheme.typography.body1
                     )
                 }
-                Box(
+                Surface(
                     modifier = Modifier
-                        .background(PrimaryColor)
-                        .padding(5.dp),
-                    contentAlignment = Alignment.Center
+                        .clip(shape =
+                        CircleShape.copy(all = CornerSize(5.dp)))
                 ) {
-                    Text(
-                        text = "Book Now",
-                        color = Color.White,
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Center
-                    )
+                    Box(
+                        modifier = Modifier
+                            .background(PrimaryColor)
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
+                            .clip(shape = CircleShape
+                                .copy(all = CornerSize(12.dp))),
+                        contentAlignment = Alignment.Center,
+
+                        ) {
+                        Text(
+                            text = "Book Now",
+                            color = Color.White,
+                            style = TextStyle(fontSize = 14.sp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
+
+
             }
         }
     }
 }
+

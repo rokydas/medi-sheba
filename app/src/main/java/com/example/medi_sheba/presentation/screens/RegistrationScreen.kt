@@ -269,6 +269,7 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                                             val db = Firebase.firestore
 
                                             val user = User(
+                                                uid = authUser!!.uid,
                                                 name = name,
                                                 email = email,
                                                 userType = "Patient",
@@ -278,7 +279,7 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                                                 gender = gender.value
                                             )
                                             db.collection("users")
-                                                .document(authUser!!.uid)
+                                                .document(authUser.uid)
                                                 .set(user)
                                                 .addOnSuccessListener {
                                                     navController.navigate(ScreenItem.HomeScreenItem.route) {

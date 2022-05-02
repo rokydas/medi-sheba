@@ -44,7 +44,8 @@ import com.google.firebase.database.collection.LLRBNode
 @Composable
 fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController,
+        bottomBar = {
+            BottomNavigationBar(navController = navController,
             title = "Home") }
     ) {
         LazyColumn(
@@ -103,7 +104,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                     color = PrimaryColor,
                                     modifier = Modifier
                                         .clickable {
-                                            navController.navigate(ScreenItem.AllDoctorsScreenItem.route)
+                                            navController.navigate(ScreenItem.AllCategoryScreen.route)
                                         }
                                 )
                             }
@@ -113,26 +114,6 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                             Row(
                                 horizontalArrangement = Arrangement.Center
                             ) {
-//                                Column(
-//                                    horizontalAlignment = Alignment.CenterHorizontally,
-//                                    modifier = Modifier
-//                                        .weight(1f)
-//                                        .padding(horizontal = 7.dp)
-//                                        .shadow(5.dp, RoundedCornerShape(10.dp))
-//                                        .background(Color.White)
-//                                ) {
-//                                    Image(
-//                                        painter = painterResource(R.drawable.cardiologist),
-//                                        contentDescription = "",
-//                                        modifier = Modifier
-//                                            .width(60.dp)
-//                                            .padding(vertical = 10.dp)
-//                                    )
-//                                    Text(text = "Cardiologist",
-//                                        modifier = Modifier.padding(bottom = 5.dp),
-//                                    style = TextStyle(fontSize = 14.sp)
-//                                    )
-//                                }
 
                                 CategoryCard(
                                     modifier = Modifier.weight(1f),
@@ -170,7 +151,10 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                     text = "See all",
                                     style = MaterialTheme.typography.h6,
                                     fontWeight = FontWeight.Bold,
-                                    color = PrimaryColor
+                                    color = PrimaryColor,
+                                    modifier = Modifier.clickable {
+                                        navController.navigate(ScreenItem.AllTopDoctorScreen.route)
+                                    }
                                 )
                             }
                             Spacer(modifier = Modifier.height(10.dp))
@@ -268,8 +252,6 @@ fun DoctorHorizontalCard(doctor: Doctor) {
                         )
                     }
                 }
-
-
             }
         }
     }

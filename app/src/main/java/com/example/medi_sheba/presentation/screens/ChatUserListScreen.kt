@@ -30,7 +30,10 @@ fun ChatUserListScreen(navController: NavController) {
 
     chatUserListController.getChatUserList(context)
 
-    Scaffold {
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController = navController,
+            title = "Chat") }
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

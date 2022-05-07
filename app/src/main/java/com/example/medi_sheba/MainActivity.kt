@@ -77,6 +77,12 @@ class MainActivity : ComponentActivity() {
                             val receiverName = navBackStack.arguments?.getString("receiverName")
                             ChatScreen(navController = navController, receiverUid = receiverUid, receiverName = receiverName)
                         }
+                        composable(route = ScreenItem.AllTopDoctorScreen.route) {
+                            AllTopDoctorsScreen(navController = navController)
+                        }
+                        composable(route = ScreenItem.AllCategoryScreen.route) {
+                            AllCategoryScreen(navController = navController)
+                        }
                     }
                 }
             }

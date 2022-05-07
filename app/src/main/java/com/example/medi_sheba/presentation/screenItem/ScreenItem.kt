@@ -13,4 +13,6 @@ sealed class ScreenItem(val route: String) {
     object AllDoctorsScreenItem: ScreenItem("all_doctors_screen")
     object ChatUserListScreenItem: ScreenItem("chat_user_list_screen")
     object ChatScreenItem: ScreenItem("chat_screen")
+    object AllTopDoctorScreen : ScreenItem("all_top_doctors")
+    object AllCategoryScreen : ScreenItem("all_category")
 }

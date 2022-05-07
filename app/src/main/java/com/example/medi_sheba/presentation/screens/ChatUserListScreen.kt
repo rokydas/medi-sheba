@@ -71,7 +71,6 @@ fun ChatUserListScreen(navController: NavController) {
                                 ) {
                                     Text(text = user.name)
                                 }
-
                             }
                         }
                     }

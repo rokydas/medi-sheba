@@ -1,8 +1,10 @@
 package com.example.medi_sheba
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
@@ -17,6 +19,7 @@ import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -69,9 +72,10 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.ChatUserListScreenItem.route) {
                             ChatUserListScreen(navController = navController)
                         }
-                        composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}") { navBackStack ->
+                        composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}/{receiverName}") { navBackStack ->
                             val receiverUid = navBackStack.arguments?.getString("receiverUid")
-                            ChatScreen(navController = navController, receiverUid = receiverUid)
+                            val receiverName = navBackStack.arguments?.getString("receiverName")
+                            ChatScreen(navController = navController, receiverUid = receiverUid, receiverName = receiverName)
                         }
                     }
                 }

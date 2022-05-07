@@ -40,7 +40,7 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatScreen(navController: NavController, receiverUid: String?) {
+fun ChatScreen(navController: NavController, receiverUid: String?, receiverName: String?) {
 
     val chatController = ChatController()
     val auth = Firebase.auth
@@ -66,7 +66,7 @@ fun ChatScreen(navController: NavController, receiverUid: String?) {
                     .shadow(elevation = 2.dp)
                     .padding(10.dp)
             ) {
-                Text(text = "Showrav Das",)
+                Text(text = receiverName!!)
             }
             if (messageLists.value != null) {
                 MessagesUI(

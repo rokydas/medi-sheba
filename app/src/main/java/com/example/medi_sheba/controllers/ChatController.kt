@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Message
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 
 
 class ChatController {

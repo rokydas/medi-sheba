@@ -5,27 +5,22 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.medi_sheba.model.AllMessages
 import com.example.medi_sheba.model.Message
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 
 
 class ChatController {
 
     val db = Firebase.firestore
-    val gson = Gson()
 
     private val _messageLists = MutableLiveData<List<Message>>()
     val messageLists: LiveData<List<Message>>
         get() = _messageLists
 
     fun getMessages(docName: String) {
+        Log.d("ekhane", docName)
         val docRef = db.collection("messages").document(docName)
             .collection("texts")
         docRef.addSnapshotListener { data, e ->
@@ -49,48 +44,23 @@ class ChatController {
     }
 
     fun sendMessage(message: Message, context: Context) {
+        sendMessageInDocument(message.senderUid + "_" + message.receiverUid, message, context)
+        sendMessageInDocument(message.receiverUid + "_" + message.senderUid, message, context)
+    }
 
-        var isSent = false
-
-        val docRef = db.collection("messages")
-        docRef.get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    if(
-                        document.id == message.senderUid + "_" + message.receiverUid ||
-                        document.id == message.receiverUid + "_" + message.senderUid
-                    ) {
-                        db.collection("messages")
-                            .document(document.id)
-                            .update("texts", (FieldValue.arrayUnion(message)) )
-                            .addOnSuccessListener { }
-                            .addOnFailureListener {
-                                Toast.makeText(context, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show()
-                            }
-                        isSent = true
-                    }
-                }
-                if(!isSent) {
-                    val allMessages = AllMessages(texts = listOf(message))
-                    db.collection("messages")
-                        .document(message.senderUid + "_" + message.receiverUid)
-                        .set(allMessages)
-                        .addOnSuccessListener { }
-                        .addOnFailureListener {
-                            Toast.makeText(context, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show()
-                        }
-
-                    db.collection("messages")
-                        .document(message.receiverUid + "_" + message.senderUid)
-                        .set(allMessages)
-                        .addOnSuccessListener { }
-                        .addOnFailureListener {
-                            Toast.makeText(context, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show()
-                        }
-                }
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(context, exception.message, Toast.LENGTH_SHORT).show()
+    private fun sendMessageInDocument(docName: String, message: Message, context: Context) {
+        db.collection("messages")
+            .document(docName)
+            .collection("texts")
+            .document(message.time)
+            .set(message)
+            .addOnSuccessListener { }
+            .addOnFailureListener {
+                Toast.makeText(
+                    context,
+                    "Something went wrong. Please try again.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 }

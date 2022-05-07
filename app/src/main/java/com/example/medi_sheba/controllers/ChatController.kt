@@ -11,8 +11,10 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
+
 
 class ChatController {
 
@@ -24,21 +26,25 @@ class ChatController {
         get() = _messageLists
 
     fun getMessages(docName: String) {
-        val docRef = db.collection("messages").document("3Q2eFw0vAef6mEmq4fk3u4bc7NA2_ggN5nR8HXZMrwH2NGqhBt62ilGs1")
-        docRef.addSnapshotListener { snapshot, e ->
+        val docRef = db.collection("messages").document(docName)
+            .collection("texts")
+        docRef.addSnapshotListener { data, e ->
             if (e != null) {
                 Log.d("fireStoreListener", "Listen failed.", e)
                 return@addSnapshotListener
             }
-            if (snapshot != null && snapshot.exists()) {
-                try {
 
-                } catch (e: Exception) {
-
-                }
-            } else {
-                Log.d("fireStoreListener", "Current data: null")
+            val messages = mutableListOf<Message>()
+            for (doc in data!!) {
+                messages.add(
+                    Message(
+                        message = doc.getString("message")!!,
+                        senderUid = doc.getString("senderUid")!!,
+                        receiverUid = doc.getString("receiverUid")!!,
+                        time = doc.getString("time")!!
+                ))
             }
+            _messageLists.value = messages
         }
     }
 

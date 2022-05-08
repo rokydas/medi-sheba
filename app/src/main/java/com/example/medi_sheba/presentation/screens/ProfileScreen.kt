@@ -193,6 +193,25 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     modifier = Modifier
                         .padding(start = 30.dp)
                         .clickable {
+                            navController.navigate(ScreenItem.DashboardScreenItem.route)
+                        }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Logout, contentDescription = "",
+                        tint = Color.Gray,
+                    )
+                    Spacer(modifier = Modifier.width(30.dp))
+                    Text(
+                        text = "Dashboard",
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.h6
+                    )
+                }
+                Spacer(modifier = Modifier.height(40.dp))
+                Row(
+                    modifier = Modifier
+                        .padding(start = 30.dp)
+                        .clickable {
                             auth.signOut()
                             navController.navigate(ScreenItem.IntroScreenItem.route) {
                                 popUpTo(0)

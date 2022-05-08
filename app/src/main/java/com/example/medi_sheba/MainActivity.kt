@@ -77,6 +77,13 @@ class MainActivity : ComponentActivity() {
                             val receiverName = navBackStack.arguments?.getString("receiverName")
                             ChatScreen(navController = navController, receiverUid = receiverUid, receiverName = receiverName)
                         }
+                        composable(route = ScreenItem.DashboardScreenItem.route) {
+                            DashboardScreen(navController = navController)
+                        }
+                        composable(route = ScreenItem.MakeAndDeleteRoleItem.route + "/{roleName}") { navBackStack ->
+                            val roleName = navBackStack.arguments?.getString("roleName")
+                            MakeAndDeleteRole(navController = navController, roleName!!)
+                        }
                     }
                 }
             }

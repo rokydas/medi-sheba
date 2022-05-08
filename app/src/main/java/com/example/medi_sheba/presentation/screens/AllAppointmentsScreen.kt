@@ -1,32 +1,100 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.medi_sheba.model.appointments
+import androidx.navigation.compose.rememberNavController
+import com.example.medi_sheba.FirestoreAll.ProductsViewModel
+import com.example.medi_sheba.R
+import com.example.medi_sheba.controllers.ProfileController
+import com.example.medi_sheba.model.*
+import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
+import com.example.medi_sheba.ui.theme.background
+import com.google.firebase.auth.FirebaseAuth
 
+public const val TAG = "TAG"
 @Composable
-fun AllAppointmentsScreen(navController: NavController) {
+fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
+    val profileController = ProfileController()
+    var _user by rememberSaveable { mutableStateOf(User()) }
+    val user = profileController.user.observeAsState()
+
+    val userId = auth.uid
+    if(user.value != null) {
+        _user = user.value!!
+    }
+    Log.d(TAG, "user id: $userId ")
+
+    if(userId != null) {
+        profileController.getUser(userId)
+    }
+    Log.d(TAG, "user value: $_user ")
+    Log.d(TAG, "=================================================")
+
+//    var _appointList by rememberSaveable { mutableStateOf(AppointList()) }
+//    val appointList = profileController.appointList.observeAsState()
+//
+//    if(appointList.value != null) {
+//        _appointList = appointList.value!!
+//        Log.d(TAG, "appointList : ${appointList.value} ")
+//
+//
+//
+//    }
+//    profileController.getAppointment()
+//
+//
+//    Log.d(TAG, "appointment list: $_appointList ")
+
+    Log.d(TAG, "------------------------------------------------------------------")
+
+//    val dataOrException = viewModel.data.value
+//    ProductsActivity(dataOrException)
+
+
+
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Appointments")
+                    Text(text =
+                    "${_user.name}'s Appointments List"
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -44,25 +112,26 @@ fun AllAppointmentsScreen(navController: NavController) {
             title = "Appointment") }
     ) {
         Column {
-            Text(
-                text = "Your Appointments",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.h5
-            )
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            if(appointments.isEmpty()) {
+            if(doctors.isEmpty()) {
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(text = "There is no appointment for you")
                 }
-            }
-            else {
+            } else {
                 LazyColumn {
-                    items(appointments) { appointment ->
-                        Image(painter = painterResource(appointment.doctorImage), contentDescription = "")
+                    items(doctors) { doctor ->
+//                        Image(painter = painterResource(appointment.doctorImage),
+//                            contentDescription = "")
+
+                        if(_user.userType.equals("Patients")){
+                            AppointmentDoctor(doctor, navController)
+                        }else if(_user.userType.equals("Doctor")){
+                            AppointmentPatient(doctor , navController)
+                        }else if(_user.userType.equals("Patient")){
+                            AppointmentNurse(doctor , navController)
+                        }
+
                     }
                 }
             }
@@ -70,3 +139,223 @@ fun AllAppointmentsScreen(navController: NavController) {
         }
     }
 }
+
+
+@Composable
+fun AppointmentDoctor(doctor: Doctor, navController: NavController ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(background)
+            .clickable {
+                navController.navigate(ScreenItem.AppointmentScreenItem.route)
+            }
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 25.dp, vertical = 10.dp)
+                .shadow(5.dp, shape = RoundedCornerShape(10.dp))
+                .background(Color.White)
+                .padding(horizontal = 5.dp, vertical = 15.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+            ) {
+                Image(
+                    painter = painterResource(doctor.image),
+                    contentDescription = "Doctor Picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.Gray, CircleShape)
+                )
+                Spacer(modifier = Modifier.width(15.dp))
+                Column {
+                    Text(
+                        text = doctor.name,
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = doctor.designation,
+                        style = MaterialTheme.typography.body1,
+                        color = Color.Gray
+                    )
+
+                }
+            }
+
+        }
+    }
+}
+
+
+@Composable
+fun AppointmentPatient(doctor: Doctor, navController: NavController ) {
+    Box(
+        modifier = Modifier
+            .background(background)
+            .fillMaxWidth()
+//            .clickable {
+//                navController.navigate(ScreenItem.AppointmentScreenItem.route)
+//            }
+    ) {
+
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(background)
+                .padding(horizontal = 15.dp, vertical = 10.dp)
+                .shadow(5.dp, shape = RoundedCornerShape(10.dp))
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.avartar),
+                    contentDescription = "profile_picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.Gray, CircleShape)
+                )
+                Spacer(modifier = Modifier.width(15.dp))
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Sarose Datta",
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Nurse not yet assigned ",
+                        style = MaterialTheme.typography.body1,
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 10.dp)
+
+                    )
+
+                    Text(
+                        text = "Time: 7.42 PM",
+                        style = MaterialTheme.typography.body1,
+                        color = Color.Black,
+                        fontSize = 14.sp
+                    )
+
+
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .clip(
+                                shape =
+                                CircleShape.copy(all = CornerSize(5.dp))
+                            )
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .background(Color.Green)
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                                .clip(
+                                    shape = CircleShape
+                                        .copy(all = CornerSize(12.dp))
+                                ),
+                            contentAlignment = Alignment.Center,
+
+                            ) {
+                            Text(
+                                text = "Assign Nurse",
+                                color = Color.White,
+                                style = TextStyle(fontSize = 14.sp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+
+@Composable
+fun AppointmentNurse(doctor: Doctor, navController: NavController ) {
+    Box(
+        modifier = Modifier
+            .background(background)
+            .fillMaxWidth()
+//            .clickable {
+//                navController.navigate(ScreenItem.AppointmentScreenItem.route)
+//            }
+    ) {
+
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(background)
+                .padding(horizontal = 15.dp, vertical = 10.dp)
+                .shadow(5.dp, shape = RoundedCornerShape(10.dp))
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.avartar),
+                    contentDescription = "profile_picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.Gray, CircleShape)
+                )
+                Spacer(modifier = Modifier.width(15.dp))
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Patient Name",
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Patient designation ",
+                        style = MaterialTheme.typography.body1,
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 10.dp)
+                    )
+
+                    Text(
+                        text = "Cabin No:",
+                        style = MaterialTheme.typography.body1,
+                        color = Color.Black,
+                        fontSize = 14.sp
+                    )
+
+                    Text(
+                        text = "Time: 7.42 PM",
+                        style = MaterialTheme.typography.body1,
+                        color = Color.Black,
+                        fontSize = 14.sp
+                    )
+
+                }
+            }
+        }
+
+    }
+}
+

@@ -1,13 +1,17 @@
 package com.example.medi_sheba.controllers
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.medi_sheba.model.AppointList
+import com.example.medi_sheba.model.DataOrException
 import com.example.medi_sheba.model.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class ProfileController() : ViewModel() {
 
@@ -27,4 +31,7 @@ class ProfileController() : ViewModel() {
                 }
             }
     }
+
+
+
 }

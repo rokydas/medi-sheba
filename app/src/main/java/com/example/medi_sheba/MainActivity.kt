@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -95,9 +92,10 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.ChatUserListScreenItem.route) {
                             ChatUserListScreen(navController = navController)
                         }
-                        composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}") { navBackStack ->
+                        composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}/{receiverName}") { navBackStack ->
                             val receiverUid = navBackStack.arguments?.getString("receiverUid")
-                            ChatScreen(navController = navController, receiverUid = receiverUid)
+                            val receiverName = navBackStack.arguments?.getString("receiverName")
+                            ChatScreen(navController = navController, receiverUid = receiverUid, receiverName = receiverName)
                         }
                         composable(route = ScreenItem.AllTopDoctorScreen.route) {
                             AllTopDoctorsScreen(navController = navController)

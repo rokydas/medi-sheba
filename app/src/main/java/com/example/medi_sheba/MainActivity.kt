@@ -2,15 +2,19 @@ package com.example.medi_sheba
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
+
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import com.example.medi_sheba.FirestoreAll.DataOrException
+import com.example.medi_sheba.FirestoreAll.Product
+import com.example.medi_sheba.FirestoreAll.ProductsViewModel
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
@@ -23,6 +27,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
         val startDest = if(auth.uid != null)
             ScreenItem.HomeScreenItem.route
@@ -30,9 +47,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             medi_shebaTheme {
+
+
                 Surface(
                     color = MaterialTheme.colors.background
                 ) {
+
                     val navController = rememberNavController()
                     NavHost (
                         navController = navController,
@@ -64,7 +84,7 @@ class MainActivity : ComponentActivity() {
                             AppointmentScreen(navController = navController, bottomNavController = null)
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
-                            AllAppointmentsScreen(navController = navController)
+                            AllAppointmentsScreen(navController = navController, auth)
                         }
                         composable(route = ScreenItem.AllDoctorsScreenItem.route) {
                             AllDoctorsScreen(navController = navController)
@@ -87,5 +107,41 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+
+
+    @Composable
+    fun ProductsActivity(dataOrException: DataOrException<List<Product>, Exception>) {
+        val products = dataOrException.data
+        products?.let {
+            LazyColumn {
+                items(
+                    items = products
+                ) { product ->
+//                    ProductCard(product = product)
+                    Log.d(TAG, "==================---------=====================")
+                    Log.d(TAG, "ProductsActivity: $product")
+                }
+            }
+        }
+
+//        val e = dataOrException.e
+//        e?.let {
+//            Text(
+//                text = e.message!!,
+//                modifier = Modifier.padding(16.dp)
+//            )
+//        }
+//
+//        Column(
+//            modifier = Modifier.fillMaxSize(),
+//            verticalArrangement = Arrangement.Center,
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            CircularProgressBar(
+//                isDisplayed = viewModel.loading.value
+//            )
+//        }
     }
 }

@@ -2,19 +2,15 @@ package com.example.medi_sheba
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.medi_sheba.FirestoreAll.DataOrException
-import com.example.medi_sheba.FirestoreAll.Product
-import com.example.medi_sheba.FirestoreAll.ProductsViewModel
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
@@ -24,20 +20,9 @@ import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -110,38 +95,4 @@ class MainActivity : ComponentActivity() {
     }
 
 
-
-    @Composable
-    fun ProductsActivity(dataOrException: DataOrException<List<Product>, Exception>) {
-        val products = dataOrException.data
-        products?.let {
-            LazyColumn {
-                items(
-                    items = products
-                ) { product ->
-//                    ProductCard(product = product)
-                    Log.d(TAG, "==================---------=====================")
-                    Log.d(TAG, "ProductsActivity: $product")
-                }
-            }
-        }
-
-//        val e = dataOrException.e
-//        e?.let {
-//            Text(
-//                text = e.message!!,
-//                modifier = Modifier.padding(16.dp)
-//            )
-//        }
-//
-//        Column(
-//            modifier = Modifier.fillMaxSize(),
-//            verticalArrangement = Arrangement.Center,
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            CircularProgressBar(
-//                isDisplayed = viewModel.loading.value
-//            )
-//        }
-    }
 }

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -27,26 +25,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.medi_sheba.FirestoreAll.ProductsViewModel
+import com.example.medi_sheba.model.Appoint
 import com.example.medi_sheba.R
+import com.example.medi_sheba.controllers.AppointmentController
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.*
-import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
 public const val TAG = "TAG"
+val appointmentController  = AppointmentController()
 @Composable
 fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
     val profileController = ProfileController()
@@ -63,29 +60,12 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
         profileController.getUser(userId)
     }
     Log.d(TAG, "user value: $_user ")
-    Log.d(TAG, "=================================================")
-
-//    var _appointList by rememberSaveable { mutableStateOf(AppointList()) }
-//    val appointList = profileController.appointList.observeAsState()
-//
-//    if(appointList.value != null) {
-//        _appointList = appointList.value!!
-//        Log.d(TAG, "appointList : ${appointList.value} ")
-//
-//
-//
-//    }
-//    profileController.getAppointment()
-//
-//
-//    Log.d(TAG, "appointment list: $_appointList ")
-
-    Log.d(TAG, "------------------------------------------------------------------")
-
-//    val dataOrException = viewModel.data.value
-//    ProductsActivity(dataOrException)
 
 
+    //----  appointment list from Firestore
+
+    val appointList = appointmentController.appointLists.observeAsState()
+    appointmentController.getAppointment()
 
 
     Scaffold(
@@ -112,23 +92,25 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
             title = "Appointment") }
     ) {
         Column {
-            if(doctors.isEmpty()) {
-                Column(
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(text = "There is no appointment for you")
-                }
-            } else {
+
+            if(appointList.value != null){
                 LazyColumn {
-                    items(doctors) { doctor ->
+                    items(appointList.value!!) { doctor ->
+//                        Log.d("Appoint", "==appointment size: ${doctor.doctor_uid} ")
+
 //                        Image(painter = painterResource(appointment.doctorImage),
 //                            contentDescription = "")
 
                         if(_user.userType.equals("Patients")){
-                            AppointmentDoctor(doctor, navController)
-                        }else if(_user.userType.equals("Doctor")){
-                            AppointmentPatient(doctor , navController)
-                        }else if(_user.userType.equals("Patient")){
+//                            AppointmentDoctor(doctor, navController)
+                        }else if(_user.userType.equals("Patient")){//doctor
+//                            Log.d("Appoint", "doctor_uid: ${doctor.doctor_uid} ")
+
+                            if(doctor.doctor_uid == "LZOAAm8huqUTzNhDoO8Qa07arDo1"){
+                                AppointmentPatient(doctor , navController, "LZOAAm8huqUTzNhDoO8Qa07arDo1")
+                            }
+
+                        }else if(_user.userType.equals("Nurse")){
                             AppointmentNurse(doctor , navController)
                         }
 
@@ -136,13 +118,24 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
                 }
             }
 
+
+//            if(doctors.isEmpty()) {
+//                Column(
+//                    verticalArrangement = Arrangement.Center
+//                ) {
+//                    Text(text = "There is no appointment for you")
+//                }
+//            } else {
+//
+//            }
+
         }
     }
 }
 
 
-@Composable
-fun AppointmentDoctor(doctor: Doctor, navController: NavController ) {
+/*@Composable
+fun AppointmentDoctor(doctor: Product, navController: NavController ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -193,11 +186,24 @@ fun AppointmentDoctor(doctor: Doctor, navController: NavController ) {
 
         }
     }
-}
+}*/
 
 
 @Composable
-fun AppointmentPatient(doctor: Doctor, navController: NavController ) {
+fun AppointmentPatient(appointment: Appoint, navController: NavController, doctor_uid: String ) {
+//    val profileController = ProfileController()
+//
+//    var _patient by rememberSaveable { mutableStateOf(User()) }
+//    val user = profileController.user.observeAsState()
+//    profileController.getUser(doctor_uid)
+//    _patient = user.value!!
+
+    Log.d("task", "appoint doctor_uid-----  $doctor_uid")
+    appointmentController.getUserData(LocalContext.current,
+        appointment.patient_uid.toString())
+    val userPatient = appointmentController.user.observeAsState()
+
+
     Box(
         modifier = Modifier
             .background(background)
@@ -233,7 +239,7 @@ fun AppointmentPatient(doctor: Doctor, navController: NavController ) {
                 Spacer(modifier = Modifier.width(15.dp))
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "Sarose Datta",
+                        text = "Name: ${userPatient.value?.name} ",
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.Bold
                     )
@@ -247,7 +253,7 @@ fun AppointmentPatient(doctor: Doctor, navController: NavController ) {
                     )
 
                     Text(
-                        text = "Time: 7.42 PM",
+                        text = "Time: ${appointment.time}",
                         style = MaterialTheme.typography.body1,
                         color = Color.Black,
                         fontSize = 14.sp
@@ -264,7 +270,7 @@ fun AppointmentPatient(doctor: Doctor, navController: NavController ) {
                     ) {
                         Box(
                             modifier = Modifier
-                                .background(Color.Green)
+                                .background(PrimaryColor)
                                 .padding(horizontal = 10.dp, vertical = 5.dp)
                                 .clip(
                                     shape = CircleShape
@@ -290,7 +296,7 @@ fun AppointmentPatient(doctor: Doctor, navController: NavController ) {
 
 
 @Composable
-fun AppointmentNurse(doctor: Doctor, navController: NavController ) {
+fun AppointmentNurse(appointment: Appoint, navController: NavController ) {
     Box(
         modifier = Modifier
             .background(background)
@@ -339,14 +345,14 @@ fun AppointmentNurse(doctor: Doctor, navController: NavController ) {
                     )
 
                     Text(
-                        text = "Cabin No:",
+                        text = "Cabin No: ${appointment.cabin_no}",
                         style = MaterialTheme.typography.body1,
                         color = Color.Black,
                         fontSize = 14.sp
                     )
 
                     Text(
-                        text = "Time: 7.42 PM",
+                        text = "Time: ${appointment.time}",
                         style = MaterialTheme.typography.body1,
                         color = Color.Black,
                         fontSize = 14.sp

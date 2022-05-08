@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.medi_sheba.model.Appoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,7 +14,7 @@ class ProductsViewModel @Inject constructor(
     private val repository: ProductsRepository
 ): ViewModel() {
     var loading = mutableStateOf(false)
-    val data: MutableState<DataOrException<List<Product>, Exception>> = mutableStateOf(
+    val data: MutableState<DataOrException<List<Appoint>, Exception>> = mutableStateOf(
         DataOrException(
             listOf(),
             Exception("")

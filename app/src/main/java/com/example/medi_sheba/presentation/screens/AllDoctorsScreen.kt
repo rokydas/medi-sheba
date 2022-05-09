@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -113,22 +114,28 @@ fun DoctorCard(doctor: Doctor) {
                 )
             }
         }
-        Box(
+        Surface(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .background(PrimaryColor)
-                .padding(horizontal = 10.dp, vertical = 5.dp)
-                .clickable {
-                    // todo: book now button handler
-                },
-            contentAlignment = Alignment.Center,
+                .clip(shape =
+                CircleShape.copy(all = CornerSize(5.dp)))
         ) {
-            Text(
-                text = "Book Now",
-                color = Color.White,
-                style = MaterialTheme.typography.body1
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+//                    .padding(16.dp)
+                    .background(PrimaryColor)
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .clickable {
+                        // todo: book now button handler
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "Book Now",
+                    color = Color.White,
+                    style = MaterialTheme.typography.body1
+                )
+            }
         }
     }
 }

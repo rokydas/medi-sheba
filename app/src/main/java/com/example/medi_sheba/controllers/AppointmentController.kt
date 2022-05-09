@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Appointment
-import com.example.medi_sheba.model.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -14,23 +13,48 @@ class AppointmentController {
     val appointmentList: LiveData<List<Appointment>>
         get() = _appointLists
 
-    private val _user = MutableLiveData<User>()
-    val user: LiveData<User>
-        get() = _user
+    private val _appointment = MutableLiveData<Appointment>()
+    val appoint: LiveData<Appointment>
+        get() = _appointment
+
 
     fun getAppointment() {
-        val docRef = db.collection("appointment")
+        val appointmentCol = db.collection("appointment")
         val appointments = mutableListOf<Appointment>()
 
-        docRef.get()
+        appointmentCol.get()
             .addOnSuccessListener { document ->
                 if (document != null) {
                     for (doc in document) {
-                        val appointment = doc.toObject(Appointment::class.java)
+                        val documentId = doc.id
+
+//                        val appointment = doc.toObject(Appointment::class.java)
+                        val appointment = Appointment(
+                            doc.getString("patient_uid"),
+                            doc.getString("doctor_uid"),
+                            doc.getString("nurse_uid"),
+                            doc.getBoolean("doc_checked"),
+                            doc.getString("cabin_no"),
+                            doc.getString("time"),
+                            doc.id
+                        )
                         appointments.add(appointment)
                     }
                     _appointLists.value = appointments
                 }
+            }
+    }
+    fun getAppointDocuData(document_id: String) {
+        val appointmentCol = db.collection("appointment").document(document_id)
+        val appointments = mutableListOf<Appointment>()
+
+        appointmentCol.get()
+            .addOnSuccessListener { document ->
+                if(document != null){
+                    val appointment = document.toObject(Appointment::class.java)
+                    _appointment.value = appointment!!
+                }
+
             }
     }
 }

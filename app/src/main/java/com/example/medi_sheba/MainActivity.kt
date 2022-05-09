@@ -65,8 +65,11 @@ class MainActivity : ComponentActivity() {
                             val userDetails = navController.previousBackStackEntry?.arguments?.getParcelable<User>("user")
                             UpdateProfileScreen(navController = navController, auth, userDetails!!)
                         }
-                        composable(route = ScreenItem.AppointmentScreenItem.route) {
-                            AppointmentScreen(navController = navController, bottomNavController = null)
+                        composable(route = ScreenItem.AppointmentScreenItem.route+ "/{document_id}/{user_id}/{user_type}") {navBackStack ->
+                            val document_id = navBackStack.arguments?.getString("document_id")
+                            val user_id = navBackStack.arguments?.getString("user_id")
+                            val user_type = navBackStack.arguments?.getString("user_type")
+                            AppointmentScreen(navController = navController, bottomNavController = null, document_id = document_id, user_id = user_id, user_type = user_type)
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
                             AllAppointmentsScreen(navController = navController, auth)

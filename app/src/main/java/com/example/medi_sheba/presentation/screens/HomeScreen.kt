@@ -11,8 +11,11 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +42,7 @@ import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 import com.google.firebase.database.collection.LLRBNode
 
 @Composable

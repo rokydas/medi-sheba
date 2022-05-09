@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -95,24 +96,38 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
 
             if(appointList.value != null){
                 LazyColumn {
+//                    item {
+//                        AppointmentPatient(appointList.value!![2] , navController, "LZOAAm8huqUTzNhDoO8Qa07arDo1")
+//                    }
+
+
+
+
                     items(appointList.value!!) { doctor ->
 //                        Log.d("Appoint", "==appointment size: ${doctor.doctor_uid} ")
+
+                        if(doctor.doctor_uid == "LZOAAm8huqUTzNhDoO8Qa07arDo1"){
+                            Log.d("Appointme", "==--doc uid: ${doctor.doctor_uid} ")
+
+                            AppointmentPatient(doctor , navController, "LZOAAm8huqUTzNhDoO8Qa07arDo1")
+                        }
+
 
 //                        Image(painter = painterResource(appointment.doctorImage),
 //                            contentDescription = "")
 
-                        if(_user.userType.equals("Patients")){
-//                            AppointmentDoctor(doctor, navController)
-                        }else if(_user.userType.equals("Patient")){//doctor
+//                        if(_user.userType.equals("Patients")){
+////                            AppointmentDoctor(doctor, navController)
+//                        }else if(_user.userType.equals("Patient")){//doctor
 //                            Log.d("Appoint", "doctor_uid: ${doctor.doctor_uid} ")
-
-                            if(doctor.doctor_uid == "LZOAAm8huqUTzNhDoO8Qa07arDo1"){
-                                AppointmentPatient(doctor , navController, "LZOAAm8huqUTzNhDoO8Qa07arDo1")
-                            }
-
-                        }else if(_user.userType.equals("Nurse")){
-                            AppointmentNurse(doctor , navController)
-                        }
+//
+//                            if(doctor.doctor_uid == "LZOAAm8huqUTzNhDoO8Qa07arDo1"){
+//                                AppointmentPatient(doctor , navController, "LZOAAm8huqUTzNhDoO8Qa07arDo1")
+//                            }
+//
+//                        }else if(_user.userType.equals("Nurse")){
+//                            AppointmentNurse(doctor , navController)
+//                        }
 
                     }
                 }
@@ -198,10 +213,11 @@ fun AppointmentPatient(appointment: Appoint, navController: NavController, docto
 //    profileController.getUser(doctor_uid)
 //    _patient = user.value!!
 
-    Log.d("task", "appoint doctor_uid-----  $doctor_uid")
+    Log.d("Appointme", "appoint doctor_uid-----  ${appointment.patient_uid}")
     appointmentController.getUserData(LocalContext.current,
         appointment.patient_uid.toString())
     val userPatient = appointmentController.user.observeAsState()
+
 
 
     Box(
@@ -240,6 +256,7 @@ fun AppointmentPatient(appointment: Appoint, navController: NavController, docto
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "Name: ${userPatient.value?.name} ",
+//                        text = "Name: Sarose ${appointment.patient_uid}",
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.Bold
                     )

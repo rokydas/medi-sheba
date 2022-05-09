@@ -11,27 +11,21 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.Doctor
@@ -39,18 +33,15 @@ import com.example.medi_sheba.model.doctors
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
-import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-import com.google.firebase.database.collection.LLRBNode
 
 @Composable
 fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController,
-            title = "Home") }
+            title = "Home") },
     ) {
         LazyColumn(
             modifier = Modifier
@@ -58,7 +49,24 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                 .background(PrimaryColor)
         ) {
             item {
-                Spacer(modifier = Modifier.height(70.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "notification",
+                        modifier = Modifier
+                            .padding(25.dp)
+                            .clickable {
+                                navController.navigate(ScreenItem.NotificationScreenItem.route)
+                        },
+                        tint = Color.White
+                    )
+                }
+            }
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -108,7 +116,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                     color = PrimaryColor,
                                     modifier = Modifier
                                         .clickable {
-                                            navController.navigate(ScreenItem.AllCategoryScreen.route)
+                                            navController.navigate(ScreenItem.AllCategoryScreenItem.route)
                                         }
                                 )
                             }
@@ -157,7 +165,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                     fontWeight = FontWeight.Bold,
                                     color = PrimaryColor,
                                     modifier = Modifier.clickable {
-                                        navController.navigate(ScreenItem.AllTopDoctorScreen.route)
+                                        navController.navigate(ScreenItem.AllTopDoctorScreenItem.route)
                                     }
                                 )
                             }
@@ -243,8 +251,10 @@ fun DoctorHorizontalCard(doctor: Doctor) {
                         modifier = Modifier
                             .background(PrimaryColor)
                             .padding(horizontal = 10.dp, vertical = 5.dp)
-                            .clip(shape = CircleShape
-                                .copy(all = CornerSize(12.dp))),
+                            .clip(
+                                shape = CircleShape
+                                    .copy(all = CornerSize(12.dp))
+                            ),
                         contentAlignment = Alignment.Center,
 
                         ) {

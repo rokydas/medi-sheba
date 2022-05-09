@@ -19,7 +19,6 @@ class ChatController {
         get() = _messageLists
 
     fun getMessages(docName: String) {
-        Log.d("ekhane", docName)
         val docRef = db.collection("messages").document(docName)
             .collection("texts")
         docRef.addSnapshotListener { data, e ->

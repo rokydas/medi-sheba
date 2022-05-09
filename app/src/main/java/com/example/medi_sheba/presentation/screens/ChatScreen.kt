@@ -54,7 +54,6 @@ fun ChatScreen(navController: NavController, receiverUid: String?, receiverName:
     Scaffold {
 
         val newMessage = rememberSaveable { mutableStateOf("") }
-        Log.d("ekhane", messageLists.value.toString())
 
         Column(
             modifier = Modifier

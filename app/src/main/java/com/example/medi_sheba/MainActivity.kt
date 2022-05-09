@@ -5,7 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
-        val startDest = if(auth.uid != null)
+        val startDest = if (auth.uid != null)
             ScreenItem.HomeScreenItem.route
         else ScreenItem.IntroScreenItem.route
 
@@ -39,7 +40,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     val navController = rememberNavController()
-                    NavHost (
+                    NavHost(
                         navController = navController,
                         startDestination = startDest
                     ) {
@@ -62,7 +63,10 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(navController = navController, auth)
                         }
                         composable(route = ScreenItem.UpdateProfileScreenItem.route) {
-                            val userDetails = navController.previousBackStackEntry?.arguments?.getParcelable<User>("user")
+                            val userDetails =
+                                navController.previousBackStackEntry?.arguments?.getParcelable<User>(
+                                    "user"
+                                )
                             UpdateProfileScreen(navController = navController, auth, userDetails!!)
                         }
                         composable(route = ScreenItem.AppointmentScreenItem.route+ "/{document_id}/{user_id}/{user_type}") {navBackStack ->
@@ -70,6 +74,7 @@ class MainActivity : ComponentActivity() {
                             val user_id = navBackStack.arguments?.getString("user_id")
                             val user_type = navBackStack.arguments?.getString("user_type")
                             AppointmentScreen(navController = navController, bottomNavController = null, document_id = document_id, user_id = user_id, user_type = user_type)
+
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
                             AllAppointmentsScreen(navController = navController, auth)
@@ -83,7 +88,18 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}/{receiverName}") { navBackStack ->
                             val receiverUid = navBackStack.arguments?.getString("receiverUid")
                             val receiverName = navBackStack.arguments?.getString("receiverName")
-                            ChatScreen(navController = navController, receiverUid = receiverUid, receiverName = receiverName)
+                            ChatScreen(
+                                navController = navController,
+                                receiverUid = receiverUid,
+                                receiverName = receiverName
+                            )
+                        }
+                        composable(route = ScreenItem.DashboardScreenItem.route) {
+                            DashboardScreen(navController = navController)
+                        }
+                        composable(route = ScreenItem.MakeAndDeleteRoleItem.route + "/{roleName}") { navBackStack ->
+                            val roleName = navBackStack.arguments?.getString("roleName")
+                            MakeAndDeleteRole(navController = navController, roleName!!)
                         }
                         composable(route = ScreenItem.AllTopDoctorScreen.route) {
                             AllTopDoctorsScreen(navController = navController)
@@ -95,7 +111,4 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-
 }

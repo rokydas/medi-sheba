@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -74,43 +73,6 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
             title = "Appointment") }
     ) {
         Column {
-<<<<<<< HEAD
-
-            if(appointList.value != null){
-                LazyColumn {
-//                    item {
-//                        AppointmentPatient(appointList.value!![2] , navController, "LZOAAm8huqUTzNhDoO8Qa07arDo1")
-//                    }
-
-
-
-
-                    items(appointList.value!!) { doctor ->
-//                        Log.d("Appoint", "==appointment size: ${doctor.doctor_uid} ")
-
-                        if(doctor.doctor_uid == "LZOAAm8huqUTzNhDoO8Qa07arDo1"){
-                            Log.d("Appointme", "==--doc uid: ${doctor.doctor_uid} ")
-
-                            AppointmentPatient(doctor , navController, "LZOAAm8huqUTzNhDoO8Qa07arDo1")
-                        }
-
-
-//                        Image(painter = painterResource(appointment.doctorImage),
-//                            contentDescription = "")
-
-//                        if(_user.userType.equals("Patients")){
-////                            AppointmentDoctor(doctor, navController)
-//                        }else if(_user.userType.equals("Patient")){//doctor
-//                            Log.d("Appoint", "doctor_uid: ${doctor.doctor_uid} ")
-//
-//                            if(doctor.doctor_uid == "LZOAAm8huqUTzNhDoO8Qa07arDo1"){
-//                                AppointmentPatient(doctor , navController, "LZOAAm8huqUTzNhDoO8Qa07arDo1")
-//                            }
-//
-//                        }else if(_user.userType.equals("Nurse")){
-//                            AppointmentNurse(doctor , navController)
-//                        }
-=======
             if(appointmentList.value != null){
                 val appointments = when (user.value?.userType) {
                     "Patient" -> {
@@ -132,7 +94,6 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
                         appointmentList.value!!
                     }
                 }
->>>>>>> 3e44dbafc2111ab47b37ed0975c7f6d406faa1f6
 
                 LazyColumn {
                     items(appointments) { appointment ->
@@ -152,27 +113,10 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
 }
 
 @Composable
-<<<<<<< HEAD
-fun AppointmentPatient(appointment: Appoint, navController: NavController, doctor_uid: String ) {
-//    val profileController = ProfileController()
-//
-//    var _patient by rememberSaveable { mutableStateOf(User()) }
-//    val user = profileController.user.observeAsState()
-//    profileController.getUser(doctor_uid)
-//    _patient = user.value!!
-
-    Log.d("Appointme", "appoint doctor_uid-----  ${appointment.patient_uid}")
-    appointmentController.getUserData(LocalContext.current,
-        appointment.patient_uid.toString())
-    val userPatient = appointmentController.user.observeAsState()
-
-=======
 fun SingleAppointment(appointment: Appointment, navController: NavController, otherPersonUid: String ) {
     val profileController = ProfileController()
     val appointmentUser = profileController.user.observeAsState()
     profileController.getUser(appointment.doctor_uid!!)
->>>>>>> 3e44dbafc2111ab47b37ed0975c7f6d406faa1f6
-
 
     Box(
         modifier = Modifier
@@ -209,12 +153,7 @@ fun SingleAppointment(appointment: Appointment, navController: NavController, ot
                 Spacer(modifier = Modifier.width(15.dp))
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-<<<<<<< HEAD
-                        text = "Name: ${userPatient.value?.name} ",
-//                        text = "Name: Sarose ${appointment.patient_uid}",
-=======
                         text = "Name: ${appointmentUser.value?.name} ",
->>>>>>> 3e44dbafc2111ab47b37ed0975c7f6d406faa1f6
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.Bold
                     )

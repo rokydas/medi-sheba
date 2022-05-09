@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -28,20 +31,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
-        val startDest = if(auth.uid != null)
+        val startDest = if (auth.uid != null)
             ScreenItem.HomeScreenItem.route
         else ScreenItem.IntroScreenItem.route
 
@@ -54,7 +45,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     val navController = rememberNavController()
-                    NavHost (
+                    NavHost(
                         navController = navController,
                         startDestination = startDest
                     ) {
@@ -77,11 +68,17 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(navController = navController, auth)
                         }
                         composable(route = ScreenItem.UpdateProfileScreenItem.route) {
-                            val userDetails = navController.previousBackStackEntry?.arguments?.getParcelable<User>("user")
+                            val userDetails =
+                                navController.previousBackStackEntry?.arguments?.getParcelable<User>(
+                                    "user"
+                                )
                             UpdateProfileScreen(navController = navController, auth, userDetails!!)
                         }
                         composable(route = ScreenItem.AppointmentScreenItem.route) {
-                            AppointmentScreen(navController = navController, bottomNavController = null)
+                            AppointmentScreen(
+                                navController = navController,
+                                bottomNavController = null
+                            )
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
                             AllAppointmentsScreen(navController = navController, auth)
@@ -95,7 +92,11 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}/{receiverName}") { navBackStack ->
                             val receiverUid = navBackStack.arguments?.getString("receiverUid")
                             val receiverName = navBackStack.arguments?.getString("receiverName")
-                            ChatScreen(navController = navController, receiverUid = receiverUid, receiverName = receiverName)
+                            ChatScreen(
+                                navController = navController,
+                                receiverUid = receiverUid,
+                                receiverName = receiverName
+                            )
                         }
                         composable(route = ScreenItem.DashboardScreenItem.route) {
                             DashboardScreen(navController = navController)
@@ -103,6 +104,7 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.MakeAndDeleteRoleItem.route + "/{roleName}") { navBackStack ->
                             val roleName = navBackStack.arguments?.getString("roleName")
                             MakeAndDeleteRole(navController = navController, roleName!!)
+                        }
                         composable(route = ScreenItem.AllTopDoctorScreen.route) {
                             AllTopDoctorsScreen(navController = navController)
                         }
@@ -113,24 +115,23 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
 
 
 
-    @Composable
-    fun ProductsActivity(dataOrException: DataOrException<List<Product>, Exception>) {
-        val products = dataOrException.data
-        products?.let {
-            LazyColumn {
-                items(
-                    items = products
-                ) { product ->
+        @Composable
+        fun ProductsActivity(dataOrException: DataOrException<List<Product>, Exception>) {
+            val products = dataOrException.data
+            products?.let {
+                LazyColumn {
+                    items(
+                        items = products
+                    ) { product ->
 //                    ProductCard(product = product)
-                    Log.d(TAG, "==================---------=====================")
-                    Log.d(TAG, "ProductsActivity: $product")
+                        Log.d(TAG, "==================---------=====================")
+                        Log.d(TAG, "ProductsActivity: $product")
+                    }
                 }
             }
-        }
 
 //        val e = dataOrException.e
 //        e?.let {
@@ -149,5 +150,6 @@ class MainActivity : ComponentActivity() {
 //                isDisplayed = viewModel.loading.value
 //            )
 //        }
+        }
     }
 }

@@ -111,6 +111,17 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.AllCategoryScreen.route) {
                             AllCategoryScreen(navController = navController)
                         }
+                        composable(route = ScreenItem.BookAppointmentScreenItem.route + "/{name}/{designation}/{price}") { navBackStack ->
+                            val name = navBackStack.arguments?.getString("name")
+                            val designation = navBackStack.arguments?.getString("designation")
+                            val price = navBackStack.arguments?.getString("price")
+                            BookAppointmentScreen(
+                                navController = navController,
+                                name = name,
+                                designation = designation,
+                                price = price
+                            )
+                        }
                     }
                 }
             }

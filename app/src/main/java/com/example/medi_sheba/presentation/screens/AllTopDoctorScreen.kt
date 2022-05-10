@@ -44,7 +44,7 @@ fun AllTopDoctorsScreen(navController:NavController= NavController(LocalContext.
             .fillMaxSize()
             .background(PrimaryColor)){
             items(doctors) { doctor ->
-                DoctorHorizontalCard(doctor)
+                DoctorHorizontalCard(doctor, navController)
             }
         }
 

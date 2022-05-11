@@ -8,5 +8,7 @@ data class Appointment(
     var doc_checked: Boolean? = false,
     var cabin_no: String? = "0",
     var time: String? = null,
-    var document_id: String? = null
+    var document_id: String? = null,
+    var disease_details: String? = null,
+    var prescription: String? = null
 )

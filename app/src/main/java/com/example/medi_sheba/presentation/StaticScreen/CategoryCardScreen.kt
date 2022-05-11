@@ -69,7 +69,8 @@ fun InputField(
     labelId: String = "Input ",
     enabled: Boolean = true,
     imeAction: ImeAction = ImeAction.Next,
-    onAction: KeyboardActions = KeyboardActions.Default
+    onAction: KeyboardActions = KeyboardActions.Default,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     OutlinedTextField(value = inputState.value,
         onValueChange = { inputState.value = it},
@@ -82,7 +83,7 @@ fun InputField(
             .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
             .fillMaxWidth(),
         enabled = enabled,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType,
             imeAction = imeAction),
         keyboardActions = onAction)
 

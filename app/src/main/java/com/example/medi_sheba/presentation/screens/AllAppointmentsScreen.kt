@@ -33,6 +33,9 @@ import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AppointmentController
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.Appointment
+import com.example.medi_sheba.presentation.constant.Constant.DOCTOR
+import com.example.medi_sheba.presentation.constant.Constant.NURSE
+import com.example.medi_sheba.presentation.constant.Constant.PATIENT
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
@@ -79,17 +82,17 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
             if(appointmentList.value != null){
                 val appointments = when (user.value?.userType) {
 
-                    "Patient" -> {
+                    PATIENT -> {
                         appointmentList.value!!.filter { appointment ->
                             appointment.patient_uid == userId
                         }
                     }
-                    "Doctor" -> {
+                    DOCTOR -> {
                         appointmentList.value!!.filter { appointment ->
                             appointment.doctor_uid == userId
                         }
                     }
-                    "Nurse" -> {
+                    NURSE -> {
                         appointmentList.value!!.filter { appointment ->
                             appointment.nurse_uid == userId
 
@@ -106,7 +109,7 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
                             appointment = appointment,
                             navController = navController,
                             otherPersonUid =
-                                if(user.value?.userType == "Patient") {
+                                if(user.value?.userType == PATIENT) {
                                     appointment.doctor_uid!!
                                 } else appointment.patient_uid!! ,
                             userType = user.value?.userType.toString()
@@ -156,7 +159,7 @@ fun SingleAppointment(
 
                 ) {
                     Image(
-                        painter = if (userType.equals("Patient")) painterResource(R.drawable.doctor2)
+                        painter = if (userType.equals(PATIENT)) painterResource(R.drawable.doctor2)
                         else painterResource(R.drawable.avartar),
                         contentDescription = "profile_picture",
                         contentScale = ContentScale.Crop,
@@ -174,16 +177,16 @@ fun SingleAppointment(
                         )
                         Text(
                             text = when(userType) {
-                                "Doctor" -> {
+                                DOCTOR -> {
                                     if(appointment.doc_checked == false)
                                         "Nurse not yet assigned "
                                     else ""
 
                                 }
-                                "Patient" -> {
+                                PATIENT -> {
                                     "Heart Surgeon"
                                 }
-                                "Nurse" ->{
+                                NURSE ->{
                                     "Cabin No: ${appointment.cabin_no}"
                                 }
                                 else ->{
@@ -205,7 +208,7 @@ fun SingleAppointment(
                             fontSize = 14.sp
                         )
 
-                        when(userType){
+                        /*when(userType){
                             "Doctor" -> {
                                 Surface(
                                     modifier = Modifier
@@ -235,7 +238,7 @@ fun SingleAppointment(
                                     }
                                 }
                             }
-                        }
+                        }*/
 
 
                     }

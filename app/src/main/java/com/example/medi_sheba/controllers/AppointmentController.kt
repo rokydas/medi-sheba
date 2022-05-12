@@ -18,7 +18,7 @@ class AppointmentController {
         get() = _appointment
 
 
-    fun getAppointment() {
+    fun getAppointment(uid: String, uid_title: String) {
         val appointmentCol = db.collection("appointment")
         val appointments = mutableListOf<Appointment>()
 
@@ -28,17 +28,19 @@ class AppointmentController {
                     for (doc in document) {
                         val documentId = doc.id
 
-//                        val appointment = doc.toObject(Appointment::class.java)
-                        val appointment = Appointment(
-                            doc.getString("patient_uid"),
-                            doc.getString("doctor_uid"),
-                            doc.getString("nurse_uid"),
-                            doc.getBoolean("doc_checked"),
-                            doc.getString("cabin_no"),
-                            doc.getString("time"),
-                            doc.id
-                        )
-                        appointments.add(appointment)
+                        if(doc.getString(uid_title) == uid){
+                            val appointment = Appointment(
+                                doc.getString("patient_uid"),
+                                doc.getString("doctor_uid"),
+                                doc.getString("nurse_uid"),
+                                doc.getBoolean("doc_checked"),
+                                doc.getString("cabin_no"),
+                                doc.getString("time"),
+                                documentId
+                            )
+                            appointments.add(appointment)
+                        }
+
                     }
                     _appointLists.value = appointments
                 }

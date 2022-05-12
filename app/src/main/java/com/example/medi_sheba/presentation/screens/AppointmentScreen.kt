@@ -38,6 +38,7 @@ import com.example.medi_sheba.controllers.NurseContoller
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.presentation.StaticScreen.InputField
+import com.example.medi_sheba.presentation.constant.Constant.DOCTOR
 import com.example.medi_sheba.presentation.constant.Constant.PATIENT
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
@@ -139,27 +140,32 @@ fun AppointmentScreen(
             }
 
             Surface(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+                .fillMaxSize(),
                 color = PrimaryColor,
                 shape = RoundedCornerShape(topStart = 20.dp,
                     topEnd = 20.dp )) {
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(vertical = 20.dp, horizontal = 20.dp),
+                    .fillMaxSize()
+                    .padding(vertical = 50.dp, horizontal = 20.dp),
                     ) {
                     if(isCheckPatient.value){
                         InputPatientDetails(document_id, appointmentData.value, isCheckPatient)
                     }else{
                         appointmentController.getAppointDocuData(document_id.toString())
-                        ShowPatientDetails(
-                            isNurseAssigned = isNurseAssigned.value,
-                            nurseName = nurseProfile.value?.name.toString(),
-                            userType = user_type.toString(),
-                            isCheckPatient = isCheckPatient,
-                            appointment = appointmentData.value
-                        )
+                        if(appointmentUser.value != null){
+                            ShowPatientDetails(
+                                isNurseAssigned = isNurseAssigned.value,
+                                nurseName = nurseProfile.value?.name.toString(),
+                                userType = user_type.toString(),
+                                isCheckPatient = isCheckPatient,
+                                appointment = appointmentData.value
+                            )
+                        }else{
+                            CircularProgressIndicator(color = PrimaryColor)
+                        }
+
                     }
 
 
@@ -201,7 +207,7 @@ fun ShowPatientDetails(
                     text = "Disease details:",
                     fontWeight = FontWeight.Bold
                 )
-                Text(text = if(isNurseAssigned)
+                Text(text = if(appointment?.disease_details !="" && appointment?.disease_details != null)
                     "${appointment?.disease_details}"
                 else "disease details not assigned yet.",
                     modifier = Modifier.padding(start = 10.dp)
@@ -225,7 +231,7 @@ fun ShowPatientDetails(
                     text = "Prescription:",
                     fontWeight = FontWeight.Bold
                 )
-                Text(text = if(isNurseAssigned)
+                Text(text = if(appointment?.prescription != "" && appointment?.prescription != null)
                     "${appointment?.prescription}"
                 else "Prescription details not assigned yet.",
                     modifier = Modifier.padding(start = 10.dp)
@@ -242,17 +248,21 @@ fun ShowPatientDetails(
 
         Spacer(modifier = Modifier.height(50.dp))
 
-        Button(
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = background,
-                contentColor = Color.Black
-            ),
-            onClick = {
-                isCheckPatient.value = true
-            },
-            modifier = Modifier.align(Alignment.End)) {
-            Text(text = "Check Patient")
+        if(userType == DOCTOR){
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = background,
+                    contentColor = Color.Black
+                ),
+                onClick = {
+                    isCheckPatient.value = true
+                },
+                modifier = Modifier.align(Alignment.End)) {
+                Text(text = "Check Patient")
+            }
         }
+
+
     }
 
 }
@@ -470,6 +480,7 @@ fun InputPatientDetails(document_id: String?,
                               appointData["cabin_no"] = cabin.value
                               appointData["doctor_uid"] = appointment?.doctor_uid.toString()
                               appointData["patient_uid"] = appointment?.patient_uid.toString()
+                              appointData["time"] = appointment?.time.toString()
 
 
                               db.collection("appointment")

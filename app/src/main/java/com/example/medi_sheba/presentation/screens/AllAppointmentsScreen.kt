@@ -48,207 +48,190 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
     val user = profileController.user.observeAsState()
 
     val userId = auth.uid
-    if(userId != null) {
+    if (userId != null) {
         profileController.getUser(userId)
     }
 
     val appointmentList = appointmentController.appointmentList.observeAsState()
-    appointmentController.getAppointment()
+    if (appointmentList.value == null && user.value != null) {
+        when (user.value?.userType) {
+            PATIENT -> {
+                appointmentController.getAppointment(userId.toString(), "patient_uid")
+            }
+            DOCTOR -> {
+                appointmentController.getAppointment(userId.toString(), "doctor_uid")
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = if(user.value != null)
-                        "${user.value?.name}'s Appointments List"
-                    else "Appointments List")
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Icon(Icons.Filled.ArrowBack, "backIcon")
-                    }
-                },
-                backgroundColor = PrimaryColor,
-                contentColor = Color.White,
-                elevation = 10.dp
-            )
-        },
-        bottomBar = { BottomNavigationBar(navController = navController,
-            title = "Appointment") }
-    ) {
-        Column {
-            if(appointmentList.value != null){
-                val appointments = when (user.value?.userType) {
+            }
+            NURSE -> {
+                appointmentController.getAppointment(userId.toString(), "nurse_uid")
 
-                    PATIENT -> {
-                        appointmentList.value!!.filter { appointment ->
-                            appointment.patient_uid == userId
-                        }
-                    }
-                    DOCTOR -> {
-                        appointmentList.value!!.filter { appointment ->
-                            appointment.doctor_uid == userId
-                        }
-                    }
-                    NURSE -> {
-                        appointmentList.value!!.filter { appointment ->
-                            appointment.nurse_uid == userId
+            }
+            else -> {
+                appointmentController.getAppointment(userId.toString(), "")
+            }
 
-                        }
-                    }
-                    else -> {
-                        appointmentList.value!!
-                    }
-                }
 
-                LazyColumn {
-                    items(appointments) { appointment ->
-                        SingleAppointment(
-                            appointment = appointment,
-                            navController = navController,
-                            otherPersonUid =
-                                if(user.value?.userType == PATIENT) {
-                                    appointment.doctor_uid!!
-                                } else appointment.patient_uid!! ,
-                            userType = user.value?.userType.toString()
+        }
+    }
+
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = if (user.value != null) {
+                                if (user.value?.userType == PATIENT) {
+                                    "${user.value?.name}'s Appointments List"
+                                } else {
+                                    "Patient Appointments List"
+                                }
+                            } else "Appointments List"
                         )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            navController.popBackStack()
+                        }) {
+                            Icon(Icons.Filled.ArrowBack, "backIcon")
+                        }
+                    },
+                    backgroundColor = PrimaryColor,
+                    contentColor = Color.White,
+                    elevation = 10.dp
+                )
+            },
+            bottomBar = {
+                BottomNavigationBar(
+                    navController = navController,
+                    title = "Appointment"
+                )
+            }
+        ) {
+            Column {
+                if (appointmentList.value != null) {
+                    LazyColumn {
+                        items(appointmentList.value!!) { appointment ->
+                            SingleAppointment(
+                                appointment = appointment,
+                                navController = navController,
+                                userType = user.value?.userType.toString(),
+                                otherPersonUid =
+                                if (user.value?.userType != PATIENT) {
+                                    appointment.patient_uid!!
+                                } else {
+                                    appointment.doctor_uid!!
+                                }
+                            )
+                        }
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-fun SingleAppointment(
-    appointment: Appointment,
-    navController: NavController,
-    otherPersonUid: String,
-    userType: String
-) {
-    val profileController = ProfileController()
-    profileController.getUser(otherPersonUid)
-    val appointmentUser = profileController.user.observeAsState()
+    @Composable
+    fun SingleAppointment(
+        appointment: Appointment,
+        navController: NavController,
+        otherPersonUid: String,
+        userType: String
+    ) {
+        val profileController = ProfileController()
+        val appointmentUser = profileController.user.observeAsState()
+        profileController.getUser(otherPersonUid)
 
 
-    if(appointmentUser.value != null){
-        Box(
-            modifier = Modifier
-                .background(background)
-                .fillMaxWidth()
-                .clickable {
-                    navController.navigate(ScreenItem.AppointmentScreenItem.route+
-                            "/"+appointment.document_id+"/"+otherPersonUid+"/"+userType)
-                }
-        ) {
 
-            Row(verticalAlignment = Alignment.CenterVertically,
+        if (appointmentUser.value != null) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .background(background)
-                    .padding(horizontal = 15.dp, vertical = 10.dp)
-                    .shadow(5.dp, shape = RoundedCornerShape(10.dp))
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate(
+                            ScreenItem.AppointmentScreenItem.route +
+                                    "/" + appointment.document_id + "/" + otherPersonUid + "/" + userType
+                        )
+                    }
             ) {
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp)
 
+                        .padding(horizontal = 15.dp, vertical = 10.dp)
+                        .shadow(5.dp, shape = RoundedCornerShape(10.dp))
+                        .background(Color.White)
                 ) {
-                    Image(
-                        painter = if (userType.equals(PATIENT)) painterResource(R.drawable.doctor2)
-                        else painterResource(R.drawable.avartar),
-                        contentDescription = "profile_picture",
-                        contentScale = ContentScale.Crop,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .size(60.dp)
-                            .clip(CircleShape)
-                            .border(2.dp, Color.Gray, CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(15.dp))
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "${appointmentUser.value?.name} ",
-                            style = MaterialTheme.typography.h6,
-                            fontWeight = FontWeight.Bold
+                            .fillMaxWidth()
+                            .padding(20.dp)
+
+                    ) {
+                        Image(
+                            painter = if (userType.equals(PATIENT)) painterResource(R.drawable.doctor2)
+                            else painterResource(R.drawable.avartar),
+                            contentDescription = "profile_picture",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clip(CircleShape)
+                                .border(2.dp, Color.Gray, CircleShape)
                         )
-                        Text(
-                            text = when(userType) {
-                                DOCTOR -> {
-                                    if(appointment.doc_checked == false)
-                                        "Nurse not yet assigned "
-                                    else ""
+                        Spacer(modifier = Modifier.width(15.dp))
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "${appointmentUser.value?.name} ",
+                                style = MaterialTheme.typography.h6,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = when (userType) {
+                                    DOCTOR -> {
+                                        if (appointment.doc_checked == false)
+                                            "Nurse not yet assigned "
+                                        else ""
 
-                                }
-                                PATIENT -> {
-                                    "Heart Surgeon"
-                                }
-                                NURSE ->{
-                                    "Cabin No: ${appointment.cabin_no}"
-                                }
-                                else ->{
-                                    ""
-                                }
-                            },
-                            style = MaterialTheme.typography.body1,
-                            color = Color.Gray,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(start = 10.dp),
+                                    }
+                                    PATIENT -> {
+                                        "Heart Surgeon"
+                                    }
+                                    NURSE -> {
+                                        "Cabin No: ${appointment.cabin_no}"
+                                    }
+                                    else -> {
+                                        ""
+                                    }
+                                },
+                                style = MaterialTheme.typography.body1,
+                                color = Color.Gray,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 10.dp),
 
 
+                                )
+
+                            Text(
+                                text = "Time: ${appointment.time}",
+                                style = MaterialTheme.typography.body1,
+                                color = Color.Black,
+                                fontSize = 14.sp
                             )
 
-                        Text(
-                            text = "Time: ${appointment.time}",
-                            style = MaterialTheme.typography.body1,
-                            color = Color.Black,
-                            fontSize = 14.sp
-                        )
 
-                        /*when(userType){
-                            "Doctor" -> {
-                                Surface(
-                                    modifier = Modifier
-                                        .align(Alignment.End)
-                                        .clip(
-                                            shape =
-                                            CircleShape.copy(all = CornerSize(5.dp))
-                                        )
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(PrimaryColor)
-                                            .padding(horizontal = 10.dp, vertical = 5.dp)
-                                            .clip(
-                                                shape = CircleShape
-                                                    .copy(all = CornerSize(12.dp))
-                                            ),
-                                        contentAlignment = Alignment.Center,
-
-                                        ) {
-                                        Text(
-                                            text = "Assign Nurse",
-                                            color = Color.White,
-                                            style = TextStyle(fontSize = 14.sp),
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            }
-                        }*/
-
-
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 
-}
+
 
 
 

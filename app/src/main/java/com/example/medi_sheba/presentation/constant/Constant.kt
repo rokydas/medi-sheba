@@ -4,4 +4,5 @@ object Constant{
     const val DOCTOR = "Doctor"
     const val PATIENT = "Patient"
     const val NURSE = "Nurse"
+    const val Admin = "Admin"
 }

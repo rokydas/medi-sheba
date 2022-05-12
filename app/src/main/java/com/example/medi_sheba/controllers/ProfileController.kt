@@ -1,5 +1,6 @@
 package com.example.medi_sheba.controllers
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,7 @@ class ProfileController() : ViewModel() {
 
     fun getUser(userId: String) = viewModelScope.launch {
         val docRef = db.collection("users").document(userId)
+
         docRef.get()
             .addOnSuccessListener { document ->
                 if (document != null) {

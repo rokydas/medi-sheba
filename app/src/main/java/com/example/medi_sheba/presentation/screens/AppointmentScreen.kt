@@ -1,6 +1,5 @@
 package com.example.medi_sheba.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -22,29 +21,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AppointmentController
 import com.example.medi_sheba.controllers.ProfileController
-import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
-import com.google.gson.Gson
-import java.util.ArrayList
-
 
 @Composable
 fun AppointmentScreen(
     navController: NavController,
-    bottomNavController: NavController?,
     document_id: String?,
     user_id: String?,
     user_type: String?
-
 ) {
     val isNurseAssigned = remember { mutableStateOf(false) }
     val appointmentController  = AppointmentController()
@@ -92,8 +84,6 @@ fun AppointmentScreen(
                 .verticalScroll(scrollState)
 
         ) {
-
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

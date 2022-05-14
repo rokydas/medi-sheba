@@ -246,7 +246,7 @@ fun DoctorHorizontalCard(doctor: Doctor, navController: NavController) {
                                 .copy(all = CornerSize(12.dp)))
                             .clickable {
                                 navController.navigate(ScreenItem.BookAppointmentScreenItem.route +
-                                        "/" + doctor.name + "/" + doctor.designation + "/" + doctor.price)
+                                        "/" + doctor.name + "/" + doctor.designation + "/" + doctor.price + "/" + doctor.uid)
                             },
                         contentAlignment = Alignment.Center,
                     ) {

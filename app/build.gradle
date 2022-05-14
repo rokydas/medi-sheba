@@ -83,7 +83,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0"
 
     implementation "androidx.compose.runtime:runtime-livedata:1.1.1"
-    implementation 'com.google.code.gson:gson:2.8.2'
 
     // Calendar
     implementation "io.github.boguszpawlowski.composecalendar:composecalendar:0.5.1"
@@ -97,5 +96,4 @@ dependencies {
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
     kapt "androidx.hilt:hilt-compiler:1.0.0"
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
-
 }

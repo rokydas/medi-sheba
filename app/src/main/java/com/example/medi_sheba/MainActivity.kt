@@ -112,15 +112,34 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.AllCategoryScreen.route) {
                             AllCategoryScreen(navController = navController)
                         }
-                        composable(route = ScreenItem.BookAppointmentScreenItem.route + "/{name}/{designation}/{price}") { navBackStack ->
+                        composable(route = ScreenItem.BookAppointmentScreenItem.route + "/{name}/{designation}/{price}/{doctorUid}") { navBackStack ->
                             val name = navBackStack.arguments?.getString("name")
                             val designation = navBackStack.arguments?.getString("designation")
                             val price = navBackStack.arguments?.getString("price")
+                            val doctorUid = navBackStack.arguments?.getString("doctorUid")
                             BookAppointmentScreen(
                                 navController = navController,
                                 name = name,
                                 designation = designation,
-                                price = price
+                                price = price,
+                                doctorUid = doctorUid
+                            )
+                        }
+                        composable(route = ScreenItem.PaymentScreenItem.route + "/{doctorUid}/{time}/{serial}/{date}/{name}/{designation}") { navBackStack ->
+                            val doctorUid = navBackStack.arguments?.getString("doctorUid")
+                            val time = navBackStack.arguments?.getString("time")
+                            val serial = navBackStack.arguments?.getString("serial")
+                            val date = navBackStack.arguments?.getString("date")
+                            val name = navBackStack.arguments?.getString("name")
+                            val designation = navBackStack.arguments?.getString("designation")
+                            PaymentScreen(
+                                navController = navController,
+                                doctorUid = doctorUid,
+                                time = time,
+                                serial = serial,
+                                date = date,
+                                name = name,
+                                designation = designation
                             )
                         }
                     }

@@ -15,39 +15,44 @@ data class User(
     val address: String = "",
     val gender: String = ""
 ) : Parcelable {
-    constructor(source: Parcel) : this(
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!,
-    )
-
-    override fun describeContents() = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(uid)
-        writeString(name)
-        writeString(userType)
-        writeString(email)
-        writeString(image)
-        writeString(mobileNumber)
-        writeString(fcmToken)
-        writeString(age)
-        writeString(address)
-        writeString(gender)
+    constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!
+    ) {
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Parcelable.Creator<User> = object : Parcelable.Creator<User> {
-            override fun createFromParcel(source: Parcel): User = User(source)
-            override fun newArray(size: Int): Array<User?> = arrayOfNulls(size)
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(uid)
+        parcel.writeString(name)
+        parcel.writeString(userType)
+        parcel.writeString(email)
+        parcel.writeString(image)
+        parcel.writeString(mobileNumber)
+        parcel.writeString(fcmToken)
+        parcel.writeString(age)
+        parcel.writeString(address)
+        parcel.writeString(gender)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<User> {
+        override fun createFromParcel(parcel: Parcel): User {
+            return User(parcel)
+        }
+
+        override fun newArray(size: Int): Array<User?> {
+            return arrayOfNulls(size)
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.medi_sheba.controllers
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Appointment
@@ -26,18 +25,8 @@ class AppointmentController {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     for (doc in document) {
-                        val documentId = doc.id
-
-//                        val appointment = doc.toObject(Appointment::class.java)
-                        val appointment = Appointment(
-                            doc.getString("patient_uid"),
-                            doc.getString("doctor_uid"),
-                            doc.getString("nurse_uid"),
-                            doc.getBoolean("doc_checked"),
-                            doc.getString("cabin_no"),
-                            doc.getString("time"),
-                            doc.id
-                        )
+                        val appointment = doc.toObject(Appointment::class.java)
+                        appointment.document_id = doc.id
                         appointments.add(appointment)
                     }
                     _appointLists.value = appointments
@@ -54,7 +43,6 @@ class AppointmentController {
                     val appointment = document.toObject(Appointment::class.java)
                     _appointment.value = appointment!!
                 }
-
             }
     }
 }

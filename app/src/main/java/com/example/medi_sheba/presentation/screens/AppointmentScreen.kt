@@ -120,10 +120,8 @@ fun AppointmentScreen(
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(vertical = 20.dp, horizontal = 20.dp)
-                    ,
-
-                    ) {
+                    .padding(vertical = 20.dp, horizontal = 20.dp),
+                ) {
                     Column {
                         NurseBoxRow(isNurseAssigned.value,
                             nurseProfile.value?.name.toString(),

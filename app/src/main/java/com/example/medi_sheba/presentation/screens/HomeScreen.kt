@@ -106,8 +106,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                     style = MaterialTheme.typography.h6,
                                     fontWeight = FontWeight.Bold,
                                     color = PrimaryColor,
-                                    modifier = Modifier
-                                        .clickable {
+                                    modifier = Modifier.clickable {
                                             navController.navigate(ScreenItem.AllCategoryScreen.route)
                                         }
                                 )

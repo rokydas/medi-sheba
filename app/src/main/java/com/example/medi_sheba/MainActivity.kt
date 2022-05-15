@@ -63,11 +63,10 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(navController = navController, auth)
                         }
                         composable(route = ScreenItem.UpdateProfileScreenItem.route) {
-                            val userDetails =
-                                navController.previousBackStackEntry?.arguments?.getParcelable<User>(
-                                    "user"
-                                )
-                            UpdateProfileScreen(navController = navController, auth, userDetails!!)
+                            val userDetails = navController.previousBackStackEntry?.savedStateHandle?.get<User>("user")
+                            userDetails?.let {
+                                UpdateProfileScreen(navController = navController, auth, userDetails)
+                            }
                         }
                         composable(route = ScreenItem.AppointmentScreenItem.route + "/{document_id}/{user_id}/{user_type}") { navBackStack ->
                             val document_id = navBackStack.arguments?.getString("document_id")
@@ -79,7 +78,6 @@ class MainActivity : ComponentActivity() {
                                 user_id = user_id,
                                 user_type = user_type
                             )
-
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
                             AllAppointmentsScreen(navController = navController, auth)

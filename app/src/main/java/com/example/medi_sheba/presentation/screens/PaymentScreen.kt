@@ -23,8 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.BookAppointmentController
-import com.example.medi_sheba.model.BookAppointment
-import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.ktx.auth
@@ -43,7 +42,7 @@ fun PaymentScreen(
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
     val context = LocalContext.current
-    val bookAppointment = BookAppointment(
+    val bookAppointment = Appointment(
         doctor_uid = doctorUid!!,
         patient_uid = uid!!,
         time_slot = time!!,
@@ -133,13 +132,13 @@ fun PaymentScreen(
                             colors = ButtonDefaults.buttonColors(backgroundColor = PrimaryColor),
                             onClick = {
                                 bookAppointmentController.bookAppointment(
-                                    BookAppointment(
+                                    Appointment(
                                         doctor_uid = doctorUid,
                                         patient_uid = uid,
                                         time_slot = time,
                                         serial = serial,
                                         date = date
-                                ), context, isOpenModal)
+                                ), context, navController)
                             },
                         ) {
                             Text(

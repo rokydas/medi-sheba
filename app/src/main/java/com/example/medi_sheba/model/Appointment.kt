@@ -1,12 +1,15 @@
 package com.example.medi_sheba.model
 
-
 data class Appointment(
-    var patient_uid: String? = null,
-    var doctor_uid: String? = null,
-    var nurse_uid: String? = null,
-    var doc_checked: Boolean? = false,
-    var cabin_no: String? = "0",
-    var time: String? = null,
-    var document_id: String? = null
+    val doctor_uid: String = "",
+    val patient_uid: String = "",
+    val nurse_uid: String = "",
+    val doc_checked: Boolean = false,
+    val time_slot: String = "",
+    val serial: String = "",
+    val date: String = "",
+    val cabin_no: String = "",
+    val prescription: String = "",
+    val disease_details: String = "",
+    var document_id: String = ""
 )

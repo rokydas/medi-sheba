@@ -1,7 +1,9 @@
 package com.example.medi_sheba.presentation.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,7 +16,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,14 +55,15 @@ fun BookAppointmentScreen(
     val calendarState = rememberSelectableCalendarState(
         initialSelection = listOf(LocalDate.now())
     )
+
     val context = LocalContext.current
     val bookAppointmentController = BookAppointmentController()
-    val appointments = bookAppointmentController.appointments.observeAsState()
+    val timeSlots = bookAppointmentController.timeSlots.observeAsState()
 
     bookAppointmentController.loadAllAppointmentsForBooking(doctorUid!!,
-        calendarState.selectionState.selection[0].toString(), context)
+        calendarState.selectionState.selection, context)
 
-    Scaffold(
+    Scaffold (
         topBar = {
             TopAppBar(
                 title = {
@@ -77,7 +83,7 @@ fun BookAppointmentScreen(
         },
         backgroundColor = background
     ) {
-        when(appointments.value) {
+        when(timeSlots.value) {
             null -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -88,16 +94,6 @@ fun BookAppointmentScreen(
                 }
             }
             else -> {
-
-                timeSlots.forEach() { timeSlot ->
-                    val filteredAppointment = appointments.value!!.filter { appointment ->
-                        appointment.time_slot == timeSlot.time
-                    }
-                    if (filteredAppointment.isEmpty()) {
-                        timeSlot.isBooked = false
-                    }
-                }
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -108,11 +104,13 @@ fun BookAppointmentScreen(
                                 .fillMaxWidth()
                                 .padding(vertical = 15.dp, horizontal = 25.dp)
                         ) {
-                            Column(modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxSize(),
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxSize(),
                                 verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally) {
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 Image(
                                     painter = painterResource(R.drawable.doctor2),
                                     contentDescription = "profile_picture",
@@ -133,52 +131,65 @@ fun BookAppointmentScreen(
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-                    itemsIndexed(timeSlots) { index, timeSlot ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 8.dp)
-                                .background(Color.White)
-                                .shadow(4.dp)
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
+                    if (timeSlots.value!!.isEmpty()) {
+                        item {
+                            Text(
+                                text = "Please select a date",
+                                style = MaterialTheme.typography.h6,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    } else {
+                        itemsIndexed(timeSlots.value!!) { index, timeSlot ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp, vertical = 8.dp)
+                                    .background(Color.White)
+                                    .shadow(4.dp)
                             ) {
-                                Spacer(modifier = Modifier.width(25.dp))
-                                Text(
-                                    text = (index + 1).toString() + ".",
-                                    style = MaterialTheme.typography.h6,
-                                    color = if(timeSlot.isBooked) Color.Gray else Color.Black,
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    text = timeSlot.time,
-                                    style = MaterialTheme.typography.h6,
-                                    color = if(timeSlot.isBooked) Color.Gray else Color.Black,
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Button(
-                                    modifier = Modifier
-                                        .padding(horizontal = 10.dp, vertical = 5.dp)
-                                        .clip(shape = CircleShape.copy(all = CornerSize(12.dp))),
-                                    colors = ButtonDefaults.buttonColors(backgroundColor = PrimaryColor),
-                                    onClick = {
-                                        // boot an appointment
-                                        navController.navigate(
-                                            ScreenItem.PaymentScreenItem.route
-                                                    + "/" + doctorUid + "/" + timeSlot.time + "/" + (index+1).toString()
-                                                    + "/" + calendarState.selectionState.selection[0].toString() + "/" + name + "/" + designation
-                                        )
-                                    },
-                                    enabled = !timeSlot.isBooked
+                                Row(
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    Spacer(modifier = Modifier.width(25.dp))
                                     Text(
-                                        text = if(timeSlot.isBooked) "Booked" else "Book",
-                                        color = if(timeSlot.isBooked) Color.Gray else Color.White,
-                                        style = TextStyle(fontSize = 14.sp),
-                                        textAlign = TextAlign.Center
+                                        text = (index + 1).toString() + ".",
+                                        style = MaterialTheme.typography.h6,
+                                        color = if (timeSlot.isBooked) Color.Gray else Color.Black,
                                     )
+                                    Spacer(modifier = Modifier.width(5.dp))
+                                    Text(
+                                        text = timeSlot.time,
+                                        style = MaterialTheme.typography.h6,
+                                        color = if (timeSlot.isBooked) Color.Gray else Color.Black,
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Button(
+                                        modifier = Modifier
+                                            .padding(horizontal = 10.dp, vertical = 5.dp)
+                                            .clip(shape = CircleShape.copy(all = CornerSize(12.dp))),
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = PrimaryColor),
+                                        onClick = {
+                                            // boot an appointment
+                                            navController.navigate(
+                                                ScreenItem.PaymentScreenItem.route
+                                                        + "/" + doctorUid + "/" + timeSlot.time + "/" + (index + 1).toString()
+                                                        + "/" + calendarState.selectionState.selection[0].toString() + "/" + name + "/" + designation
+                                            )
+                                        },
+                                        enabled = !timeSlot.isBooked
+                                    ) {
+                                        Text(
+                                            text = if (timeSlot.isBooked) "Booked" else "Book",
+                                            color = if (timeSlot.isBooked) Color.Gray else Color.White,
+                                            style = TextStyle(fontSize = 14.sp),
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -188,20 +199,3 @@ fun BookAppointmentScreen(
         }
     }
 }
-
-val timeSlots = mutableListOf<TimeSlot>(
-    TimeSlot("09.01 AM - 09.30 AM", true),
-    TimeSlot("09.31 AM - 10.00 AM", true),
-    TimeSlot("10.01 AM - 10.30 AM", true),
-    TimeSlot("10.31 AM - 11.00 AM", true),
-    TimeSlot("11.01 AM - 11.30 AM", true),
-    TimeSlot("11.31 AM - 12.00 PM", true),
-    TimeSlot("12.01 PM - 12.30 PM", true),
-    TimeSlot("12.31 PM - 01.00 PM", true),
-    TimeSlot("07.01 PM - 07.30 PM", true),
-    TimeSlot("07.31 PM - 08.00 PM", true),
-    TimeSlot("08.01 PM - 08.30 PM", true),
-    TimeSlot("08.31 PM - 09.00 PM", true),
-    TimeSlot("09.01 PM - 09.30 PM", true),
-    TimeSlot("09.31 PM - 10.00 PM", true)
-)

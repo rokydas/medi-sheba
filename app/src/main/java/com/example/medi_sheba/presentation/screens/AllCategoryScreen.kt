@@ -1,33 +1,19 @@
 package com.example.medi_sheba.presentation.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalProvider
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.medi_sheba.R
-import com.example.medi_sheba.model.Doctor
 import com.example.medi_sheba.model.categoryList
-import com.example.medi_sheba.model.doctors
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.util.gridItems
@@ -66,17 +52,16 @@ fun AllCategoryScreen(navController: NavController) {
                 data = categoryList,
                 columnCount = 2,
                 modifier = Modifier
-            ) { doctor ->
+            ) { category ->
                 CategoryCard(
                     modifier = Modifier.clickable {
-                        navController.navigate(ScreenItem.AllDoctorsScreenItem.route)
-
+                        navController.navigate(ScreenItem.AllDoctorsScreenItem.route + "/"
+                                + category.cate_name)
                     },
-                    name =  doctor.cate_name,
-                    contentName =  doctor.cate_name,
-                    painter = painterResource(doctor.cate_image))
+                    name =  category.cate_name,
+                    contentName =  category.cate_name,
+                    painter = painterResource(category.cate_image))
             }
-
         }
     }
 }

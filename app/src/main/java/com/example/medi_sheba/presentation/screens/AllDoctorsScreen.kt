@@ -1,5 +1,6 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,19 +25,25 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.medi_sheba.model.Doctor
-import com.example.medi_sheba.model.doctors
+import com.example.medi_sheba.R
+import com.example.medi_sheba.controllers.AllDoctorsController
+import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.util.gridItems
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 
 @Composable
-fun AllDoctorsScreen(navController: NavController) {
+fun AllDoctorsScreen(navController: NavController, category: String?) {
+
+    val allDoctorsController = AllDoctorsController()
+    allDoctorsController.getDoctors(category!!)
+    val doctors = allDoctorsController.doctors.observeAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "All Doctors")
+                    Text(text = "$category Doctors")
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -56,19 +64,32 @@ fun AllDoctorsScreen(navController: NavController) {
                 .background(background)
                 .fillMaxSize()
         ) {
-            gridItems(
-                data = doctors,
-                columnCount = 2,
-                modifier = Modifier
-            ) { doctor ->
-                DoctorCard(doctor)
+            if (doctors.value == null) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+            else {
+                gridItems(
+                    data = doctors.value!!,
+                    columnCount = 2,
+                    modifier = Modifier
+                ) { doctor ->
+                    DoctorCard(doctor)
+                }
             }
         }
     }
 }
 
 @Composable
-fun DoctorCard(doctor: Doctor) {
+fun DoctorCard(doctor: User) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -79,7 +100,7 @@ fun DoctorCard(doctor: Doctor) {
             .padding(vertical = 15.dp, horizontal = 25.dp)
     ) {
         Image(
-            painter = painterResource(doctor.image),
+            painter = painterResource(R.drawable.doctor2),
             contentDescription = "profile_picture",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -93,7 +114,7 @@ fun DoctorCard(doctor: Doctor) {
             style = MaterialTheme.typography.h6
         )
         Text(
-            text = doctor.designation,
+            text = doctor.doctorDesignation,
             style = MaterialTheme.typography.body1,
             color = Color.Gray
         )
@@ -103,13 +124,13 @@ fun DoctorCard(doctor: Doctor) {
                 .fillMaxWidth()
         ) {
             Text(
-                text = "৳ " + doctor.price,
+                text = "৳ " + doctor.doctorPrice,
                 style = MaterialTheme.typography.h6
             )
             Row {
                 Icon(imageVector = Icons.Default.Star, contentDescription = "star")
                 Text(
-                    text = doctor.rating.toString(),
+                    text = doctor.doctorRating.toString(),
                     style = MaterialTheme.typography.h6
                 )
             }
@@ -122,7 +143,6 @@ fun DoctorCard(doctor: Doctor) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .padding(16.dp)
                     .background(PrimaryColor)
                     .padding(horizontal = 10.dp, vertical = 5.dp)
                     .clickable {

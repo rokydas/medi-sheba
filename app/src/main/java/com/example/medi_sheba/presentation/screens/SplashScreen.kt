@@ -1,13 +1,12 @@
 package com.example.medi_sheba.presentation.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,26 +23,28 @@ import kotlinx.coroutines.delay
 fun SplashScreen(navController: NavController = NavController(LocalContext.current), auth: FirebaseAuth) {
 
     LaunchedEffect(key1 = true) {
-        delay(1000)
+        delay(2000)
         navController.popBackStack()
-
         val currentUser: FirebaseUser? = auth.currentUser
 
         if(currentUser == null) {
             navController.navigate(ScreenItem.IntroScreenItem.route)
         } else {
-            navController.navigate(ScreenItem.ProfileScreenItem.route)
+            navController.navigate(ScreenItem.HomeScreenItem.route)
         }
     }
 
-    Box(
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(50.dp),
-        contentAlignment = Alignment.Center
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Image(painterResource(R.drawable.ic_trello_logo),"trello logo")
+        Image(
+            painter = painterResource(R.drawable.logo),"medi sheba logo",
+            modifier = Modifier.width(300.dp),
+            contentScale = ContentScale.FillWidth
+        )
     }
-
 }
 

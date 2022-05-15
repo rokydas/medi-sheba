@@ -14,9 +14,8 @@ import com.google.firebase.ktx.Firebase
 import java.time.LocalDate
 
 class BookAppointmentController {
-    val db = Firebase.firestore
-
-    val initialTimeSlots = listOf<TimeSlot>(
+    private val db = Firebase.firestore
+    private val initialTimeSlots = listOf<TimeSlot>(
         TimeSlot("09.01 AM - 09.30 AM", true),
         TimeSlot("09.31 AM - 10.00 AM", true),
         TimeSlot("10.01 AM - 10.30 AM", true),
@@ -36,10 +35,6 @@ class BookAppointmentController {
     private val _timeSlots = MutableLiveData<List<TimeSlot>>()
     val timeSlots: LiveData<List<TimeSlot>>
         get() = _timeSlots
-
-    private val _chatUserList = MutableLiveData<List<Appointment>>()
-    val chatUserList: LiveData<List<Appointment>>
-        get() = _chatUserList
 
     fun bookAppointment(
         appointment: Appointment,

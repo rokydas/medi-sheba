@@ -93,7 +93,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                         imageVector = Icons.Default.Edit, contentDescription = "update profile",
                         modifier = Modifier
                             .clickable {
-                                navController.currentBackStackEntry?.arguments?.putParcelable("user", user.value)
+                                navController.currentBackStackEntry?.savedStateHandle?.set("user", user.value)
                                 navController.navigate(ScreenItem.UpdateProfileScreenItem.route)
                             }
                     )

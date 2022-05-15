@@ -63,11 +63,10 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(navController = navController, auth)
                         }
                         composable(route = ScreenItem.UpdateProfileScreenItem.route) {
-                            val userDetails =
-                                navController.previousBackStackEntry?.arguments?.getParcelable<User>(
-                                    "user"
-                                )
-                            UpdateProfileScreen(navController = navController, auth, userDetails!!)
+                            val userDetails = navController.previousBackStackEntry?.savedStateHandle?.get<User>("user")
+                            userDetails?.let {
+                                UpdateProfileScreen(navController = navController, auth, userDetails)
+                            }
                         }
                         composable(route = ScreenItem.AppointmentScreenItem.route + "/{document_id}/{user_id}/{user_type}") { navBackStack ->
                             val document_id = navBackStack.arguments?.getString("document_id")
@@ -75,12 +74,10 @@ class MainActivity : ComponentActivity() {
                             val user_type = navBackStack.arguments?.getString("user_type")
                             AppointmentScreen(
                                 navController = navController,
-                                bottomNavController = null,
                                 document_id = document_id,
                                 user_id = user_id,
                                 user_type = user_type
                             )
-
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
                             AllAppointmentsScreen(navController = navController, auth)
@@ -112,6 +109,36 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = ScreenItem.AllCategoryScreen.route) {
                             AllCategoryScreen(navController = navController)
+                        }
+                        composable(route = ScreenItem.BookAppointmentScreenItem.route + "/{name}/{designation}/{price}/{doctorUid}") { navBackStack ->
+                            val name = navBackStack.arguments?.getString("name")
+                            val designation = navBackStack.arguments?.getString("designation")
+                            val price = navBackStack.arguments?.getString("price")
+                            val doctorUid = navBackStack.arguments?.getString("doctorUid")
+                            BookAppointmentScreen(
+                                navController = navController,
+                                name = name,
+                                designation = designation,
+                                price = price,
+                                doctorUid = doctorUid
+                            )
+                        }
+                        composable(route = ScreenItem.PaymentScreenItem.route + "/{doctorUid}/{time}/{serial}/{date}/{name}/{designation}") { navBackStack ->
+                            val doctorUid = navBackStack.arguments?.getString("doctorUid")
+                            val time = navBackStack.arguments?.getString("time")
+                            val serial = navBackStack.arguments?.getString("serial")
+                            val date = navBackStack.arguments?.getString("date")
+                            val name = navBackStack.arguments?.getString("name")
+                            val designation = navBackStack.arguments?.getString("designation")
+                            PaymentScreen(
+                                navController = navController,
+                                doctorUid = doctorUid,
+                                time = time,
+                                serial = serial,
+                                date = date,
+                                name = name,
+                                designation = designation
+                            )
                         }
                     }
                 }

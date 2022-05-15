@@ -1,6 +1,5 @@
 package com.example.medi_sheba.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -81,7 +80,6 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
         Column {
             if(appointmentList.value != null){
                 val appointments = when (user.value?.userType) {
-
                     PATIENT -> {
                         appointmentList.value!!.filter { appointment ->
                             appointment.patient_uid == userId
@@ -102,7 +100,6 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
                         appointmentList.value!!
                     }
                 }
-
                 LazyColumn {
                     items(appointments) { appointment ->
                         SingleAppointment(
@@ -202,7 +199,7 @@ fun SingleAppointment(
                             )
 
                         Text(
-                            text = "Time: ${appointment.time}",
+                            text = "Time: ${appointment.time_slot}",
                             style = MaterialTheme.typography.body1,
                             color = Color.Black,
                             fontSize = 14.sp

@@ -106,8 +106,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                     style = MaterialTheme.typography.h6,
                                     fontWeight = FontWeight.Bold,
                                     color = PrimaryColor,
-                                    modifier = Modifier
-                                        .clickable {
+                                    modifier = Modifier.clickable {
                                             navController.navigate(ScreenItem.AllCategoryScreen.route)
                                         }
                                 )
@@ -167,14 +166,14 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                 }
             }
             items(doctors) { doctor ->
-                DoctorHorizontalCard(doctor)
+                DoctorHorizontalCard(doctor, navController)
             }
         }
     }
 }
 
 @Composable
-fun DoctorHorizontalCard(doctor: Doctor) {
+fun DoctorHorizontalCard(doctor: Doctor, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -236,18 +235,20 @@ fun DoctorHorizontalCard(doctor: Doctor) {
                 }
                 Surface(
                     modifier = Modifier
-                        .clip(shape =
-                        CircleShape.copy(all = CornerSize(5.dp)))
+                        .clip(shape = CircleShape.copy(all = CornerSize(5.dp)))
                 ) {
                     Box(
                         modifier = Modifier
                             .background(PrimaryColor)
                             .padding(horizontal = 10.dp, vertical = 5.dp)
                             .clip(shape = CircleShape
-                                .copy(all = CornerSize(12.dp))),
+                                .copy(all = CornerSize(12.dp)))
+                            .clickable {
+                                navController.navigate(ScreenItem.BookAppointmentScreenItem.route +
+                                        "/" + doctor.name + "/" + doctor.designation + "/" + doctor.price + "/" + doctor.uid)
+                            },
                         contentAlignment = Alignment.Center,
-
-                        ) {
+                    ) {
                         Text(
                             text = "Book Now",
                             color = Color.White,

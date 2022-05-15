@@ -207,7 +207,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                 .set(user)
                                 .addOnSuccessListener {
                                     isLoading = false
-//                                    navController.popBackStack()
+                                    navController.popBackStack()
+                                    Toast.makeText(context, "Your profile is successfully updated", Toast.LENGTH_SHORT).show()
                                 }
                                 .addOnFailureListener {
                                     isLoading = false

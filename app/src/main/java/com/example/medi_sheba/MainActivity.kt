@@ -25,24 +25,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
-        val startDest = if (auth.uid != null)
-            ScreenItem.HomeScreenItem.route
-        else ScreenItem.IntroScreenItem.route
+//        val startDest = if (auth.uid != null)
+//            ScreenItem.HomeScreenItem.route
+//        else ScreenItem.IntroScreenItem.route
 
         setContent {
             medi_shebaTheme {
-
-
                 Surface(
                     color = MaterialTheme.colors.background
                 ) {
-
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = startDest
+                        startDestination = ScreenItem.SplashScreenItem.route
                     ) {
                         composable(route = ScreenItem.HomeScreenItem.route) {
                             HomeScreen(navController = navController, auth)
@@ -82,8 +78,9 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
                             AllAppointmentsScreen(navController = navController, auth)
                         }
-                        composable(route = ScreenItem.AllDoctorsScreenItem.route) {
-                            AllDoctorsScreen(navController = navController)
+                        composable(route = ScreenItem.AllDoctorsScreenItem.route + "/{category}") { navBackStack ->
+                            val category = navBackStack.arguments?.getString("category")
+                            AllDoctorsScreen(navController = navController, category)
                         }
                         composable(route = ScreenItem.ChatUserListScreenItem.route) {
                             ChatUserListScreen(navController = navController)
@@ -103,9 +100,6 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.MakeAndDeleteRoleItem.route + "/{roleName}") { navBackStack ->
                             val roleName = navBackStack.arguments?.getString("roleName")
                             MakeAndDeleteRole(navController = navController, roleName!!)
-                        }
-                        composable(route = ScreenItem.AllTopDoctorScreen.route) {
-                            AllTopDoctorsScreen(navController = navController)
                         }
                         composable(route = ScreenItem.AllCategoryScreen.route) {
                             AllCategoryScreen(navController = navController)

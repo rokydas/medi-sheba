@@ -11,42 +11,39 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.medi_sheba.R
-import com.example.medi_sheba.model.Doctor
-import com.example.medi_sheba.model.doctors
+import com.example.medi_sheba.controllers.AllDoctorsController
+import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
-import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-import com.google.firebase.database.collection.LLRBNode
 
 @Composable
 fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
+
+    val allDoctorsController = AllDoctorsController()
+    allDoctorsController.getDoctors("All")
+    val doctors = allDoctorsController.doctors.observeAsState()
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController,
@@ -66,7 +63,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                 ) {
                     Text(
                         text = "Medi Sheba",
-                        style = MaterialTheme.typography.h4,
+                        style = MaterialTheme.typography.h2,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                     )
@@ -156,7 +153,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                     fontWeight = FontWeight.Bold,
                                     color = PrimaryColor,
                                     modifier = Modifier.clickable {
-                                        navController.navigate(ScreenItem.AllTopDoctorScreen.route)
+                                        navController.navigate(ScreenItem.AllDoctorsScreenItem.route + "/All")
                                     }
                                 )
                             }
@@ -165,15 +162,30 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                     }
                 }
             }
-            items(doctors) { doctor ->
-                DoctorHorizontalCard(doctor, navController)
+            if (doctors.value == null) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxSize()
+                            .padding(15.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            } else {
+                val doctorList = if (doctors.value!!.size >= 5) doctors.value!!.subList(0, 5)
+                            else doctors.value!!.subList(0, doctors.value!!.size)
+                items(doctorList) { doctor ->
+                    DoctorHorizontalCard(doctor, navController)
+                }
             }
+
         }
     }
 }
 
 @Composable
-fun DoctorHorizontalCard(doctor: Doctor, navController: NavController) {
+fun DoctorHorizontalCard(doctor: User, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -195,7 +207,7 @@ fun DoctorHorizontalCard(doctor: Doctor, navController: NavController) {
                     .fillMaxWidth(0.7f)
             ) {
                 Image(
-                    painter = painterResource(doctor.image),
+                    painter = painterResource(R.drawable.doctor2),
                     contentDescription = "profile_picture",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -211,12 +223,12 @@ fun DoctorHorizontalCard(doctor: Doctor, navController: NavController) {
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = doctor.designation,
+                        text = doctor.doctorDesignation,
                         style = MaterialTheme.typography.body1,
                         color = Color.Gray
                     )
                     Text(
-                        text = "৳ " + doctor.price,
+                        text = "৳ " + doctor.doctorPrice,
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Bold
                     )
@@ -229,7 +241,7 @@ fun DoctorHorizontalCard(doctor: Doctor, navController: NavController) {
                     Icon(imageVector = Icons.Default.Star,
                         contentDescription = "star")
                     Text(
-                        text = doctor.rating.toString(),
+                        text = doctor.doctorRating.toString(),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -241,11 +253,15 @@ fun DoctorHorizontalCard(doctor: Doctor, navController: NavController) {
                         modifier = Modifier
                             .background(PrimaryColor)
                             .padding(horizontal = 10.dp, vertical = 5.dp)
-                            .clip(shape = CircleShape
-                                .copy(all = CornerSize(12.dp)))
+                            .clip(
+                                shape = CircleShape
+                                    .copy(all = CornerSize(12.dp))
+                            )
                             .clickable {
-                                navController.navigate(ScreenItem.BookAppointmentScreenItem.route +
-                                        "/" + doctor.name + "/" + doctor.designation + "/" + doctor.price + "/" + doctor.uid)
+                                navController.navigate(
+                                    ScreenItem.BookAppointmentScreenItem.route +
+                                            "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
+                                )
                             },
                         contentAlignment = Alignment.Center,
                     ) {

@@ -134,7 +134,7 @@ fun BookAppointmentScreen(
                     if (timeSlots.value!!.isEmpty()) {
                         item {
                             Text(
-                                text = "Please select a date",
+                                text = "Please select a valid date",
                                 style = MaterialTheme.typography.h6,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -155,7 +155,7 @@ fun BookAppointmentScreen(
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Spacer(modifier = Modifier.width(25.dp))
+                                    Spacer(modifier = Modifier.width(30.dp))
                                     Text(
                                         text = (index + 1).toString() + ".",
                                         style = MaterialTheme.typography.h6,

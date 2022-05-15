@@ -1,7 +1,9 @@
 package com.example.medi_sheba.controllers
 
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
@@ -56,8 +58,18 @@ class BookAppointmentController {
             }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun loadAllAppointmentsForBooking(docUid: String, date: List<LocalDate>, context: Context) {
-        if (date.isNotEmpty()) {
+        if (date.isEmpty()) {
+            _timeSlots.value = listOf()
+            return
+        }
+        else {
+            val today = LocalDate.now()
+            if (today.isAfter(date[0])) {
+                _timeSlots.value = listOf()
+                return
+            }
             val docRef = db.collection("appointment")
                 .whereEqualTo("doctor_uid", docUid)
                 .whereEqualTo("date", date[0].toString())
@@ -79,8 +91,6 @@ class BookAppointmentController {
                 .addOnFailureListener { exception ->
                     Toast.makeText(context, exception.message, Toast.LENGTH_SHORT).show()
                 }
-        } else {
-            _timeSlots.value = listOf()
         }
 
     }

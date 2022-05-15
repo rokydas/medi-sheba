@@ -1,6 +1,7 @@
 package com.example.medi_sheba.presentation.screens
 
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -308,13 +309,10 @@ fun InputPatientDetails() {
                     .size(300.dp)
                     .background(Color.White, shape = RoundedCornerShape(8.dp))
             ) {
-                Log.d("nurse", "InputPatientDetails: ${nurseList.value?.size}")
-
                 Column {
                     if(nurseList.value != null){
                         LazyColumn {
                             items(nurseList.value!!) { nurseUser ->
-                                Log.d("nurse", "InputPatientDetails: ${nurseUser.name}")
                                 Text(text = "Nurse Name: ${nurseUser.name}",
                                     fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold)

@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
@@ -45,7 +46,13 @@ fun BottomNavigationBar(navController: NavController, title: String) {
                         modifier = Modifier.width(20.dp),
                     )
                 },
-                label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
+                label = {
+                    Text(
+                        text = item.title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp
+                    )
+                },
                 selectedContentColor = Color.Black,
                 unselectedContentColor = Color.Black.copy(0.4f),
                 alwaysShowLabel = true,

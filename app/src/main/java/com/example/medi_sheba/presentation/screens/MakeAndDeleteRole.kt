@@ -2,23 +2,25 @@ package com.example.medi_sheba.presentation.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.MakeAndDeleteRoleController
+import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -33,10 +35,16 @@ fun MakeAndDeleteRole(navController: NavController, roleName: String) {
 
     makeAndDeleteRoleController.getUserList(context)
 
-    Scaffold {
+    Scaffold(
+        topBar = {
+            AppBar(navController = navController, title = "Update Role")
+        }
+    ) {
         when(userList.value) {
             null -> {
-                CircularProgressIndicator()
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             }
             else -> {
                 val users = userList.value!!.filter { user ->
@@ -49,52 +57,66 @@ fun MakeAndDeleteRole(navController: NavController, roleName: String) {
                 }
                 else {
                     LazyColumn {
+                        item {
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
                         items(users) { user ->
                             if(user.uid != auth.currentUser?.uid) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(bottom = 20.dp)
-                                        .clip(RoundedCornerShape(25.dp))
+                                        .padding(horizontal = 20.dp, vertical = 5.dp)
+                                        .clip(RoundedCornerShape(5.dp))
                                         .background(PrimaryColorLight)
-                                        .padding(20.dp)
+                                        .padding(10.dp)
                                 ) {
-                                    Row {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.horizontalScroll(rememberScrollState())
+                                    ) {
+                                        Spacer(modifier = Modifier.width(15.dp))
                                         Text(text = user.name)
-                                        if (user.userType == roleName) {
-                                            Button(
-                                                onClick = {
-                                                    makeAndDeleteRoleController.changeRole("Patient", user.uid) { isSuccess ->
+                                        Spacer(modifier = Modifier.width(15.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .background(PrimaryColor)
+                                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                                                .clickable {
+                                                    makeAndDeleteRoleController.changeRole(
+                                                        roleName = if (user.userType == roleName) "Patient" else roleName,
+                                                        uid = user.uid
+                                                    ) { isSuccess ->
                                                         if (isSuccess) {
-                                                            Toast.makeText(context,"Role updated successfully", Toast.LENGTH_SHORT).show()
-                                                            makeAndDeleteRoleController.getUserList(context)
+                                                            Toast
+                                                                .makeText(
+                                                                    context,
+                                                                    "Role updated successfully",
+                                                                    Toast.LENGTH_SHORT
+                                                                )
+                                                                .show()
+                                                            makeAndDeleteRoleController.getUserList(
+                                                                context
+                                                            )
                                                         } else {
-                                                            Toast.makeText(context,"Something went wrong", Toast.LENGTH_SHORT).show()
+                                                            Toast
+                                                                .makeText(
+                                                                    context,
+                                                                    "Something went wrong",
+                                                                    Toast.LENGTH_SHORT
+                                                                )
+                                                                .show()
                                                         }
                                                     }
-                                                }
-                                            ) {
-                                                Text(text = "Delete $roleName")
-                                            }
-                                        }
-                                        else {
-                                            Button(
-                                                onClick = {
-                                                    makeAndDeleteRoleController.changeRole(roleName, user.uid) { isSuccess ->
-                                                        if (isSuccess) {
-                                                            Toast.makeText(context,"Role updated successfully", Toast.LENGTH_SHORT).show()
-                                                            makeAndDeleteRoleController.getUserList(context)
-                                                        } else {
-                                                            Toast.makeText(context,"Something went wrong", Toast.LENGTH_SHORT).show()
-                                                        }
-                                                    }
-                                                }
-                                            ) {
-                                                Text(text = "Make $roleName")
-                                            }
+                                                },
+                                            contentAlignment = Alignment.Center,
+                                        ) {
+                                            Text(
+                                                text = if (user.userType == roleName) "Delete $roleName" else "Make $roleName",
+                                                color = Color.White,
+                                                style = MaterialTheme.typography.body1
+                                            )
                                         }
                                     }
-
                                 }
                             }
                         }

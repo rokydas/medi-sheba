@@ -206,26 +206,28 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                         style = MaterialTheme.typography.body1
                     )
                 }
-                Spacer(modifier = Modifier.height(40.dp))
-                Row(
-                    modifier = Modifier
-                        .padding(start = 30.dp)
-                        .clickable {
-                            navController.navigate(ScreenItem.DashboardScreenItem.route)
-                        }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Logout, contentDescription = "",
-                        tint = Color.Gray,
-                    )
-                    Spacer(modifier = Modifier.width(30.dp))
-                    Text(
-                        text = "Dashboard",
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.h6
-                    )
+                if(_user.userType == "Admin") {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 30.dp)
+                            .clickable {
+                                navController.navigate(ScreenItem.DashboardScreenItem.route)
+                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Logout, contentDescription = "",
+                            tint = Color.Gray,
+                        )
+                        Spacer(modifier = Modifier.width(30.dp))
+                        Text(
+                            text = "Dashboard",
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.h6
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier
                         .padding(start = 30.dp)

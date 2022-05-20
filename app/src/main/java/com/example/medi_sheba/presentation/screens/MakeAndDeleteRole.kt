@@ -87,24 +87,10 @@ fun MakeAndDeleteRole(navController: NavController, roleName: String) {
                                                         uid = user.uid
                                                     ) { isSuccess ->
                                                         if (isSuccess) {
-                                                            Toast
-                                                                .makeText(
-                                                                    context,
-                                                                    "Role updated successfully",
-                                                                    Toast.LENGTH_SHORT
-                                                                )
-                                                                .show()
-                                                            makeAndDeleteRoleController.getUserList(
-                                                                context
-                                                            )
+                                                            Toast.makeText(context, "Role updated successfully", Toast.LENGTH_SHORT).show()
+                                                            makeAndDeleteRoleController.getUserList(context)
                                                         } else {
-                                                            Toast
-                                                                .makeText(
-                                                                    context,
-                                                                    "Something went wrong",
-                                                                    Toast.LENGTH_SHORT
-                                                                )
-                                                                .show()
+                                                            Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
                                                         }
                                                     }
                                                 },

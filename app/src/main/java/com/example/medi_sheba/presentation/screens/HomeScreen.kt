@@ -2,6 +2,7 @@
 
 package com.example.medi_sheba.presentation.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +32,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AllDoctorsController
+import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.LineChart.LineChartContent
 import com.example.medi_sheba.presentation.LineChart.LineChartScreen
@@ -44,154 +47,176 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
 
     val allDoctorsController = AllDoctorsController()
     allDoctorsController.getDoctors("All")
+    val profileController = ProfileController()
     val doctors = allDoctorsController.doctors.observeAsState()
+    val user = profileController.user.observeAsState()
+
+    profileController.getUser(auth.currentUser!!.uid)
 
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController,
             title = "Home") }
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 20.dp)
-                .background(PrimaryColor)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(70.dp))
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Medi Sheba",
-                        style = MaterialTheme.typography.h2,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                    )
-                    Text(
-                        text = "Your online health partner",
-                        style = MaterialTheme.typography.h6,
-                        color = Color.White
-                    )
-                }
-                Spacer(modifier = Modifier.height(50.dp))
-                Card(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)
-                ) {
-                    Box(
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 20.dp)
+                    .background(PrimaryColor)
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(70.dp))
+                    Column(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(background)
-                            .padding(horizontal = 20.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column {
-                            Spacer(modifier = Modifier.height(40.dp))
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Categories",
-                                    style = MaterialTheme.typography.h5,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                Text(
-                                    text = "See all",
-                                    style = MaterialTheme.typography.h6,
-                                    fontWeight = FontWeight.Bold,
-                                    color = PrimaryColor,
-                                    modifier = Modifier.clickable {
+                        Text(
+                            text = "Medi Sheba",
+                            style = MaterialTheme.typography.h2,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                        )
+                        Text(
+                            text = "Your online health partner",
+                            style = MaterialTheme.typography.h6,
+                            color = Color.White
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(50.dp))
+                    Card(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(background)
+                                .padding(horizontal = 20.dp)
+                        ) {
+                            Column {
+                                Spacer(modifier = Modifier.height(40.dp))
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "Categories",
+                                        style = MaterialTheme.typography.h5,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                    Text(
+                                        text = "See all",
+                                        style = MaterialTheme.typography.h6,
+                                        fontWeight = FontWeight.Bold,
+                                        color = PrimaryColor,
+                                        modifier = Modifier.clickable {
                                             navController.navigate(ScreenItem.AllCategoryScreen.route)
                                         }
-                                )
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(20.dp))
+
+                                Row(
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+
+                                    CategoryCard(
+                                        modifier = Modifier.weight(1f),
+                                        name =  "Cardiologist",
+                                        contentName =  "Cardiologist",
+                                        painter = painterResource(R.drawable.cardiologist))
+
+                                    CategoryCard(
+                                        modifier = Modifier.weight(1f),
+                                        name =  "Orthopedic",
+                                        contentName =  "Orthopedic",
+                                        painter = painterResource(R.drawable.ortho))
+
+                                    CategoryCard(
+                                        modifier = Modifier.weight(1f),
+                                        name =  "Dentist",
+                                        contentName =  "Dentist",
+                                        painter = painterResource(R.drawable.dentist))
+                                }
+
+                                Spacer(modifier = Modifier.height(25.dp))
+
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "Our Top Doctors",
+                                        style = MaterialTheme.typography.h5,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                    Text(
+                                        text = "See all",
+                                        style = MaterialTheme.typography.h6,
+                                        fontWeight = FontWeight.Bold,
+                                        color = PrimaryColor,
+                                        modifier = Modifier.clickable {
+                                            navController.navigate(ScreenItem.AllDoctorsScreenItem.route + "/All")
+                                        }
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
                             }
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            Row(
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-
-                                CategoryCard(
-                                    modifier = Modifier.weight(1f),
-                                    name =  "Cardiologist",
-                                    contentName =  "Cardiologist",
-                                    painter = painterResource(R.drawable.cardiologist))
-
-                                CategoryCard(
-                                    modifier = Modifier.weight(1f),
-                                    name =  "Orthopedic",
-                                    contentName =  "Orthopedic",
-                                    painter = painterResource(R.drawable.ortho))
-
-                                CategoryCard(
-                                    modifier = Modifier.weight(1f),
-                                    name =  "Dentist",
-                                    contentName =  "Dentist",
-                                    painter = painterResource(R.drawable.dentist))
-                            }
-
-                            Spacer(modifier = Modifier.height(25.dp))
-
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Our Top Doctors",
-                                    style = MaterialTheme.typography.h5,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                Text(
-                                    text = "See all",
-                                    style = MaterialTheme.typography.h6,
-                                    fontWeight = FontWeight.Bold,
-                                    color = PrimaryColor,
-                                    modifier = Modifier.clickable {
-                                        navController.navigate(ScreenItem.AllDoctorsScreenItem.route + "/All")
-                                    }
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(10.dp))
-
-
                         }
                     }
                 }
-            }
-            if (doctors.value == null) {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(15.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
+                when {
+                    doctors.value == null -> {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(background)
+                                    .padding(15.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
+                    doctors.value!!.isEmpty() -> {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(background)
+                                    .padding(15.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = "There is no doctor")
+                            }
+                        }
+                    }
+                    else -> {
+                        val doctorList = if (doctors.value!!.size >= 5) doctors.value!!.subList(0, 5)
+                        else doctors.value!!.subList(0, doctors.value!!.size)
+                        items(doctorList) { doctor ->
+                            DoctorHorizontalCard(doctor, navController, user.value!!)
+                        }
                     }
                 }
-            } else {
-                val doctorList = if (doctors.value!!.size >= 5) doctors.value!!.subList(0, 5)
-                            else doctors.value!!.subList(0, doctors.value!!.size)
-                items(doctorList) { doctor ->
-                    DoctorHorizontalCard(doctor, navController)
-                }
-            }
 
+            }
         }
     }
 }
 
 @Composable
-fun DoctorHorizontalCard(doctor: User, navController: NavController) {
+fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -264,17 +289,22 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController) {
                                     .copy(all = CornerSize(12.dp))
                             )
                             .clickable {
-                                navController.navigate(
-                                    ScreenItem.BookAppointmentScreenItem.route +
-                                            "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
-                                )
+                                if (user.userType == "Patient") {
+                                    navController.navigate(
+                                        ScreenItem.BookAppointmentScreenItem.route +
+                                                "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
+                                    )
+                                } else {
+                                    Toast.makeText(context, "Sorry, you are not a patient.", Toast.LENGTH_SHORT).show()
+                                }
+
                             },
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = "Book Appointment",
                             color = Color.White,
-                            style = TextStyle(fontSize = 10.sp),
+                            style = TextStyle(fontSize = 12.sp),
                             textAlign = TextAlign.Center
                         )
                     }

@@ -51,32 +51,33 @@ fun ChatScreen(navController: NavController, receiverUid: String?, receiverName:
 
     chatController.getMessages(receiverUid + "_" + uid)
 
-    Scaffold {
+    Scaffold { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            val newMessage = rememberSaveable { mutableStateOf("") }
 
-        val newMessage = rememberSaveable { mutableStateOf("") }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Card(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(elevation = 2.dp)
-                    .padding(10.dp)
+                    .fillMaxSize()
             ) {
-                Text(text = receiverName!!)
-            }
-            if (messageLists.value != null) {
-                MessagesUI(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
-                    messageLists = messageLists.value!!,
-                    uid = auth.currentUser!!.uid
-                )
+                        .shadow(elevation = 2.dp)
+                        .padding(10.dp)
+                ) {
+                    Text(text = receiverName!!)
+                }
+                if (messageLists.value != null) {
+                    MessagesUI(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        messageLists = messageLists.value!!,
+                        uid = auth.currentUser!!.uid
+                    )
+                }
+                MessageField(newMessage, chatController, uid, receiverUid, context, dateFormatter)
             }
-            MessageField(newMessage, chatController, uid, receiverUid, context, dateFormatter)
         }
     }
 }

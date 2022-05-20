@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.compose.rememberImagePainter
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
@@ -113,24 +116,33 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     modifier = Modifier
                         .padding(start = 30.dp)
                 ) {
-                    Image(
-                        painter = if(user.value?.image != "")
-                        {
-                            rememberImagePainter(
-                                data = user.value?.image)
-                        }else{
-                            painterResource(R.drawable.avartar)
-                                                                  },
-                        contentDescription = "profile_picture",
+                    SubcomposeAsyncImage(
+                        model = user.value?.image,
+                        contentDescription = "profile image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
                             .border(2.dp, Color.Gray, CircleShape)
-                            .clickable {
+                    ) {
+                        when (painter.state) {
+                            is AsyncImagePainter.State.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(35.dp),
+                                    color = PrimaryColor
+                                )
                             }
-                    )
-
+                            is AsyncImagePainter.State.Error -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.avartar),
+                                    contentDescription = "profile image"
+                                )
+                            }
+                            else -> {
+                                SubcomposeAsyncImageContent()
+                            }
+                        }
+                    }
 
                     Spacer(modifier = Modifier.width(30.dp))
 

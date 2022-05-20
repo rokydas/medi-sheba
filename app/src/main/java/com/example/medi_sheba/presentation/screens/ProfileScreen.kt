@@ -35,6 +35,7 @@ import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
+import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -57,7 +58,8 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
     }
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController, title = "Profile") }
+        bottomBar = { BottomNavigationBar(navController = navController, title = "Profile") },
+        backgroundColor = background
     ) {
         Column(
             modifier = Modifier

@@ -55,29 +55,37 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
         topBar = {
             AppBar(navController = navController, title = "$category Doctors")
         },
+        backgroundColor = background
     ) {
-        if (doctors.value == null) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(10.dp),
-                modifier = Modifier
-                    .background(background)
-                    .fillMaxSize()
-            ) {
-                items(doctors.value!!) { doctor ->
-                    DoctorHorizontalCard(doctor, navController, user.value)
+        when {
+            doctors.value == null -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-
+            }
+            doctors.value!!.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "There is no doctor in this category")
+                }
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    items(doctors.value!!) { doctor ->
+                        DoctorHorizontalCard(doctor, navController, user.value)
+                    }
+                }
             }
         }
-
     }
 }
 
@@ -164,16 +172,27 @@ fun DoctorCard(
                     .clickable {
                         if (user.userType == "Patient") {
                             if (doctor.doctorDesignation != "" && doctor.doctorCategory != "") {
-                                navController.navigate(ScreenItem.BookAppointmentScreenItem.route +
-                                        "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
+                                navController.navigate(
+                                    ScreenItem.BookAppointmentScreenItem.route +
+                                            "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
                                 )
+                            } else {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        "Sorry, this doctor is not ready yet",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                             }
-                            else {
-                                Toast.makeText(context, "Sorry, this doctor is not ready yet", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        else {
-                            Toast.makeText(context, "Sorry, you are not a patient.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Sorry, you are not a patient.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                .show()
                         }
 
                     },

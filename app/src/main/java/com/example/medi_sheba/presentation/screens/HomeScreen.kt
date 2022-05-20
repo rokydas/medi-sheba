@@ -13,6 +13,9 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.runtime.Composable
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -22,14 +25,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.medi_sheba.R
@@ -61,6 +62,56 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController,
+            title = "Home") },
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(PrimaryColor)
+        ) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "notification",
+                        modifier = Modifier
+                            .padding(25.dp)
+                            .clickable {
+                                navController.navigate(ScreenItem.NotificationScreenItem.route)
+                        },
+                        tint = Color.White
+                    )
+                }
+            }
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Medi Sheba",
+                        style = MaterialTheme.typography.h4,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                    )
+                    Text(
+                        text = "Your online health partner",
+                        style = MaterialTheme.typography.h6,
+                        color = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.height(50.dp))
+                Card(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)
+                ) {
+                    Box(
             title = "Home") }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
@@ -107,6 +158,8 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
+                                        .clickable {
+                                            navController.navigate(ScreenItem.AllCategoryScreenItem.route)
                                         .fillMaxWidth()
                                 ) {
                                     Text(
@@ -182,6 +235,20 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                                     .padding(15.dp),
                                 contentAlignment = Alignment.Center
                             ) {
+                                Text(
+                                    text = "Our Top Doctors",
+                                    style = MaterialTheme.typography.h5,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                Text(
+                                    text = "See all",
+                                    style = MaterialTheme.typography.h6,
+                                    fontWeight = FontWeight.Bold,
+                                    color = PrimaryColor,
+                                    modifier = Modifier.clickable {
+                                        navController.navigate(ScreenItem.AllTopDoctorScreenItem.route)
+                                    }
+                                )
                                 CircularProgressIndicator()
                             }
                         }

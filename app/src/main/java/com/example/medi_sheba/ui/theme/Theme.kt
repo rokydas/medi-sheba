@@ -34,7 +34,6 @@ fun medi_shebaTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compos
 //    } else {
 //        LightColorPalette
 //    }
-
     val colors = LightColorPalette
 
     MaterialTheme(

@@ -33,6 +33,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AllDoctorsController
 import com.example.medi_sheba.controllers.ProfileController
@@ -150,10 +153,14 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                                 ) {
                                     categoryList.subList(0, 3).forEach { category ->
                                         CategoryCard(
-                                            modifier = Modifier.weight(1f).clickable {
-                                                navController.navigate(ScreenItem.AllDoctorsScreenItem.route + "/"
-                                                        + category.cate_name)
-                                            },
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clickable {
+                                                    navController.navigate(
+                                                        ScreenItem.AllDoctorsScreenItem.route + "/"
+                                                                + category.cate_name
+                                                    )
+                                                },
                                             name =  category.cate_name,
                                             contentName =  category.cate_name,
                                             painter = painterResource(category.cate_image)
@@ -225,7 +232,6 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                         }
                     }
                 }
-
             }
         }
     }
@@ -240,7 +246,7 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?
             .background(background)
     ) {
         Row(
-            horizontalArrangement = Arrangement.SpaceAround,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxSize()
@@ -249,50 +255,66 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?
                 .background(Color.White)
                 .padding(horizontal = 5.dp, vertical = 15.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Spacer(modifier = Modifier.width(10.dp))
+            SubcomposeAsyncImage(
+                model = doctor.image,
+                contentDescription = "profile image",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
+                    .size(70.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color.Gray, CircleShape)
             ) {
-                Image(
-                    painter = painterResource(R.drawable.doctor2),
-                    contentDescription = "profile_picture",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, Color.Gray, CircleShape)
+                when (painter.state) {
+                    is AsyncImagePainter.State.Loading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(35.dp),
+                            color = PrimaryColor
+                        )
+                    }
+                    is AsyncImagePainter.State.Error -> {
+                        Image(
+                            painter = painterResource(id = R.drawable.avartar),
+                            contentDescription = "profile image"
+                        )
+                    }
+                    else -> {
+                        SubcomposeAsyncImageContent()
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.width(20.dp))
+            Column {
+                Text(
+                    text = doctor.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
                 )
-                Spacer(modifier = Modifier.width(15.dp))
-                Column {
-                    Text(
-                        text = doctor.name,
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.Bold
-                    )
+                if (doctor.doctorDesignation != "") {
                     Text(
                         text = doctor.doctorDesignation,
                         style = MaterialTheme.typography.body1,
                         color = Color.Gray
                     )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Row {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "star"
+                    )
+                    Text(
+                        text = doctor.doctorRating.toString(),
+                        style = MaterialTheme.typography.body1
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "৳ " + doctor.doctorPrice,
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Bold
                     )
                 }
-            }
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                Row {
-                    Icon(imageVector = Icons.Default.Star,
-                        contentDescription = "star")
-                    Text(
-                        text = doctor.doctorRating.toString(),
-                        style = MaterialTheme.typography.body1
-                    )
-                }
+                Spacer(modifier = Modifier.width(10.dp))
                 Surface(
                     modifier = Modifier
                         .clip(shape = CircleShape.copy(all = CornerSize(5.dp)))
@@ -336,9 +358,9 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = "Book Appointment",
+                            text = "Appointment",
                             color = Color.White,
-                            style = TextStyle(fontSize = 12.sp),
+                            style = TextStyle(fontSize = 14.sp),
                             textAlign = TextAlign.Center
                         )
                     }

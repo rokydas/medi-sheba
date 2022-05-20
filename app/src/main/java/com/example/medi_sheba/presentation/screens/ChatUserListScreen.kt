@@ -1,5 +1,4 @@
 package com.example.medi_sheba.presentation.screens
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -34,6 +33,9 @@ fun ChatUserListScreen(navController: NavController) {
     chatUserListController.getChatUserList(context)
 
     Scaffold(
+        topBar = {
+            AppBar(navController = navController, title = "Chat")
+        },
         bottomBar = { BottomNavigationBar(navController = navController,
             title = "Chat") }
     ) {
@@ -44,7 +46,9 @@ fun ChatUserListScreen(navController: NavController) {
         ) {
             when(chatUserList.value) {
                 null -> {
-                    CircularProgressIndicator()
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
                 else -> {
                     val userList = chatUserList.value!!.filter { user ->
@@ -68,7 +72,7 @@ fun ChatUserListScreen(navController: NavController) {
                                         .clickable {
                                             navController.navigate(
                                                 ScreenItem.ChatScreenItem.route
-                                                    + "/" + user.uid + "/" + user.name
+                                                        + "/" + user.uid + "/" + user.name
                                             )
                                         }
                                 ) {

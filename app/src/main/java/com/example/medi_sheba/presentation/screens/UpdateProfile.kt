@@ -265,50 +265,52 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                 )
                 Spacer(modifier = Modifier.height(15.dp))
 
-                TextField(
-                    modifier = Modifier
-                        .background(Color.White),
-                    value = designation,
-                    onValueChange = { designation = it },
-                    placeholder = { Text("Designation") },
-                    maxLines = 1,
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.White,
-                        cursorColor = Color.Gray,
-                        focusedIndicatorColor = Color.Gray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                val categoryList = mutableListOf("Cardiologist", "Orthopedic", "Dentist", "Neurologists", "Child Specialist",
-                    "Medicine", "Eye Specialist", "Surgery", "Kidney specialist", "Liver Specialist")
-
-                Box(Modifier.fillMaxWidth(),contentAlignment = Alignment.Center) {
-                    Row(
-                        Modifier.padding(24.dp)
-                            .clickable {
-                                expanded = !expanded
-                            }
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = if(selectedCategory == "") "Select category" else selectedCategory,
-                            fontSize = 18.sp,modifier = Modifier.padding(end = 8.dp)
+                if (userDetails.userType == "Doctor") {
+                    TextField(
+                        modifier = Modifier
+                            .background(Color.White),
+                        value = designation,
+                        onValueChange = { designation = it },
+                        placeholder = { Text("Designation") },
+                        maxLines = 1,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            cursorColor = Color.Gray,
+                            focusedIndicatorColor = Color.Gray
                         )
-                        Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = "")
+                    )
 
-                        DropdownMenu(expanded = expanded, onDismissRequest = {
-                            expanded = false
-                        }) {
-                            categoryList.forEach{ category->
-                                DropdownMenuItem(onClick = {
-                                    expanded = false
-                                    selectedCategory = category
-                                }) {
-                                    Text(text = category)
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    val categoryList = mutableListOf("Cardiologist", "Orthopedic", "Dentist", "Neurologists", "Child Specialist",
+                        "Medicine", "Eye Specialist", "Surgery", "Kidney specialist", "Liver Specialist")
+
+                    Box(Modifier.fillMaxWidth(),contentAlignment = Alignment.Center) {
+                        Row(
+                            Modifier.padding(24.dp)
+                                .clickable {
+                                    expanded = !expanded
+                                }
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = if(selectedCategory == "") "Select category" else selectedCategory,
+                                fontSize = 18.sp,modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = "")
+
+                            DropdownMenu(expanded = expanded, onDismissRequest = {
+                                expanded = false
+                            }) {
+                                categoryList.forEach{ category->
+                                    DropdownMenuItem(onClick = {
+                                        expanded = false
+                                        selectedCategory = category
+                                    }) {
+                                        Text(text = category)
+                                    }
                                 }
                             }
                         }
@@ -323,7 +325,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                 Box(
                     modifier = Modifier
                         .noRippleClickable() {
-                            if (imageUri != null) {
+                            if (imageUri.toString() != "") {
                                 val ref = storageRef.child("image_${authUser!!.uid}")
                                 val uploadTask = ref.putFile(imageUri!!)
 

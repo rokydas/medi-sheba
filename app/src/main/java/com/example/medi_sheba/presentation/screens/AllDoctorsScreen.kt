@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,7 +34,6 @@ import com.example.medi_sheba.controllers.AllDoctorsController
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
-import com.example.medi_sheba.presentation.util.gridItems
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
@@ -55,31 +55,34 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
         topBar = {
             AppBar(navController = navController, title = "$category Doctors")
         },
+        backgroundColor = background
     ) {
-        LazyColumn(
-            contentPadding = PaddingValues(10.dp),
-            modifier = Modifier
-                .background(background)
-                .fillMaxSize()
-        ) {
-            if (doctors.value == null) {
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxSize().border(5.dp, Color.Red),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+        when {
+            doctors.value == null -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
                 }
             }
-            else {
-                gridItems(
-                    data = doctors.value!!,
-                    columnCount = 2,
+            doctors.value!!.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "There is no doctor in this category")
+                }
+            }
+            else -> {
+                LazyColumn(
                     modifier = Modifier
-                ) { doctor ->
-                    DoctorHorizontalCard(doctor, navController, user.value)
+                        .fillMaxSize()
+                ) {
+                    items(doctors.value!!) { doctor ->
+                        DoctorHorizontalCard(doctor, navController, user.value)
+                    }
                 }
             }
         }
@@ -169,16 +172,27 @@ fun DoctorCard(
                     .clickable {
                         if (user.userType == "Patient") {
                             if (doctor.doctorDesignation != "" && doctor.doctorCategory != "") {
-                                navController.navigate(ScreenItem.BookAppointmentScreenItem.route +
-                                        "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
+                                navController.navigate(
+                                    ScreenItem.BookAppointmentScreenItem.route +
+                                            "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
                                 )
+                            } else {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        "Sorry, this doctor is not ready yet",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                             }
-                            else {
-                                Toast.makeText(context, "Sorry, this doctor is not ready yet", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        else {
-                            Toast.makeText(context, "Sorry, you are not a patient.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast
+                                .makeText(
+                                    context,
+                                    "Sorry, you are not a patient.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                .show()
                         }
 
                     },

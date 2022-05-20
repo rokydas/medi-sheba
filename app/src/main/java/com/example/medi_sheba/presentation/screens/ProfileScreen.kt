@@ -1,5 +1,14 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,23 +19,26 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
+import coil.compose.rememberImagePainter
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
@@ -80,6 +92,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(PrimaryColor)
                         .padding(30.dp)
                 ) {
                     Icon(
@@ -93,7 +106,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                         imageVector = Icons.Default.Edit, contentDescription = "update profile",
                         modifier = Modifier
                             .clickable {
-                                navController.currentBackStackEntry?.arguments?.putParcelable("user", user.value)
+                                navController.currentBackStackEntry?.savedStateHandle?.set("user", user.value)
                                 navController.navigate(ScreenItem.UpdateProfileScreenItem.route)
                             }
                     )
@@ -104,15 +117,33 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     modifier = Modifier
                         .padding(start = 30.dp)
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.avartar),
-                        contentDescription = "profile_picture",
+                    SubcomposeAsyncImage(
+                        model = user.value?.image,
+                        contentDescription = "profile image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
                             .border(2.dp, Color.Gray, CircleShape)
-                    )
+                    ) {
+                        when (painter.state) {
+                            is AsyncImagePainter.State.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(35.dp),
+                                    color = PrimaryColor
+                                )
+                            }
+                            is AsyncImagePainter.State.Error -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.avartar),
+                                    contentDescription = "profile image"
+                                )
+                            }
+                            else -> {
+                                SubcomposeAsyncImageContent()
+                            }
+                        }
+                    }
 
                     Spacer(modifier = Modifier.width(30.dp))
 
@@ -188,26 +219,28 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                         style = MaterialTheme.typography.body1
                     )
                 }
-                Spacer(modifier = Modifier.height(40.dp))
-                Row(
-                    modifier = Modifier
-                        .padding(start = 30.dp)
-                        .clickable {
-                            navController.navigate(ScreenItem.DashboardScreenItem.route)
-                        }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Logout, contentDescription = "",
-                        tint = Color.Gray,
-                    )
-                    Spacer(modifier = Modifier.width(30.dp))
-                    Text(
-                        text = "Dashboard",
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.h6
-                    )
+                if(_user.userType == "Admin") {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 30.dp)
+                            .clickable {
+                                navController.navigate(ScreenItem.DashboardScreenItem.route)
+                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Logout, contentDescription = "",
+                            tint = Color.Gray,
+                        )
+                        Spacer(modifier = Modifier.width(30.dp))
+                        Text(
+                            text = "Dashboard",
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.h6
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier
                         .padding(start = 30.dp)

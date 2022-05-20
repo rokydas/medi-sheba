@@ -1,23 +1,15 @@
 package com.example.medi_sheba.model
 
-import com.example.medi_sheba.R
-
 data class Appointment(
-    val id: String,
-    val doctorId: String,
-    val patientId: String,
-    val doctorImage: Int
-)
-
-val appointments = listOf<Appointment>(
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
-    Appointment("", "", "", R.drawable.doctor2),
+    val doctor_uid: String = "",
+    val patient_uid: String = "",
+    val nurse_uid: String = "",
+    val doc_checked: Boolean = false,
+    val time_slot: String = "",
+    val serial: String = "",
+    val date: String = "",
+    val cabin_no: String = "",
+    val prescription: String = "",
+    val disease_details: String = "",
+    var document_id: String = ""
 )

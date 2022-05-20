@@ -35,15 +35,15 @@ fun DashboardScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            MakeDeleteBox(navController = navController, type = "Doctor")
-            MakeDeleteBox(navController = navController, type = "Nurse")
-            MakeDeleteBox(navController = navController, type = "Admin")
+            MakeDeleteBox(navController = navController, type = "Doctor", R.drawable.doctor2)
+            MakeDeleteBox(navController = navController, type = "Nurse", R.drawable.nurse)
+            MakeDeleteBox(navController = navController, type = "Admin", R.drawable.admin)
         }
     }
 }
 
 @Composable
-fun MakeDeleteBox(navController: NavController, type: String) {
+fun MakeDeleteBox(navController: NavController, type: String, avartar: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,7 +62,7 @@ fun MakeDeleteBox(navController: NavController, type: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.doctor2),
+                painter = painterResource(id = avartar),
                 contentDescription = "avartar",
                 modifier = Modifier.width(80.dp)
             )

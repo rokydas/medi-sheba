@@ -3,9 +3,11 @@ package com.example.medi_sheba.presentation.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -69,7 +71,8 @@ fun MakeAndDeleteRole(navController: NavController, roleName: String) {
                                         .padding(10.dp)
                                 ) {
                                     Row(
-                                        verticalAlignment = Alignment.CenterVertically
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.horizontalScroll(rememberScrollState())
                                     ) {
                                         Spacer(modifier = Modifier.width(15.dp))
                                         Text(text = user.name)

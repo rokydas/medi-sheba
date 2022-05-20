@@ -24,21 +24,7 @@ fun DashboardScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Dashboard")
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Icon(Icons.Filled.ArrowBack, "backIcon")
-                    }
-                },
-                backgroundColor = PrimaryColor,
-                contentColor = Color.White,
-                elevation = 10.dp
-            )
+            AppBar(navController = navController, title = "Dashboard")
         },
         backgroundColor = background
     ) {

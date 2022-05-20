@@ -76,41 +76,43 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
         },
         bottomBar = { BottomNavigationBar(navController = navController,
             title = "Appointment") }
-    ) {
-        Column {
-            if(appointmentList.value != null){
-                val appointments = when (user.value?.userType) {
-                    PATIENT -> {
-                        appointmentList.value!!.filter { appointment ->
-                            appointment.patient_uid == userId
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            Column {
+                if(appointmentList.value != null){
+                    val appointments = when (user.value?.userType) {
+                        PATIENT -> {
+                            appointmentList.value!!.filter { appointment ->
+                                appointment.patient_uid == userId
+                            }
                         }
-                    }
-                    DOCTOR -> {
-                        appointmentList.value!!.filter { appointment ->
-                            appointment.doctor_uid == userId
+                        DOCTOR -> {
+                            appointmentList.value!!.filter { appointment ->
+                                appointment.doctor_uid == userId
+                            }
                         }
-                    }
-                    NURSE -> {
-                        appointmentList.value!!.filter { appointment ->
-                            appointment.nurse_uid == userId
+                        NURSE -> {
+                            appointmentList.value!!.filter { appointment ->
+                                appointment.nurse_uid == userId
 
+                            }
+                        }
+                        else -> {
+                            appointmentList.value!!
                         }
                     }
-                    else -> {
-                        appointmentList.value!!
-                    }
-                }
-                LazyColumn {
-                    items(appointments) { appointment ->
-                        SingleAppointment(
-                            appointment = appointment,
-                            navController = navController,
-                            otherPersonUid =
+                    LazyColumn {
+                        items(appointments) { appointment ->
+                            SingleAppointment(
+                                appointment = appointment,
+                                navController = navController,
+                                otherPersonUid =
                                 if(user.value?.userType == PATIENT) {
-                                    appointment.doctor_uid!!
-                                } else appointment.patient_uid!! ,
-                            userType = user.value?.userType.toString()
-                        )
+                                    appointment.doctor_uid
+                                } else appointment.patient_uid,
+                                userType = user.value?.userType.toString()
+                            )
+                        }
                     }
                 }
             }

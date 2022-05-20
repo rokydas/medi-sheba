@@ -1,6 +1,7 @@
 package com.example.medi_sheba.presentation.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,15 +23,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AllDoctorsController
+import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.util.gridItems
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun AllDoctorsScreen(navController: NavController, category: String?) {
@@ -39,23 +47,15 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
     allDoctorsController.getDoctors(category!!)
     val doctors = allDoctorsController.doctors.observeAsState()
 
+    val profileController = ProfileController()
+    val user = profileController.user.observeAsState()
+    val auth = FirebaseAuth.getInstance()
+
+    profileController.getUser(auth.currentUser!!.uid)
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "$category Doctors")
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Icon(Icons.Filled.ArrowBack, "backIcon")
-                    }
-                },
-                backgroundColor = PrimaryColor,
-                contentColor = Color.White,
-                elevation = 10.dp
-            )
+            AppBar(navController = navController, title = "$category Doctors")
         },
     ) {
         LazyColumn(
@@ -81,7 +81,7 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
                     columnCount = 2,
                     modifier = Modifier
                 ) { doctor ->
-                    DoctorCard(doctor)
+                    DoctorCard(doctor, navController, user.value!!)
                 }
             }
         }
@@ -89,7 +89,12 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
 }
 
 @Composable
-fun DoctorCard(doctor: User) {
+fun DoctorCard(
+    doctor: User,
+    navController: NavController,
+    user: User
+) {
+    val context = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -99,15 +104,33 @@ fun DoctorCard(doctor: User) {
             .background(Color.White)
             .padding(vertical = 15.dp, horizontal = 25.dp)
     ) {
-        Image(
-            painter = painterResource(R.drawable.doctor2),
-            contentDescription = "profile_picture",
+        SubcomposeAsyncImage(
+            model = doctor.image,
+            contentDescription = "profile image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(70.dp)
+                .size(100.dp)
                 .clip(CircleShape)
                 .border(2.dp, Color.Gray, CircleShape)
-        )
+        ) {
+            when (painter.state) {
+                is AsyncImagePainter.State.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(35.dp),
+                        color = PrimaryColor
+                    )
+                }
+                is AsyncImagePainter.State.Error -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.avartar),
+                        contentDescription = "course thumbnail"
+                    )
+                }
+                else -> {
+                    SubcomposeAsyncImageContent()
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = doctor.name,
@@ -146,12 +169,20 @@ fun DoctorCard(doctor: User) {
                     .background(PrimaryColor)
                     .padding(horizontal = 10.dp, vertical = 5.dp)
                     .clickable {
-                        // todo: book now button handler
+                        if (user.userType == "Patient") {
+                            navController.navigate(ScreenItem.BookAppointmentScreenItem.route +
+                                    "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
+                            )
+                        }
+                        else {
+                            Toast.makeText(context, "Sorry, you are not a patient.", Toast.LENGTH_SHORT).show()
+                        }
+
                     },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "Book Now",
+                    text = "Book Appointment",
                     color = Color.White,
                     style = MaterialTheme.typography.body1
                 )

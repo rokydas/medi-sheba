@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import coil.compose.*
+import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
@@ -50,7 +53,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
 import java.io.File
-import coil.compose.rememberImagePainter
 import com.google.firebase.auth.FirebaseUser
 
 
@@ -61,14 +63,11 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
     var isLoading by rememberSaveable { mutableStateOf(false) }
     val authUser = auth.currentUser
     val storageRef: StorageReference = FirebaseStorage.getInstance()
-        .getReference().child("avatars")
-
+        .reference.child("avatars")
 
     var imageUri by remember {
-        mutableStateOf<Uri?>(Uri.parse(userDetails.image))
+        mutableStateOf<Uri>(Uri.parse(userDetails.image))
     }
-
-
 
     if(isLoading) {
         Dialog(
@@ -144,8 +143,57 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
             val gender = remember { mutableStateOf(userDetails.gender) }
             val downloadUrL  = rememberSaveable { mutableStateOf("") }
 
-
             Column {
+
+                Row (
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxWidth()
+                ) {
+                    val launcher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.GetContent()
+                    ) { uri: Uri? ->
+                        if (uri != null) {
+                            imageUri = uri
+                        }
+                    }
+
+                    SubcomposeAsyncImage(
+                        model = imageUri,
+                        contentDescription = "profile image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, Color.Gray, CircleShape)
+                            .clickable {
+                                launcher.launch("image/*")
+                            },
+                    ) {
+                        when (painter.state) {
+                            is AsyncImagePainter.State.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(35.dp),
+                                    color = PrimaryColor
+                                )
+                            }
+                            is AsyncImagePainter.State.Error -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.avartar),
+                                    contentDescription = "profile image"
+                                )
+                            }
+                            else -> {
+                                SubcomposeAsyncImageContent()
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
                 TextField(
                     modifier = Modifier
                         .background(Color.White),
@@ -213,66 +261,10 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                         focusedIndicatorColor = Color.Gray
                     )
                 )
-
-
-
+                Spacer(modifier = Modifier.height(15.dp))
                 displayGenderRadio(gender)
-
                 Spacer(modifier = Modifier.height(15.dp))
 
-
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .fillMaxWidth()) {
-                    val launcher = rememberLauncherForActivityResult(contract =
-                    ActivityResultContracts.GetContent()) { uri: Uri? ->
-                        imageUri = uri
-                    }
-                    Surface(
-                        modifier = Modifier
-                            .clip(shape = CircleShape.copy(all = CornerSize(5.dp)))
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .background(PrimaryColor)
-                                .padding(horizontal = 10.dp, vertical = 5.dp)
-                                .clip(
-                                    shape = CircleShape
-                                        .copy(all = CornerSize(12.dp))
-                                )
-                                .clickable {
-                                    launcher.launch("image/*")
-                                },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = "Profile Image",
-                                color = Color.White,
-                                style = TextStyle(fontSize = 14.sp),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    imageUri?.let {
-                        Image(
-                            painter = rememberImagePainter(
-                                data = imageUri),
-                            contentDescription = "profile_picture",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(CircleShape)
-                                .border(2.dp, Color.Gray, CircleShape)
-                                .clickable {
-                                }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(15.dp))
 
 
                 val gradient = Brush.horizontalGradient(listOf(SecondaryColor, PrimaryColor))
@@ -280,7 +272,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                 Box(
                     modifier = Modifier
                         .noRippleClickable() {
-                            if(imageUri != null){
+                            if (imageUri != null) {
                                 val ref = storageRef.child("image_${authUser!!.uid}")
                                 val uploadTask = ref.putFile(imageUri!!)
 
@@ -292,7 +284,6 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                         if (task.isSuccessful) {
                                             val downloadUri = task.result
                                             downloadUrL.value = downloadUri.toString()
-
 
                                             isLoading = true
                                             saveDataFirestore(
@@ -308,28 +299,15 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                                 downloadUrL,
                                                 authUser
                                             )
-                                        } else {
-                                            Log.d("profile", "failed")
-
                                         }
                                     }
-                            }else{
+                            } else {
                                 isLoading = true
                                 saveDataFirestore(
-                                    context,
-                                    navController,
-                                    isLoading,
-                                    name,
-                                    userDetails,
-                                    mobileNumber,
-                                    age,
-                                    address,
-                                    gender,
-                                    downloadUrL,
-                                    authUser!!
+                                    context, navController, isLoading, name, userDetails,
+                                    mobileNumber, age, address, gender, downloadUrL, authUser!!
                                 )
                             }
-
 
                         }
                         .fillMaxWidth()
@@ -349,8 +327,6 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
     }
 }
 
-
-
 fun saveDataFirestore(
     context: Context,
     navController: NavController,
@@ -368,6 +344,7 @@ fun saveDataFirestore(
 
     val db = Firebase.firestore
     val user = User(
+        uid = authUser.uid,
         name = name,
         email = userDetails.email,
         userType = "Patient",
@@ -375,12 +352,15 @@ fun saveDataFirestore(
         age = age,
         address = address,
         gender = gender.value,
-        image = downloadUrL.value
+        image = downloadUrL.value,
+//        doctorCategory = userDetails.doctorCategory,
+//        doctorDesignation = userDetails.doctorDesignation,
+        doctorRating = userDetails.doctorRating
     )
 
     db
         .collection("users")
-        .document(authUser!!.uid)
+        .document(authUser.uid)
         .set(user)
         .addOnSuccessListener {
             loading = false
@@ -403,9 +383,4 @@ fun saveDataFirestore(
                 )
                 .show()
         }
-
-}
-
-fun saveDataFirestore1() {
-
 }

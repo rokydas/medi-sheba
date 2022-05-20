@@ -31,6 +31,8 @@ import androidx.navigation.NavHostController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AllDoctorsController
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.LineChart.LineChartContent
+import com.example.medi_sheba.presentation.LineChart.LineChartScreen
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
@@ -52,6 +54,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(bottom = 20.dp)
                 .background(PrimaryColor)
         ) {
             item {
@@ -158,6 +161,8 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                 )
                             }
                             Spacer(modifier = Modifier.height(10.dp))
+
+
                         }
                     }
                 }
@@ -165,7 +170,8 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
             if (doctors.value == null) {
                 item {
                     Row(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .padding(15.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -266,9 +272,9 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController) {
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = "Book Now",
+                            text = "Book Appointment",
                             color = Color.White,
-                            style = TextStyle(fontSize = 14.sp),
+                            style = TextStyle(fontSize = 10.sp),
                             textAlign = TextAlign.Center
                         )
                     }

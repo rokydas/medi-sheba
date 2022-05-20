@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -65,9 +66,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
     val storageRef: StorageReference = FirebaseStorage.getInstance()
         .reference.child("avatars")
 
-    var imageUri by remember {
-        mutableStateOf<Uri>(Uri.parse(userDetails.image))
-    }
+    var imageUri by remember { mutableStateOf<Uri?>(Uri.parse(userDetails.image)) }
 
     if(isLoading) {
         Dialog(
@@ -142,6 +141,9 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
             var address by rememberSaveable { mutableStateOf(userDetails.address) }
             val gender = remember { mutableStateOf(userDetails.gender) }
             val downloadUrL  = rememberSaveable { mutableStateOf("") }
+            var designation  by rememberSaveable { mutableStateOf(userDetails.doctorDesignation) }
+            var selectedCategory  by rememberSaveable { mutableStateOf(userDetails.doctorCategory) }
+            var expanded by remember { mutableStateOf(false)}
 
             Column {
 
@@ -262,10 +264,59 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                     )
                 )
                 Spacer(modifier = Modifier.height(15.dp))
+
+                TextField(
+                    modifier = Modifier
+                        .background(Color.White),
+                    value = designation,
+                    onValueChange = { designation = it },
+                    placeholder = { Text("Designation") },
+                    maxLines = 1,
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.White,
+                        cursorColor = Color.Gray,
+                        focusedIndicatorColor = Color.Gray
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                val categoryList = mutableListOf("Cardiologist", "Orthopedic", "Dentist", "Neurologists", "Child Specialist",
+                    "Medicine", "Eye Specialist", "Surgery", "Kidney specialist", "Liver Specialist")
+
+                Box(Modifier.fillMaxWidth(),contentAlignment = Alignment.Center) {
+                    Row(
+                        Modifier.padding(24.dp)
+                            .clickable {
+                                expanded = !expanded
+                            }
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if(selectedCategory == "") "Select category" else selectedCategory,
+                            fontSize = 18.sp,modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = "")
+
+                        DropdownMenu(expanded = expanded, onDismissRequest = {
+                            expanded = false
+                        }) {
+                            categoryList.forEach{ category->
+                                DropdownMenuItem(onClick = {
+                                    expanded = false
+                                    selectedCategory = category
+                                }) {
+                                    Text(text = category)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 displayGenderRadio(gender)
-                Spacer(modifier = Modifier.height(15.dp))
-
-
+                Spacer(modifier = Modifier.height(10.dp))
 
                 val gradient = Brush.horizontalGradient(listOf(SecondaryColor, PrimaryColor))
 
@@ -297,7 +348,9 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                                 address,
                                                 gender,
                                                 downloadUrL,
-                                                authUser
+                                                authUser,
+                                                selectedCategory,
+                                                designation
                                             )
                                         }
                                     }
@@ -305,7 +358,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                 isLoading = true
                                 saveDataFirestore(
                                     context, navController, isLoading, name, userDetails,
-                                    mobileNumber, age, address, gender, downloadUrL, authUser!!
+                                    mobileNumber, age, address, gender, downloadUrL, authUser!!, selectedCategory, designation
                                 )
                             }
 
@@ -338,7 +391,9 @@ fun saveDataFirestore(
     address: String,
     gender: MutableState<String>,
     downloadUrL: MutableState<String>,
-    authUser: FirebaseUser
+    authUser: FirebaseUser,
+    selectedCategory: String,
+    designation: String
 ) {
     var loading = isLoading
 
@@ -353,8 +408,8 @@ fun saveDataFirestore(
         address = address,
         gender = gender.value,
         image = downloadUrL.value,
-//        doctorCategory = userDetails.doctorCategory,
-//        doctorDesignation = userDetails.doctorDesignation,
+        doctorCategory = selectedCategory,
+        doctorDesignation = designation,
         doctorRating = userDetails.doctorRating
     )
 

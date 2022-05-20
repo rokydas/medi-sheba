@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -24,21 +25,7 @@ import com.example.medi_sheba.ui.theme.background
 fun AllCategoryScreen(navController: NavController) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "All Categories")
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Icon(Icons.Filled.ArrowBack, "backIcon")
-                    }
-                },
-                backgroundColor = PrimaryColor,
-                contentColor = Color.White,
-                elevation = 10.dp
-            )
+            AppBar(navController = navController, title = "All Categories")
         },
     ) {
         LazyColumn(
@@ -47,7 +34,6 @@ fun AllCategoryScreen(navController: NavController) {
                 .background(background)
                 .fillMaxSize()
         ) {
-
             gridItems(
                 data = categoryList,
                 columnCount = 2,

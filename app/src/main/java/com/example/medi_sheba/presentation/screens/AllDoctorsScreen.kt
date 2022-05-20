@@ -1,6 +1,5 @@
 package com.example.medi_sheba.presentation.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,7 +12,6 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -67,7 +65,7 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
             if (doctors.value == null) {
                 item {
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().border(5.dp, Color.Red),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -81,7 +79,7 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
                     columnCount = 2,
                     modifier = Modifier
                 ) { doctor ->
-                    DoctorCard(doctor, navController, user.value!!)
+                    DoctorHorizontalCard(doctor, navController, user.value)
                 }
             }
         }
@@ -170,9 +168,14 @@ fun DoctorCard(
                     .padding(horizontal = 10.dp, vertical = 5.dp)
                     .clickable {
                         if (user.userType == "Patient") {
-                            navController.navigate(ScreenItem.BookAppointmentScreenItem.route +
-                                    "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
-                            )
+                            if (doctor.doctorDesignation != "" && doctor.doctorCategory != "") {
+                                navController.navigate(ScreenItem.BookAppointmentScreenItem.route +
+                                        "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
+                                )
+                            }
+                            else {
+                                Toast.makeText(context, "Sorry, this doctor is not ready yet", Toast.LENGTH_SHORT).show()
+                            }
                         }
                         else {
                             Toast.makeText(context, "Sorry, you are not a patient.", Toast.LENGTH_SHORT).show()
@@ -182,7 +185,7 @@ fun DoctorCard(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "Book Appointment",
+                    text = "Book Appointment abc",
                     color = Color.White,
                     style = MaterialTheme.typography.body1
                 )

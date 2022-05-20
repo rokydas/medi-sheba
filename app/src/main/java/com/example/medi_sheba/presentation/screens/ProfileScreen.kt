@@ -92,6 +92,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(PrimaryColor)
                         .padding(30.dp)
                 ) {
                     Icon(

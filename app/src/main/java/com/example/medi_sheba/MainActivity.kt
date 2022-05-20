@@ -2,6 +2,7 @@ package com.example.medi_sheba
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -16,7 +17,9 @@ import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
 import com.example.medi_sheba.presentation.screens.*
+import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -26,12 +29,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
-//        val startDest = if (auth.uid != null)
-//            ScreenItem.HomeScreenItem.route
-//        else ScreenItem.IntroScreenItem.route
 
         setContent {
             medi_shebaTheme {
+                val systemUiController = rememberSystemUiController()
+                systemUiController.setStatusBarColor(PrimaryColor)
                 Surface(
                     color = MaterialTheme.colors.background
                 ) {

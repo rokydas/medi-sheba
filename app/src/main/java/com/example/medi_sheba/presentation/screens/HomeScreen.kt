@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
@@ -30,20 +31,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AllDoctorsController
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.model.categoryList
 import com.example.medi_sheba.presentation.LineChart.LineChartContent
 import com.example.medi_sheba.presentation.LineChart.LineChartScreen
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.example.medi_sheba.presentation.util.gridItems
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
+import okhttp3.internal.notifyAll
 
 @Composable
-fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
+fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
 
     val allDoctorsController = AllDoctorsController()
     allDoctorsController.getDoctors("All")
@@ -125,24 +130,17 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                                 Row(
                                     horizontalArrangement = Arrangement.Center
                                 ) {
-
-                                    CategoryCard(
-                                        modifier = Modifier.weight(1f),
-                                        name =  "Cardiologist",
-                                        contentName =  "Cardiologist",
-                                        painter = painterResource(R.drawable.cardiologist))
-
-                                    CategoryCard(
-                                        modifier = Modifier.weight(1f),
-                                        name =  "Orthopedic",
-                                        contentName =  "Orthopedic",
-                                        painter = painterResource(R.drawable.ortho))
-
-                                    CategoryCard(
-                                        modifier = Modifier.weight(1f),
-                                        name =  "Dentist",
-                                        contentName =  "Dentist",
-                                        painter = painterResource(R.drawable.dentist))
+                                    categoryList.subList(0, 3).forEach { category ->
+                                        CategoryCard(
+                                            modifier = Modifier.weight(1f).clickable {
+                                                navController.navigate(ScreenItem.AllDoctorsScreenItem.route + "/"
+                                                        + category.cate_name)
+                                            },
+                                            name =  category.cate_name,
+                                            contentName =  category.cate_name,
+                                            painter = painterResource(category.cate_image)
+                                        )
+                                    }
                                 }
 
                                 Spacer(modifier = Modifier.height(25.dp))
@@ -179,6 +177,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
+                                    .height(120.dp)
                                     .background(background)
                                     .padding(15.dp),
                                 contentAlignment = Alignment.Center
@@ -204,7 +203,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
                         val doctorList = if (doctors.value!!.size >= 5) doctors.value!!.subList(0, 5)
                         else doctors.value!!.subList(0, doctors.value!!.size)
                         items(doctorList) { doctor ->
-                            DoctorHorizontalCard(doctor, navController, user.value!!)
+                            DoctorHorizontalCard(doctor, navController, user.value)
                         }
                     }
                 }
@@ -215,7 +214,7 @@ fun HomeScreen(navController: NavHostController, auth: FirebaseAuth) {
 }
 
 @Composable
-fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User) {
+fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?) {
     val context = LocalContext.current
     Box(
         modifier = Modifier
@@ -289,15 +288,32 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User)
                                     .copy(all = CornerSize(12.dp))
                             )
                             .clickable {
-                                if (user.userType == "Patient") {
-                                    navController.navigate(
-                                        ScreenItem.BookAppointmentScreenItem.route +
-                                                "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
-                                    )
-                                } else {
-                                    Toast.makeText(context, "Sorry, you are not a patient.", Toast.LENGTH_SHORT).show()
+                                if (user != null) {
+                                    if (user.userType == "Patient") {
+                                        if (doctor.doctorDesignation != "" && doctor.doctorCategory != "") {
+                                            navController.navigate(
+                                                ScreenItem.BookAppointmentScreenItem.route +
+                                                        "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid
+                                            )
+                                        } else {
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    "Sorry, this doctor is not ready yet",
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                .show()
+                                        }
+                                    } else {
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                "Sorry, you are not a patient.",
+                                                Toast.LENGTH_SHORT
+                                            )
+                                            .show()
+                                    }
                                 }
-
                             },
                         contentAlignment = Alignment.Center,
                     ) {

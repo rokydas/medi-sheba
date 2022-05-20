@@ -102,16 +102,18 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
                         }
                     }
                     LazyColumn {
-                        items(appointments) { appointment ->
-                            SingleAppointment(
-                                appointment = appointment,
-                                navController = navController,
-                                otherPersonUid =
-                                if(user.value?.userType == PATIENT) {
-                                    appointment.doctor_uid
-                                } else appointment.patient_uid,
-                                userType = user.value?.userType.toString()
-                            )
+                        if (user.value != null) {
+                            items(appointments) { appointment ->
+                                SingleAppointment(
+                                    appointment = appointment,
+                                    navController = navController,
+                                    otherPersonUid =
+                                    if(user.value?.userType == PATIENT) {
+                                        appointment.doctor_uid
+                                    } else appointment.patient_uid,
+                                    userType = user.value?.userType.toString()
+                                )
+                            }
                         }
                     }
                 }
@@ -130,7 +132,6 @@ fun SingleAppointment(
     val profileController = ProfileController()
     profileController.getUser(otherPersonUid)
     val appointmentUser = profileController.user.observeAsState()
-
 
     if(appointmentUser.value != null){
         Box(

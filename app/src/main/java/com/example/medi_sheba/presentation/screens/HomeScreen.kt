@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -71,7 +72,24 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                     .background(PrimaryColor)
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(70.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "notification",
+                            modifier = Modifier
+                                .padding(25.dp)
+                                .clickable {
+                                    navController.navigate(ScreenItem.NotificationScreenItem.route)
+                                },
+                            tint = Color.White
+                        )
+                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(10.dp))
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(),

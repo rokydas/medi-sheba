@@ -12,6 +12,7 @@ sealed class ScreenItem(val route: String) {
     object AllAppointmentsScreenItem: ScreenItem("all_appointments_screen")
     object AllDoctorsScreenItem: ScreenItem("all_doctors_screen")
     object ChatUserListScreenItem: ScreenItem("chat_user_list_screen")
+    object NotificationScreenItem: ScreenItem("notification_screen")
     object ChatScreenItem: ScreenItem("chat_screen")
     object DashboardScreenItem: ScreenItem("dashboard_screen")
     object MakeAndDeleteRoleItem: ScreenItem("make_and_delete_role_screen")

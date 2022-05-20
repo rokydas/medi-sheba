@@ -136,6 +136,9 @@ class MainActivity : ComponentActivity() {
                                 designation = designation
                             )
                         }
+                        composable(route = ScreenItem.NotificationScreenItem.route) {
+                            NotificationScreen(navController = navController)
+                        }
                     }
                 }
             }

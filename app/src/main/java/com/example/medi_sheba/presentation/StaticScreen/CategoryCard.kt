@@ -70,6 +70,7 @@ fun InputField(
         label = { Text(text = labelId)},
         singleLine = false,
 
+
         textStyle = TextStyle(fontSize = 18.sp,
             color = MaterialTheme.colors.onBackground),
         modifier = modifier

@@ -149,7 +149,8 @@ fun SingleAppointment(
                     .fillMaxWidth()
                     .background(background)
                     .padding(horizontal = 15.dp, vertical = 10.dp)
-                    .shadow(5.dp, shape = RoundedCornerShape(10.dp))
+                    .shadow(5.dp, RoundedCornerShape(10.dp))
+                    .background(Color.White)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

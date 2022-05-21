@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -33,15 +31,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AppointmentController
 import com.example.medi_sheba.controllers.NurseContoller
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.Appointment
-import com.example.medi_sheba.presentation.LineChart.LineChartContent
 import com.example.medi_sheba.presentation.LineChart.LineChartScreen
 import com.example.medi_sheba.ui.theme.PrimaryColor
-import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
 import com.example.medi_sheba.presentation.StaticScreen.InputField
 import com.example.medi_sheba.presentation.constant.Constant
@@ -54,7 +53,7 @@ fun AppointmentScreen(
     navController: NavController,
     document_id: String?,
     user_id: String?,
-    user_type: String?
+    userType: String?
 ) {
     val isNurseAssigned = remember { mutableStateOf(false) }
     val isCheckPatient = remember { mutableStateOf(false) }
@@ -115,20 +114,38 @@ fun AppointmentScreen(
                     .fillMaxSize() ,
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = if(user_type == "Doctor")
-                            painterResource(R.drawable.avartar)
-                        else painterResource(R.drawable.doctor2),
-                        contentDescription = "profile_picture",
+
+                    SubcomposeAsyncImage(
+                        model = appointmentUser.value?.image,
+                        contentDescription = "profile image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(70.dp)
                             .clip(CircleShape)
                             .border(2.dp, Color.Gray, CircleShape)
-                    )
+                    ) {
+                        when (painter.state) {
+                            is AsyncImagePainter.State.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(35.dp),
+                                    color = PrimaryColor
+                                )
+                            }
+                            is AsyncImagePainter.State.Error -> {
+                                Image(
+                                    painter = if (userType == PATIENT) painterResource(R.drawable.doctor2)
+                                    else painterResource(R.drawable.avartar),
+                                    contentDescription = "profile image"
+                                )
+                            }
+                            else -> {
+                                SubcomposeAsyncImageContent()
+                            }
+                        }
+                    }
 
                     Text(text = "${appointmentUser.value?.name}", color = Color.White)
-                    if(user_type == PATIENT){
+                    if(userType == PATIENT){
                         Text(text = "${appointmentUser.value?.doctorCategory}", color = Color.White)
                         Text(text = "${appointmentUser.value?.doctorDesignation}", color = Color.White)
                     }else{
@@ -159,7 +176,7 @@ fun AppointmentScreen(
                         ShowPatientDetails(
                             isNurseAssigned = isNurseAssigned.value,
                             nurseName = nurseProfile.value?.name.toString(),
-                            userType = user_type.toString(),
+                            userType = userType.toString(),
                             isCheckPatient = isCheckPatient,
                             appointment = appointmentData.value
                         )
@@ -251,8 +268,8 @@ fun ShowPatientDetails(
         if(userType == Constant.DOCTOR){
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = background,
-                    contentColor = Color.Black
+                    backgroundColor = PrimaryColor,
+                    contentColor = Color.White
                 ),
                 onClick = {
                     isCheckPatient.value = true
@@ -289,23 +306,6 @@ fun NurseBoxRow(isNurseAssigned: Boolean, nurseName: String, userType: String) {
             modifier = Modifier.padding(start = 10.dp)
 
         )
-
-//            if(!isNurseAssigned && userType == "Doctor"){
-//                Spacer(modifier = Modifier.height(20.dp))
-//                Button(
-//                    colors = ButtonDefaults.buttonColors(
-//                        backgroundColor = PrimaryColor,
-//                        contentColor = Color.White
-//                    ),
-//                    onClick = {
-////                                            isNurseAssigned.value = true
-//                    },
-//                    modifier = Modifier.align(Alignment.End)
-//                ) {
-//                    Text(text = "Assign Nurse")
-//                }
-//            }
-
     }
 }
 

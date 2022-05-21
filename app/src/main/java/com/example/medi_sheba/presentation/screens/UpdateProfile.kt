@@ -359,7 +359,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                             } else {
                                 isLoading = true
                                 saveDataFirestore(
-                                    context, navController, isLoading, name, userDetails,
+                                    context, navController, isLoading, name,  userDetails,
                                     mobileNumber, age, address, gender, downloadUrL, authUser!!, selectedCategory, designation
                                 )
                             }
@@ -404,7 +404,7 @@ fun saveDataFirestore(
         uid = authUser.uid,
         name = name,
         email = userDetails.email,
-        userType = "Patient",
+        userType = userDetails.userType,
         mobileNumber = mobileNumber,
         age = age,
         address = address,

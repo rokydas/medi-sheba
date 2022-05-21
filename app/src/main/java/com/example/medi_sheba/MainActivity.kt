@@ -2,12 +2,9 @@ package com.example.medi_sheba
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
@@ -74,7 +71,7 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 document_id = document_id,
                                 user_id = user_id,
-                                user_type = user_type
+                                userType = user_type
                             )
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {

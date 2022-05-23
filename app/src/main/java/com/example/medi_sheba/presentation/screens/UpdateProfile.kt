@@ -329,8 +329,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                 val ref = storageRef.child("image_${authUser!!.uid}")
                                 val uploadTask = ref.putFile(imageUri!!)
 
-                                uploadTask
-                                    .continueWithTask { task ->
+                                isLoading = true
+                                uploadTask.continueWithTask { task ->
                                         ref.downloadUrl
                                     }
                                     .addOnCompleteListener { task ->
@@ -338,7 +338,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                             val downloadUri = task.result
                                             downloadUrL.value = downloadUri.toString()
 
-                                            isLoading = true
+
                                             saveDataFirestore(
                                                 context,
                                                 navController,

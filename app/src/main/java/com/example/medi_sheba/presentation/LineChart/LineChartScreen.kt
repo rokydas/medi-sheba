@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.bytebeats.views.charts.line.LineChart
 import me.bytebeats.views.charts.line.render.line.SolidLineDrawer
@@ -38,6 +39,8 @@ fun LineChartContent() {
             vertical = 15.dp
         )
     ) {
+        Text(text = "Patient Weight Chart", fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(20.dp))
         LineChartRow(lineChartDataModel = lineChartData)
     }
 }

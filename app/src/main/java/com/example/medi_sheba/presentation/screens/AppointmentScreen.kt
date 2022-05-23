@@ -258,12 +258,12 @@ fun ShowPatientDetails(
             userType = userType)
 
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         LineChartScreen()
 
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         if(userType == Constant.DOCTOR){
             Button(

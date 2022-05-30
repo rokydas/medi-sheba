@@ -1,5 +1,6 @@
 package com.example.medi_sheba.controllers
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Appointment
@@ -25,6 +26,7 @@ class AppointmentController {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     for (doc in document) {
+
                         val appointment = doc.toObject(Appointment::class.java)
                         appointment.document_id = doc.id
                         appointments.add(appointment)
@@ -35,13 +37,37 @@ class AppointmentController {
     }
     fun getAppointDocuData(document_id: String) {
         val appointmentCol = db.collection("appointment").document(document_id)
-        val appointments = mutableListOf<Appointment>()
 
         appointmentCol.get()
             .addOnSuccessListener { document ->
                 if(document != null){
+
+                    //1st step
                     val appointment = document.toObject(Appointment::class.java)
                     _appointment.value = appointment!!
+
+
+
+//                    //2nd step by encryption
+//                    val appoint = Appointment(
+//                        document.getString("doctor_uid")!!,
+//                        document.getString("patient_uid")!!,
+//                        document.getString("nurse_uid")!!,
+//                        document.getBoolean("doc_checked")!!,
+//                        document.getString("time_slot")!!,
+//                        document.getString("serial")!!,
+//                        document.getString("date")!!,
+//                        document.getString("cabin_no")!!,
+//                        "${document.getString("weight")}" ,
+//                        document.getString("prescription")!!,
+//                        document.getString("disease_details")!!,
+//                        document.getString("document_id")!!
+//                        )
+//                    _appointment.value = appoint
+
+
+
+
                 }
             }
     }

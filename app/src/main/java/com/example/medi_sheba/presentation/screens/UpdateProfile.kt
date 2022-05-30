@@ -1,12 +1,7 @@
 package com.example.medi_sheba.presentation.screens
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -29,11 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -43,18 +35,18 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil.compose.*
+import com.example.medi_sheba.EncryptClass
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.io.ByteArrayOutputStream
-import java.io.File
-import com.google.firebase.auth.FirebaseUser
+import javax.crypto.SecretKey
 
 
 @Composable
@@ -287,7 +279,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
 
                     Box(Modifier.fillMaxWidth(),contentAlignment = Alignment.Center) {
                         Row(
-                            Modifier.padding(24.dp)
+                            Modifier
+                                .padding(24.dp)
                                 .clickable {
                                     expanded = !expanded
                                 }
@@ -330,7 +323,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                 val uploadTask = ref.putFile(imageUri!!)
 
                                 isLoading = true
-                                uploadTask.continueWithTask { task ->
+                                uploadTask
+                                    .continueWithTask { task ->
                                         ref.downloadUrl
                                     }
                                     .addOnCompleteListener { task ->
@@ -359,8 +353,19 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                             } else {
                                 isLoading = true
                                 saveDataFirestore(
-                                    context, navController, isLoading, name,  userDetails,
-                                    mobileNumber, age, address, gender, downloadUrL, authUser!!, selectedCategory, designation
+                                    context,
+                                    navController,
+                                    isLoading,
+                                    name,
+                                    userDetails,
+                                    mobileNumber,
+                                    age,
+                                    address,
+                                    gender,
+                                    downloadUrL,
+                                    authUser!!,
+                                    selectedCategory,
+                                    designation
                                 )
                             }
 
@@ -399,21 +404,29 @@ fun saveDataFirestore(
 ) {
     var loading = isLoading
 
+    val nameEnc = EncryptClass.encrypt(userDetails.name)
+    val emailEnc = EncryptClass.encrypt(userDetails.email)
+    val mobileNumberEnc = EncryptClass.encrypt(mobileNumber)
+    val ageEnc = EncryptClass.encrypt(age)
+    val addressEnc = EncryptClass.encrypt(address)
+
+
     val db = Firebase.firestore
     val user = User(
         uid = authUser.uid,
-        name = name,
-        email = userDetails.email,
+        name = nameEnc,
+        email = emailEnc,
         userType = userDetails.userType,
-        mobileNumber = mobileNumber,
-        age = age,
-        address = address,
+        mobileNumber = mobileNumberEnc,
+        age = ageEnc,
+        address = addressEnc,
         gender = gender.value,
         image = downloadUrL.value,
         doctorCategory = selectedCategory,
         doctorDesignation = designation,
         doctorRating = userDetails.doctorRating
     )
+    Log.d("encode", "saveDataFirestore: ${user.toString()}")
 
     db
         .collection("users")

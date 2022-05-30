@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.example.medi_sheba.EncryptClass
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AppointmentController
 import com.example.medi_sheba.controllers.ProfileController
@@ -63,7 +64,7 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
             TopAppBar(
                 title = {
                     Text(text = if(user.value != null)
-                        "${user.value?.name}'s Appointments List"
+                        "${EncryptClass.decrypt(user.value?.name!!)}'s Appointments List"
                     else "Appointments List")
                 },
                 navigationIcon = {

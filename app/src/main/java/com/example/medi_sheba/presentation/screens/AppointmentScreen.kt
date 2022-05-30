@@ -39,12 +39,15 @@ import com.example.medi_sheba.controllers.AppointmentController
 import com.example.medi_sheba.controllers.NurseContoller
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.Appointment
-import com.example.medi_sheba.presentation.LineChart.LineChartScreen
+import com.example.medi_sheba.presentation.BarChart.BarChartContent
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.example.medi_sheba.presentation.StaticScreen.InputField
 import com.example.medi_sheba.presentation.constant.Constant
+import com.example.medi_sheba.presentation.constant.Constant.DOCTOR
 import com.example.medi_sheba.presentation.constant.Constant.PATIENT
+import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -74,6 +77,9 @@ fun AppointmentScreen(
     if(isNurseAssigned.value){
         nurseProController.getUser(userId = appointmentData.value?.nurse_uid.toString())
     }
+
+    Log.d("bar", "user_id---: $user_id")
+    Log.d("bar", "document_id: $document_id")
 
     val scrollState = rememberScrollState()
 
@@ -144,7 +150,10 @@ fun AppointmentScreen(
                         }
                     }
 
-                    Text(text = "${appointmentUser.value?.name}", color = Color.White)
+                    Text(text = "${appointmentUser.value?.name}", color = Color.White,
+                        modifier = Modifier.clickable {
+                        navController.navigate(ScreenItem.PrescriptScreenItem.route)
+                    })
                     if(userType == PATIENT){
                         Text(text = "${appointmentUser.value?.doctorCategory}", color = Color.White)
                         Text(text = "${appointmentUser.value?.doctorDesignation}", color = Color.White)
@@ -174,6 +183,7 @@ fun AppointmentScreen(
                     }else{
                         appointmentController.getAppointDocuData(document_id.toString())
                         ShowPatientDetails(
+                            user_id = user_id,
                             isNurseAssigned = isNurseAssigned.value,
                             nurseName = nurseProfile.value?.name.toString(),
                             userType = userType.toString(),
@@ -199,11 +209,13 @@ fun AppointmentScreen(
 
 @Composable
 fun ShowPatientDetails(
+    user_id: String?,
     isNurseAssigned: Boolean,
     nurseName: String,
     userType: String,
     isCheckPatient: MutableState<Boolean>,
-    appointment: Appointment?
+    appointment: Appointment?,
+
 ) {
 
     Column(modifier = Modifier.padding(vertical = 20.dp)) {
@@ -260,7 +272,20 @@ fun ShowPatientDetails(
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        LineChartScreen()
+        //barchart
+        val FB_UID = FirebaseAuth.getInstance().uid
+        when (userType) {
+            DOCTOR -> {
+                BarChartContent(patient_uid = user_id.toString(), doctor_uid = FB_UID.toString())
+            }
+            PATIENT -> {
+                BarChartContent(patient_uid = FB_UID.toString(), doctor_uid = user_id.toString())
+            }
+            else -> {
+                BarChartContent(patient_uid = user_id.toString(), doctor_uid = appointment?.doctor_uid.toString() )
+            }
+        }
+
 
 
         Spacer(modifier = Modifier.height(30.dp))

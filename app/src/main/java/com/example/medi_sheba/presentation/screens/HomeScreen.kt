@@ -2,6 +2,7 @@
 
 package com.example.medi_sheba.presentation.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -44,6 +45,7 @@ import com.example.medi_sheba.model.categoryList
 import com.example.medi_sheba.presentation.LineChart.LineChartContent
 import com.example.medi_sheba.presentation.LineChart.LineChartScreen
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.util.gridItems
 import com.example.medi_sheba.ui.theme.PrimaryColor
@@ -180,6 +182,15 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                                         text = "Our Top Doctors",
                                         style = MaterialTheme.typography.h5,
                                         fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.clickable {
+                                            val encryptClass = EncryptClass()
+                                            val encode: String = encryptClass.encrypt("I love You", "1234")
+                                            Log.d("encode", "encode: $encode")
+
+                                            val decode = encryptClass.decrypt("auI+tY6o53hol/19zjIKv2XEMJFoMlfDOgLItUs+hh8=]aK2L0ikGdOiYA7eQn2fskQ==]oA3oCX5J8P2pxWn5FvLXYxYaEcKdiHJmXXoEXUl15ERm3utL2WEi0BZ+vjTcgfts/LKvWV9pGv2BI33VXCKWeK3EpiNB/o+9d7R1Jyv2Ah1t1+TOJCkcjX+N5IvsBF5p" +
+                                                    "")
+                                            Log.d("encode", "decode: $decode")
+                                        }
                                     )
                                     Text(
                                         text = "See all",

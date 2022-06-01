@@ -57,7 +57,7 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
     }
 
     val appointmentList = appointmentController.appointmentList.observeAsState()
-    appointmentController.getAppointment()
+    appointmentController.getAppointment(userId, user.value?.userType)
 
     Scaffold(
         topBar = {
@@ -84,53 +84,40 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             Column{
-                if(appointmentList.value != null){
-                    val appointments = when (user.value?.userType) {
-                        PATIENT -> {
-                            appointmentList.value!!.filter { appointment ->
-                                appointment.patient_uid == userId
-                            }
-                        }
-                        DOCTOR -> {
-                            appointmentList.value!!.filter { appointment ->
-                                appointment.doctor_uid == userId
-                            }
-                        }
-                        NURSE -> {
-                            appointmentList.value!!.filter { appointment ->
-                                appointment.nurse_uid == userId
-
-                            }
-                        }
-                        else -> {
-                            appointmentList.value!!
-                        }
-                    }
-                    LazyColumn {
-                        if (user.value != null) {
-                            items(appointments) { appointment ->
-                                SingleAppointment(
-                                    appointment = appointment,
-                                    navController = navController,
-                                    otherPersonUid =
-                                    if(user.value?.userType == PATIENT) {
-                                        appointment.doctor_uid
-                                    } else appointment.patient_uid,
-                                    userType = user.value?.userType.toString()
-                                )
-                            }
-                        }
-                    }
-
-                    if(appointments.isEmpty()){
+                when(appointmentList.value){
+                    null -> {
                         Box(modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ){
-                            Text(text = "There is no appointment",
-                                fontWeight = FontWeight.Bold)
+                            contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
                         }
+                    }
+                    else ->{
+                        if(appointmentList.value!!.isEmpty()) {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(text = "There is no appointment")
+                            }
+                        }
+                        else{
+                            LazyColumn {
+                                if (user.value != null) {
+                                    items(appointmentList.value!!) { appointment ->
+                                        SingleAppointment(
+                                            appointment = appointment,
+                                            navController = navController,
+                                            otherPersonUid =
+                                            if(user.value?.userType == PATIENT) {
+                                                appointment.doctor_uid
+                                            } else appointment.patient_uid,
+                                            userType = user.value?.userType.toString()
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
+
             }
         }
     }

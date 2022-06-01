@@ -35,7 +35,7 @@ class BarChartController {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     for (doc in document) {
-                        if(doc.getString("patient_uid") == patient_uid && count<5 && doc.getString("doctor_uid") == doctor_uid ){
+                        if(doc.getString("patient_uid") == patient_uid && count<4 && doc.getString("doctor_uid") == doctor_uid ){
                             val barchartModel = BarChartData.Bar(
                                 value = (if(doc.getString("weight") != "" && doc.getString("weight") != null )
                                     doc.getString("weight")?.toFloat()

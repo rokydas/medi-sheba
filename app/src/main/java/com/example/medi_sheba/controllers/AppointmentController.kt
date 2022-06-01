@@ -18,7 +18,23 @@ class AppointmentController {
         get() = _appointment
 
 
-    fun getAppointment() {
+    fun getAppointment(uid: String?, userType: String?) {
+        var uid_title= "user"
+        var dataAccess = false
+        when (userType) {
+            "Doctor" -> {
+                uid_title = "doctor_uid"
+            }
+            "Nurse" -> {
+                uid_title = "nurse_uid"
+            }
+            "Patient" -> {
+                uid_title = "patient_uid"
+            }
+            "Admin" -> {
+                dataAccess = true
+            }
+        }
         val appointmentCol = db.collection("appointment")
         val appointments = mutableListOf<Appointment>()
 
@@ -26,10 +42,12 @@ class AppointmentController {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     for (doc in document) {
+                        if(doc.getString(uid_title) == uid || dataAccess){
+                            val appointment = doc.toObject(Appointment::class.java)
+                            appointment.document_id = doc.id
+                            appointments.add(appointment)
+                        }
 
-                        val appointment = doc.toObject(Appointment::class.java)
-                        appointment.document_id = doc.id
-                        appointments.add(appointment)
                     }
                     _appointLists.value = appointments
                 }

@@ -42,16 +42,12 @@ import com.example.medi_sheba.controllers.AllDoctorsController
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.model.categoryList
-import com.example.medi_sheba.presentation.LineChart.LineChartContent
-import com.example.medi_sheba.presentation.LineChart.LineChartScreen
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
 import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
-import com.example.medi_sheba.presentation.util.gridItems
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
-import okhttp3.internal.notifyAll
 
 @Composable
 fun HomeScreen(navController: NavController, auth: FirebaseAuth) {

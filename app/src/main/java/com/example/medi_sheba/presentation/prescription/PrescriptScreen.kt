@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
-import com.example.medi_sheba.EncryptClass
 import com.example.medi_sheba.ui.theme.Purple500
 import com.example.medi_sheba.R
 import com.example.medi_sheba.presentation.ratingbar.CustomRatingBar
@@ -46,7 +45,7 @@ private fun foregroundPermissionApproved(context: Context): Boolean {
     return writePermissionFlag && readPermissionFlag
 }
 
-private fun requestForegroundPermission(context: Context) {
+fun requestForegroundPermission(context: Context) {
     val provideRationale = foregroundPermissionApproved(context = context)
     if (provideRationale) {
         ActivityCompat.requestPermissions(
@@ -79,7 +78,7 @@ fun PrescriptScreen() {
     ) {
         Button(
             onClick = {
-                generatePDF(context, getDirectory(context))
+//                generatePDF(context, getDirectory(context), appointment)
             },
             modifier = Modifier
                 .fillMaxWidth(0.5f)
@@ -123,7 +122,7 @@ fun PrescriptScreen() {
 
 
 
-private fun getDirectory(context: Context): File {
+fun getDirectory(context: Context): File {
     val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
         File(it, context.resources.getString(R.string.app_name)).apply { mkdirs() }
     }

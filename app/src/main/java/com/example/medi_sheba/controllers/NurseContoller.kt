@@ -15,7 +15,6 @@ class NurseContoller {
     val nurseList: LiveData<List<User>>
         get() = _nurseList
 
-
     fun getNurseList() {
         val userCol = db.collection("users")
         val user = mutableListOf<User>()
@@ -28,7 +27,6 @@ class NurseContoller {
                             val userValue = doc.toObject(User::class.java)
                             user.add(userValue)
                         }
-
                     }
                     _nurseList.value = user
                     Log.d("nurse", "getNurseList: ${_nurseList.value}")

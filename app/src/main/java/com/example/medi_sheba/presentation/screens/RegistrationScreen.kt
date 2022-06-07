@@ -33,6 +33,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.constant.Constant
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
@@ -270,13 +271,13 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
 
                                             val user = User(
                                                 uid = authUser!!.uid,
-                                                name = name,
-                                                email = email,
-                                                userType = "Patient",
-                                                mobileNumber = mobileNumber,
-                                                age = age,
-                                                address = address,
-                                                gender = gender.value
+                                                name = encryptClass.encrypt(name),
+                                                email = encryptClass.encrypt(email),
+                                                userType = encryptClass.encrypt(Constant.PATIENT),
+                                                mobileNumber = encryptClass.encrypt(mobileNumber),
+                                                age = encryptClass.encrypt(age),
+                                                address = encryptClass.encrypt(address),
+                                                gender = encryptClass.encrypt(gender.value)
                                             )
                                             db.collection("users")
                                                 .document(authUser.uid)

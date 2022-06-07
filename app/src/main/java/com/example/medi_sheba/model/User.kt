@@ -6,18 +6,18 @@ import android.os.Parcelable
 data class User(
     val uid: String = "",
     var name: String = "",
-    val userType: String = "",
+    var userType: String = "",
     var email: String = "",
-    val image: String = "",
+    var image: String = "",
     var mobileNumber: String = "",
     val fcmToken: String = "",
     var age: String = "",
     var address: String = "",
-    val gender: String = "",
-    val doctorCategory: String = "",
-    val doctorDesignation: String = "",
-    val doctorPrice: Int = 0,
-    val doctorRating: Float = 0.0f
+    var gender: String = "",
+    var doctorCategory: String = "",
+    var doctorDesignation: String = "",
+    var doctorPrice: Int = 0,
+    var doctorRating: Float = 0.0f
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,

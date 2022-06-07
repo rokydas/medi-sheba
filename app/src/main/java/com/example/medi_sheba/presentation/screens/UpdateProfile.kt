@@ -35,9 +35,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil.compose.*
-import com.example.medi_sheba.EncryptClass
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
 import com.google.firebase.auth.FirebaseAuth
@@ -47,7 +47,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import javax.crypto.SecretKey
-
 
 @Composable
 fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDetails: User) {
@@ -404,32 +403,25 @@ fun saveDataFirestore(
 ) {
     var loading = isLoading
 
-    val nameEnc = EncryptClass.encrypt(userDetails.name)
-    val emailEnc = EncryptClass.encrypt(userDetails.email)
-    val mobileNumberEnc = EncryptClass.encrypt(mobileNumber)
-    val ageEnc = EncryptClass.encrypt(age)
-    val addressEnc = EncryptClass.encrypt(address)
-
 
     val db = Firebase.firestore
     val user = User(
         uid = authUser.uid,
-        name = nameEnc,
-        email = emailEnc,
-        userType = userDetails.userType,
-        mobileNumber = mobileNumberEnc,
-        age = ageEnc,
-        address = addressEnc,
-        gender = gender.value,
-        image = downloadUrL.value,
-        doctorCategory = selectedCategory,
-        doctorDesignation = designation,
+        name = encryptClass.encrypt(userDetails.name),
+        email = encryptClass.encrypt(userDetails.email),
+        userType = encryptClass.encrypt(userDetails.userType),
+        mobileNumber = encryptClass.encrypt(mobileNumber),
+        age = encryptClass.encrypt(age),
+        address = encryptClass.encrypt(address),
+        gender = encryptClass.encrypt(gender.value),
+        image = encryptClass.encrypt(downloadUrL.value),
+        doctorCategory = encryptClass.encrypt(selectedCategory),
+        doctorDesignation = encryptClass.encrypt(designation),
+//        doctorRating = encryptClass.encrypt(userDetails.doctorRating.toString()).toFloat()
         doctorRating = userDetails.doctorRating
     )
-    Log.d("encode", "saveDataFirestore: ${user.toString()}")
 
-    db
-        .collection("users")
+    db.collection("users")
         .document(authUser.uid)
         .set(user)
         .addOnSuccessListener {

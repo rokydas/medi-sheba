@@ -197,7 +197,7 @@ fun AppointmentScreen(
                                     userType = userType.toString(),
                                     isCheckPatient = isCheckPatient,
                                     appointment = appointmentData.value,
-                                    doctoreDetails = appointmentUser.value
+                                    doctorDetails = appointmentUser.value
                                 )
                             }
 
@@ -232,7 +232,7 @@ fun ShowPatientDetails(
     userType: String,
     isCheckPatient: MutableState<Boolean>,
     appointment: Appointment?,
-    doctoreDetails: User?,
+    doctorDetails: User?,
 
     ) {
     val context = LocalContext.current
@@ -296,16 +296,18 @@ fun ShowPatientDetails(
         Spacer(modifier = Modifier.height(15.dp))
 
         //barchart
-        val FB_UID = FirebaseAuth.getInstance().uid
-        when (userType) {
-            DOCTOR -> {
-                BarChartContent(patient_uid = user_id.toString(), doctor_uid = FB_UID.toString())
-            }
-            PATIENT -> {
-                BarChartContent(patient_uid = FB_UID.toString(), doctor_uid = user_id.toString())
-            }
-            else -> {
-                BarChartContent(patient_uid = user_id.toString(), doctor_uid = appointment?.doctor_uid.toString() )
+        if(isCheckPatient.value){
+            val FB_UID = FirebaseAuth.getInstance().uid
+            when (userType) {
+                DOCTOR -> {
+                    BarChartContent(patient_uid = user_id.toString(), doctor_uid = FB_UID.toString())
+                }
+                PATIENT -> {
+                    BarChartContent(patient_uid = FB_UID.toString(), doctor_uid = user_id.toString())
+                }
+                else -> {
+                    BarChartContent(patient_uid = user_id.toString(), doctor_uid = appointment?.doctor_uid.toString() )
+                }
             }
         }
 
@@ -337,11 +339,11 @@ fun ShowPatientDetails(
                     requestForegroundPermission(context)
                     if(patientData.value != null){
                         val data_map: HashMap<String, String> = HashMap()
-                        data_map["doctor_name"] = doctoreDetails!!.name
-                        data_map["doctor_designation"] = doctoreDetails.doctorDesignation
-                        data_map["doctor_category"] =  doctoreDetails.doctorCategory
-                        data_map["doctor_phn"] =  doctoreDetails.mobileNumber
-                        data_map["doctor_address"] =  doctoreDetails.address
+                        data_map["doctor_name"] = doctorDetails!!.name
+                        data_map["doctor_designation"] = doctorDetails.doctorDesignation
+                        data_map["doctor_category"] =  doctorDetails.doctorCategory
+                        data_map["doctor_phn"] =  doctorDetails.mobileNumber
+                        data_map["doctor_address"] =  doctorDetails.address
                         data_map["name"] = patientData.value!!.name
                         data_map["phn"] = patientData.value!!.mobileNumber
                         data_map["address"] = patientData.value!!.address

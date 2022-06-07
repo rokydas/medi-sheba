@@ -4,14 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.medi_sheba.EncryptClass
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.screens.encryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 class ProfileController() : ViewModel() {
-
     val db = Firebase.firestore
 
     private val _user = MutableLiveData<User>()
@@ -25,11 +24,19 @@ class ProfileController() : ViewModel() {
                 if (document != null) {
                     //2nd step encrupt-decrypt
                     val user = document.toObject(User::class.java)!!
-                    user.name = EncryptClass.decrypt(document.getString("name")!!)
-                    user.address = EncryptClass.decrypt(document.getString("address")!!)
-                    user.email = EncryptClass.decrypt(document.getString("email")!!)
-                    user.age = EncryptClass.decrypt(document.getString("age")!!)
-                    user.mobileNumber = EncryptClass.decrypt(document.getString("mobileNumber")!!)
+                    user.name = encryptClass.decrypt(user.name)
+                    user.email = encryptClass.decrypt(user.email)
+                    user.userType = encryptClass.decrypt(user.userType)
+                    user.mobileNumber = encryptClass.decrypt(user.mobileNumber)
+                    user.age = encryptClass.decrypt(user.age)
+                    user.address = encryptClass.decrypt(user.address)
+                    user.gender = encryptClass.decrypt(user.gender)
+                    user.image = encryptClass.decrypt(user.image)
+                    user.doctorCategory = encryptClass.decrypt(user.doctorCategory)
+                    user.doctorDesignation = encryptClass.decrypt(user.doctorDesignation)
+                    user.doctorRating = encryptClass.decrypt(user.doctorRating.toString()).toFloat()
+                    user.doctorPrice = encryptClass.decrypt(user.doctorPrice.toString()).toInt()
+
                     _user.value = user
 
 

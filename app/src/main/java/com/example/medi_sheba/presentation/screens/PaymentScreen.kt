@@ -135,8 +135,8 @@ fun PaymentScreen(
                                     Appointment(
                                         doctor_uid = doctorUid,
                                         patient_uid = uid,
-                                        time_slot = time,
-                                        serial = serial,
+                                        time_slot = encryptClass.encrypt(time),
+                                        serial = encryptClass.encrypt(serial),
                                         date = date
                                 ), context, navController)
                             },

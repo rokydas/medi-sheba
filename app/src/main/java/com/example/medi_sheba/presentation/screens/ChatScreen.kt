@@ -113,7 +113,7 @@ fun MessageField(
                             chatController.sendMessage(Message(
                                 senderUid = uid!!,
                                 receiverUid = receiverUid!!,
-                                message = newMessage.value,
+                                message = encryptClass.encrypt(newMessage.value),
                                 time = formattedDate
                             ),
                                 context = context

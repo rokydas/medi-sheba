@@ -11,7 +11,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.medi_sheba.model.User
-import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.prescription.PrescriptScreen
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
@@ -22,7 +21,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
 
 const val EncryptUID = "jabedrokyabsarsaruj"
-val EncryptClass = EncryptClass()
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
 

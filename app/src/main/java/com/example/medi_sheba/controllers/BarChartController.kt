@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.medi_sheba.presentation.screens.encryptClass
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -37,12 +38,12 @@ class BarChartController {
                     for (doc in document) {
                         if(doc.getString("patient_uid") == patient_uid && count<4 && doc.getString("doctor_uid") == doctor_uid ){
                             val barchartModel = BarChartData.Bar(
-                                value = (if(doc.getString("weight") != "" && doc.getString("weight") != null )
-                                    doc.getString("weight")?.toFloat()
+                                value = (if(encryptClass.decrypt(doc.getString("weight")!!) != "")
+                                    encryptClass.decrypt(doc.getString("weight")!!).toFloat()
                                 else
                                     0f)!!,
                                 color = Color(0XFF607D8B),
-                                label = doc.getString("date").toString()
+                                label = encryptClass.decrypt(doc.getString("date")!!)
                             )
                             barChartData.add(barchartModel)
 

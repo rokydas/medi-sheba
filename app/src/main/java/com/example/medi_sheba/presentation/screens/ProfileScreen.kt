@@ -30,15 +30,16 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
-import com.example.medi_sheba.EncryptClass
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
+val encryptClass = EncryptClass()
 @Composable
 fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
 
@@ -142,7 +143,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
 
                     Column {
                         Text(
-                            text = EncryptClass.decrypt(_user.name),
+                            text = encryptClass.decrypt(_user.name),
                             style = MaterialTheme.typography.h5,
                             fontWeight = FontWeight.Bold
                         )
@@ -163,7 +164,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = "Mobile: " + EncryptClass.decrypt(_user.mobileNumber),
+                        text = "Mobile: " + encryptClass.decrypt(_user.mobileNumber),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -178,7 +179,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = "Email: " + EncryptClass.decrypt(_user.email),
+                        text = "Email: " + encryptClass.decrypt(_user.email),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -193,7 +194,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = "Age: " + EncryptClass.decrypt(_user.age),
+                        text = "Age: " + encryptClass.decrypt(_user.age),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -208,7 +209,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = "Address: " + EncryptClass.decrypt(_user.address),
+                        text = "Address: " + encryptClass.decrypt(_user.address),
                         style = MaterialTheme.typography.body1
                     )
                 }

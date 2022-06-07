@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Message
+import com.example.medi_sheba.presentation.screens.encryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -31,11 +32,13 @@ class ChatController {
             for (doc in data!!) {
                 messages.add(
                     Message(
-                        message = doc.getString("message")!!,
+                        message = encryptClass.decrypt(doc.getString("message")!!),
                         senderUid = doc.getString("senderUid")!!,
                         receiverUid = doc.getString("receiverUid")!!,
                         time = doc.getString("time")!!
                 ))
+
+                Log.d("comp", "time. ${encryptClass.decrypt(doc.getString("time")!!)}")
             }
             _messageLists.value = messages
         }

@@ -16,8 +16,8 @@ data class User(
     val gender: String = "",
     val doctorCategory: String = "",
     val doctorDesignation: String = "",
-    val doctorPrice: Int = 0,
-    val doctorRating: Float = 0.0f
+    val doctorPrice: String = "",
+    val doctorRating: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,

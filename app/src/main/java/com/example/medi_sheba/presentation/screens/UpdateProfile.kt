@@ -11,6 +11,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -45,6 +46,7 @@ import androidx.navigation.NavController
 import coil.compose.*
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
 import com.google.firebase.auth.FirebaseAuth
@@ -57,6 +59,7 @@ import java.io.File
 import com.google.firebase.auth.FirebaseUser
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDetails: User) {
 
@@ -142,6 +145,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
             val gender = remember { mutableStateOf(userDetails.gender) }
             val downloadUrL  = rememberSaveable { mutableStateOf("") }
             var designation  by rememberSaveable { mutableStateOf(userDetails.doctorDesignation) }
+            var price  by rememberSaveable { mutableStateOf(userDetails.doctorPrice) }
             var selectedCategory  by rememberSaveable { mutableStateOf(userDetails.doctorCategory) }
             var expanded by remember { mutableStateOf(false)}
 
@@ -282,6 +286,25 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
 
                     Spacer(modifier = Modifier.height(10.dp))
 
+                    TextField(
+                        modifier = Modifier
+                            .background(Color.White),
+                        value = price,
+                        onValueChange = { price = it },
+                        placeholder = { Text("Price") },
+                        maxLines = 1,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            cursorColor = Color.Gray,
+                            focusedIndicatorColor = Color.Gray
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
                     val categoryList = mutableListOf("Cardiologist", "Orthopedic", "Dentist", "Neurologists", "Child Specialist",
                         "Medicine", "Eye Specialist", "Surgery", "Kidney specialist", "Liver Specialist")
 
@@ -382,6 +405,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun saveDataFirestore(
     context: Context,
     navController: NavController,
@@ -402,17 +426,17 @@ fun saveDataFirestore(
     val db = Firebase.firestore
     val user = User(
         uid = authUser.uid,
-        name = name,
-        email = userDetails.email,
-        userType = userDetails.userType,
-        mobileNumber = mobileNumber,
-        age = age,
-        address = address,
-        gender = gender.value,
-        image = downloadUrL.value,
-        doctorCategory = selectedCategory,
-        doctorDesignation = designation,
-        doctorRating = userDetails.doctorRating
+        name = encrypt(name),
+        email = encrypt(userDetails.email),
+        userType = encrypt(userDetails.userType),
+        mobileNumber = encrypt(mobileNumber),
+        age = encrypt(age),
+        address = encrypt(address),
+        gender = encrypt(gender.value),
+        image = encrypt(downloadUrL.value),
+        doctorCategory = encrypt(selectedCategory),
+        doctorDesignation = encrypt(designation),
+        doctorRating = encrypt(userDetails.doctorRating)
     )
 
     db

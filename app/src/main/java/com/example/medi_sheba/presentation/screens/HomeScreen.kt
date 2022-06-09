@@ -69,7 +69,6 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 20.dp)
                     .background(PrimaryColor)
             ) {
                 item {
@@ -178,15 +177,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                                         text = "Our Top Doctors",
                                         style = MaterialTheme.typography.h5,
                                         fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.clickable {
-                                            val encryptClass = EncryptClass()
-                                            val encode: String = encryptClass.encrypt("I love You", "1234")
-                                            Log.d("encode", "encode: $encode")
 
-                                            val decode = encryptClass.decrypt("auI+tY6o53hol/19zjIKv2XEMJFoMlfDOgLItUs+hh8=]aK2L0ikGdOiYA7eQn2fskQ==]oA3oCX5J8P2pxWn5FvLXYxYaEcKdiHJmXXoEXUl15ERm3utL2WEi0BZ+vjTcgfts/LKvWV9pGv2BI33VXCKWeK3EpiNB/o+9d7R1Jyv2Ah1t1+TOJCkcjX+N5IvsBF5p" +
-                                                    "")
-                                            Log.d("encode", "decode: $decode")
-                                        }
                                     )
                                     Text(
                                         text = "See all",
@@ -224,10 +215,12 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(background)
-                                    .padding(15.dp),
+                                    .padding(vertical = 50.dp)
+                                    .padding(vertical = 30.dp)
+                                ,
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(text = "There is no doctor")
+                                Text(text = "There is no doctor", fontWeight = FontWeight.Bold)
                             }
                         }
                     }

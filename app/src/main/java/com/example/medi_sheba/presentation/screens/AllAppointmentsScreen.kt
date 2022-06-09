@@ -15,6 +15,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
@@ -43,6 +46,7 @@ import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
 
 val appointmentController  = AppointmentController()
 @Composable
@@ -58,68 +62,86 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
     val appointmentList = appointmentController.appointmentList.observeAsState()
     appointmentController.getAppointment(userId, user.value?.userType)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = if(user.value != null)
-                        "${user.value?.name!!}'s Appointments List"
-                    else "Appointments List")
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Icon(Icons.Filled.ArrowBack, "backIcon")
-                    }
-                },
-                backgroundColor = PrimaryColor,
-                contentColor = Color.White,
-                elevation = 10.dp
-            )
-        },
-        bottomBar = { BottomNavigationBar(navController = navController,
-            title = "Appointment") }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            Column{
-                when(appointmentList.value){
-                    null -> {
-                        Box(modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
+    if(user.value == null) {
+        Dialog(
+            onDismissRequest = {  },
+            DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        ) {
+            Box(
+                contentAlignment= Alignment.Center,
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(Color.Transparent, shape = RoundedCornerShape(8.dp))
+            ) {
+                CircularProgressIndicator(color = PrimaryColor)
+            }
+        }
+    }else{
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(text = if(user.value != null)
+                            "${user.value?.name!!}'s Appointments List"
+                        else "Appointments List")
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            navController.popBackStack()
+                        }) {
+                            Icon(Icons.Filled.ArrowBack, "backIcon")
                         }
-                    }
-                    else ->{
-                        if(appointmentList.value!!.isEmpty()) {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(text = "There is no appointment")
+                    },
+                    backgroundColor = PrimaryColor,
+                    contentColor = Color.White,
+                    elevation = 10.dp
+                )
+            },
+            bottomBar = { BottomNavigationBar(navController = navController,
+                title = "Appointment") }
+        ) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                Column{
+                    when(appointmentList.value){
+                        null -> {
+                            Box(modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
                             }
                         }
-                        else{
-                            LazyColumn {
-                                if (user.value != null) {
-                                    items(appointmentList.value!!) { appointment ->
-                                        SingleAppointment(
-                                            appointment = appointment,
-                                            navController = navController,
-                                            otherPersonUid =
-                                            if(user.value?.userType == PATIENT) {
-                                                appointment.doctor_uid
-                                            } else appointment.patient_uid,
-                                            userType = user.value?.userType.toString()
-                                        )
-                                    }
+                        else ->{
+                            if(appointmentList.value!!.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+
+
+                                    Text(text = "There is no appointment")
                                 }
                             }
+                            else{
+                                LazyColumn {
+                                        items(appointmentList.value!!) { appointment ->
+                                            SingleAppointment(
+                                                appointment = appointment,
+                                                navController = navController,
+                                                otherPersonUid =
+                                                if(user.value?.userType == PATIENT) {
+                                                    appointment.doctor_uid
+                                                } else appointment.patient_uid,
+                                                userType = user.value?.userType.toString()
+                                            )
+                                        }
+                                }
+                            }
+
                         }
-
                     }
-                }
 
+                }
             }
         }
     }
+
+
 }
 
 @Composable

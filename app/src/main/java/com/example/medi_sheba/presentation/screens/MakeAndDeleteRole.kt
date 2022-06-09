@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.MakeAndDeleteRoleController
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.google.firebase.auth.ktx.auth
@@ -27,7 +28,7 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun MakeAndDeleteRole(navController: NavController, roleName: String) {
-
+    val encryptClass = EncryptClass()
     val makeAndDeleteRoleController = MakeAndDeleteRoleController()
     val userList = makeAndDeleteRoleController.userList.observeAsState()
     val auth = Firebase.auth
@@ -83,7 +84,8 @@ fun MakeAndDeleteRole(navController: NavController, roleName: String) {
                                                 .padding(horizontal = 10.dp, vertical = 5.dp)
                                                 .clickable {
                                                     makeAndDeleteRoleController.changeRole(
-                                                        roleName = if (user.userType == roleName) "Patient" else roleName,
+                                                        roleName = if (user.userType == roleName) encryptClass.encrypt("Patient")
+                                                        else encryptClass.encrypt(roleName),
                                                         uid = user.uid
                                                     ) { isSuccess ->
                                                         if (isSuccess) {

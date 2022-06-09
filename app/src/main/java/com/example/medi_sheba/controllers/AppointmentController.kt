@@ -1,14 +1,16 @@
 package com.example.medi_sheba.controllers
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Appointment
-import com.example.medi_sheba.presentation.screens.encryptClass
+import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class AppointmentController {
+    val encryptClass = EncryptClass()
     val db = Firebase.firestore
     private val _appointLists = MutableLiveData<List<Appointment>>()
     val appointmentList: LiveData<List<Appointment>>
@@ -63,14 +65,14 @@ class AppointmentController {
                 }
             }
     }
+
     fun getAppointDocuData(document_id: String) {
         val appointmentCol = db.collection("appointment").document(document_id)
 
         appointmentCol.get()
             .addOnSuccessListener { document ->
                 if(document != null){
-
-                    //1st step
+                    //1st step  encryptChange
                     val appointment = document.toObject(Appointment::class.java)
                     if (appointment != null) {
 //                        appointment.doc_checked = encryptClass.decrypt(appointment.doc_checked)
@@ -109,4 +111,7 @@ class AppointmentController {
                 }
             }
     }
+
+
+
 }

@@ -39,10 +39,9 @@ import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
-val encryptClass = EncryptClass()
 @Composable
 fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
-
+    val encryptClass = EncryptClass()
     val userId = auth.uid
     val profileController = ProfileController()
 

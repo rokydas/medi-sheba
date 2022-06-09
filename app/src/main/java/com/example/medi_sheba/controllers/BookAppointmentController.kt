@@ -10,12 +10,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.model.TimeSlot
-import com.example.medi_sheba.presentation.screens.encryptClass
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDate
 
 class BookAppointmentController {
+    val encryptClass = EncryptClass()
     private val db = Firebase.firestore
     private val initialTimeSlots = listOf<TimeSlot>(
         TimeSlot("09.01 AM - 09.30 AM", true),

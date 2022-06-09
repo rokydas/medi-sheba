@@ -34,6 +34,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.constant.Constant
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
@@ -50,7 +51,7 @@ inline fun Modifier.noRippleClickable(crossinline onClick: ()->Unit): Modifier =
 
 @Composable
 fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
-
+    val encryptClass = EncryptClass()
     val context = LocalContext.current
     var isLoading by rememberSaveable { mutableStateOf(false) }
 

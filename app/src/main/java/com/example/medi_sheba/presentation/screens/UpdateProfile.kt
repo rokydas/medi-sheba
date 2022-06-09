@@ -2,7 +2,6 @@ package com.example.medi_sheba.presentation.screens
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,7 +45,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import javax.crypto.SecretKey
 
 @Composable
 fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDetails: User) {
@@ -133,6 +131,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
             val gender = remember { mutableStateOf(userDetails.gender) }
             val downloadUrL  = rememberSaveable { mutableStateOf("") }
             var designation  by rememberSaveable { mutableStateOf(userDetails.doctorDesignation) }
+            var doctorPrice  by rememberSaveable { mutableStateOf(userDetails.doctorPrice) }
             var selectedCategory  by rememberSaveable { mutableStateOf(userDetails.doctorCategory) }
             var expanded by remember { mutableStateOf(false)}
 
@@ -307,6 +306,23 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    TextField(
+                        modifier = Modifier
+                            .background(Color.White),
+                        value = doctorPrice,
+                        onValueChange = { doctorPrice = it },
+                        placeholder = { Text("Doctor Fee") },
+                        maxLines = 1,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            cursorColor = Color.Gray,
+                            focusedIndicatorColor = Color.Gray
+                        )
+                    )
+
                 }
 
                 displayGenderRadio(gender)
@@ -323,7 +339,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
 
                                 isLoading = true
                                 uploadTask
-                                    .continueWithTask { task ->
+                                    .continueWithTask {
                                         ref.downloadUrl
                                     }
                                     .addOnCompleteListener { task ->
@@ -345,7 +361,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                                 downloadUrL,
                                                 authUser,
                                                 selectedCategory,
-                                                designation
+                                                designation,
+                                                doctorPrice
                                             )
                                         }
                                     }
@@ -364,7 +381,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                     downloadUrL,
                                     authUser!!,
                                     selectedCategory,
-                                    designation
+                                    designation,
+                                    doctorPrice
                                 )
                             }
 
@@ -399,15 +417,16 @@ fun saveDataFirestore(
     downloadUrL: MutableState<String>,
     authUser: FirebaseUser,
     selectedCategory: String,
-    designation: String
+    designation: String,
+    doctorPrice: String
 ) {
     var loading = isLoading
 
-
+    val encryptClass = EncryptClass()
     val db = Firebase.firestore
     val user = User(
         uid = authUser.uid,
-        name = encryptClass.encrypt(userDetails.name),
+        name = encryptClass.encrypt(name),
         email = encryptClass.encrypt(userDetails.email),
         userType = encryptClass.encrypt(userDetails.userType),
         mobileNumber = encryptClass.encrypt(mobileNumber),
@@ -417,8 +436,8 @@ fun saveDataFirestore(
         image = encryptClass.encrypt(downloadUrL.value),
         doctorCategory = encryptClass.encrypt(selectedCategory),
         doctorDesignation = encryptClass.encrypt(designation),
-//        doctorRating = encryptClass.encrypt(userDetails.doctorRating.toString()).toFloat()
-        doctorRating = userDetails.doctorRating
+        doctorRating = encryptClass.encrypt(userDetails.doctorRating),
+        doctorPrice = encryptClass.encrypt(doctorPrice)
     )
 
     db.collection("users")

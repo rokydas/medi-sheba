@@ -8,13 +8,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.medi_sheba.model.User
-import com.example.medi_sheba.presentation.screens.encryptClass
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 class ChatUserListController(): ViewModel() {
-
+    val encryptClass = EncryptClass()
     val db = Firebase.firestore
 
     private val _chatUserList = MutableLiveData<List<User>>()
@@ -38,8 +38,8 @@ class ChatUserListController(): ViewModel() {
                     user.image = encryptClass.decrypt(user.image)
                     user.doctorCategory = encryptClass.decrypt(user.doctorCategory)
                     user.doctorDesignation = encryptClass.decrypt(user.doctorDesignation)
-                    user.doctorRating = encryptClass.decrypt(user.doctorRating.toString()).toFloat()
-                    user.doctorPrice = encryptClass.decrypt(user.doctorPrice.toString()).toInt()
+                    user.doctorRating = encryptClass.decrypt(user.doctorRating.toString())
+                    user.doctorPrice = encryptClass.decrypt(user.doctorPrice.toString())
                     chatUsers.add(user)
                 }
                 _chatUserList.value = chatUsers

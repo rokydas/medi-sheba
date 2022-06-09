@@ -36,7 +36,7 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AppointmentController
-import com.example.medi_sheba.controllers.NurseContoller
+import com.example.medi_sheba.controllers.NurseController
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.model.User
@@ -295,8 +295,9 @@ fun ShowPatientDetails(
 
         Spacer(modifier = Modifier.height(15.dp))
 
+        Log.d("nurse", "doc checked: ${appointment?.doc_checked}")
         //barchart
-        if(isCheckPatient.value){
+        if(appointment?.doc_checked == true){
             val FB_UID = FirebaseAuth.getInstance().uid
             when (userType) {
                 DOCTOR -> {
@@ -400,7 +401,7 @@ fun InputPatientDetails(document_id: String?,
                         appointment: Appointment?,
                         isCheckPatient: MutableState<Boolean>) {
     val context = LocalContext.current
-    val nurseContoller = NurseContoller()
+    val nurseContoller = NurseController()
     val nurseList = nurseContoller.nurseList.observeAsState()
     nurseContoller.getNurseList()
 

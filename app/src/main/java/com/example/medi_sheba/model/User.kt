@@ -16,8 +16,8 @@ data class User(
     var gender: String = "",
     var doctorCategory: String = "",
     var doctorDesignation: String = "",
-    var doctorPrice: Int = 0,
-    var doctorRating: Float = 0.0f
+    var doctorPrice: String = "0",
+    var doctorRating: String = "0.0f"
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,

@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.medi_sheba.presentation.screens.encryptClass
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -14,6 +14,7 @@ import me.bytebeats.views.charts.bar.BarChartData
 import me.bytebeats.views.charts.bar.render.label.SimpleLabelDrawer
 
 class BarChartController {
+    val encryptClass = EncryptClass()
     val db = Firebase.firestore
 
     private val _barChartList = MutableLiveData<List<BarChartData.Bar>>()

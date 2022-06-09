@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.medi_sheba.controllers.AppApplication
 import com.example.medi_sheba.controllers.BookAppointmentController
 import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.presentation.encryption.EncryptClass
@@ -38,7 +39,8 @@ fun PaymentScreen(
     serial: String?,
     date: String?,
     name: String?,
-    designation: String?
+    designation: String?,
+    encryptClass: EncryptClass
 ) {
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
@@ -54,7 +56,6 @@ fun PaymentScreen(
     val bookAppointmentController = BookAppointmentController()
 //    bookAppointmentController.bookAppointment(bookAppointment, context)
     var isOpenModal = remember { mutableStateOf(false)}
-    val encryptClass = EncryptClass()
 
     Scaffold(
         backgroundColor = background,

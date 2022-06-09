@@ -47,7 +47,12 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 @Composable
-fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDetails: User) {
+fun UpdateProfileScreen(
+    navController: NavController,
+    auth: FirebaseAuth,
+    userDetails: User,
+    encryptClass: EncryptClass
+) {
 
     val context = LocalContext.current
     var isLoading by rememberSaveable { mutableStateOf(false) }
@@ -362,7 +367,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                                 authUser,
                                                 selectedCategory,
                                                 designation,
-                                                doctorPrice
+                                                doctorPrice,
+                                                encryptClass
                                             )
                                         }
                                     }
@@ -382,7 +388,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                     authUser!!,
                                     selectedCategory,
                                     designation,
-                                    doctorPrice
+                                    doctorPrice,
+                                    encryptClass
                                 )
                             }
 
@@ -418,11 +425,11 @@ fun saveDataFirestore(
     authUser: FirebaseUser,
     selectedCategory: String,
     designation: String,
-    doctorPrice: String
+    doctorPrice: String,
+    encryptClass: EncryptClass
 ) {
     var loading = isLoading
 
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
     val user = User(
         uid = authUser.uid,

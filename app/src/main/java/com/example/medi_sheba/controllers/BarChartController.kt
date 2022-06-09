@@ -12,9 +12,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import me.bytebeats.views.charts.bar.BarChartData
 import me.bytebeats.views.charts.bar.render.label.SimpleLabelDrawer
+import javax.inject.Inject
 
 class BarChartController {
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
 
     private val _barChartList = MutableLiveData<List<BarChartData.Bar>>()
@@ -26,7 +26,7 @@ class BarChartController {
         private set
 
 
-    fun getBarChartList(patient_uid: String, doctor_uid:String) {
+    fun getBarChartList(patient_uid: String, doctor_uid: String, encryptClass: EncryptClass) {
         val appointmentCol = db.collection("appointment")
         val barChartData = mutableListOf<BarChartData.Bar>()
 

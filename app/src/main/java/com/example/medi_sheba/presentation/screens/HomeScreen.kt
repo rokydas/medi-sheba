@@ -2,12 +2,10 @@
 
 package com.example.medi_sheba.presentation.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
@@ -32,14 +30,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
-import com.example.medi_sheba.controllers.AllDoctorsController
-import com.example.medi_sheba.controllers.ProfileController
+import com.example.medi_sheba.controllers.HomeController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.model.categoryList
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
@@ -50,27 +45,23 @@ import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
-
-    val allDoctorsController = AllDoctorsController()
-    allDoctorsController.getDoctors("All")
-    val profileController = ProfileController()
-    val doctors = allDoctorsController.doctors.observeAsState()
-    val user = profileController.user.observeAsState()
-
-    profileController.getUser(auth.currentUser!!.uid)
-
+fun HomeScreen(navController: NavController, auth: FirebaseAuth, encryptClass: EncryptClass) {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController,
             title = "Home") }
     ) { innerPadding ->
+        val homeController = HomeController()
+        val doctorList = homeController.doctors.observeAsState()
+        val homeUser = homeController.user.observeAsState()
+
         Box(modifier = Modifier.padding(innerPadding)) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(PrimaryColor)
             ) {
+                homeController.getDoctors("All", encryptClass)
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -195,7 +186,8 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                     }
                 }
                 when {
-                    doctors.value == null -> {
+
+                    doctorList.value == null -> {
                         item {
                             Box(
                                 modifier = Modifier
@@ -209,7 +201,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                             }
                         }
                     }
-                    doctors.value!!.isEmpty() -> {
+                    doctorList.value!!.isEmpty() -> {
                         item {
                             Box(
                                 modifier = Modifier
@@ -225,10 +217,11 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                         }
                     }
                     else -> {
-                        val doctorList = if (doctors.value!!.size >= 5) doctors.value!!.subList(0, 5)
-                        else doctors.value!!.subList(0, doctors.value!!.size)
+                        homeController.getHomeUser(auth.currentUser!!.uid, encryptClass)
+                        val doctorList = if (doctorList.value!!.size >= 5) doctorList.value!!.subList(0, 5)
+                        else doctorList.value!!.subList(0, doctorList.value!!.size)
                         items(doctorList) { doctor ->
-                            DoctorHorizontalCard(doctor, navController, user.value)
+                            DoctorHorizontalCard(doctor, navController, homeUser.value)
                         }
                     }
                 }
@@ -238,7 +231,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
 }
 
 @Composable
-fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?) {
+fun DoctorHorizontalCard(doctor: User, navController: NavController, homeUser: User?) {
     val context = LocalContext.current
     Box(
         modifier = Modifier
@@ -304,7 +297,7 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?
                         contentDescription = "star"
                     )
                     Text(
-                        text = doctor.doctorRating.toString(),
+                        text = doctor.doctorRating,
                         style = MaterialTheme.typography.body1
                     )
                     Spacer(modifier = Modifier.width(10.dp))
@@ -328,8 +321,8 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?
                                     .copy(all = CornerSize(12.dp))
                             )
                             .clickable {
-                                if (user != null) {
-                                    if (user.userType == "Patient") {
+                                if (homeUser != null) {
+                                    if (homeUser.userType == "Patient") {
                                         if (doctor.doctorDesignation != "" && doctor.doctorCategory != "") {
                                             navController.navigate(
                                                 ScreenItem.BookAppointmentScreenItem.route +

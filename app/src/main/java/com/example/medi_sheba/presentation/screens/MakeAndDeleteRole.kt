@@ -27,14 +27,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun MakeAndDeleteRole(navController: NavController, roleName: String) {
-    val encryptClass = EncryptClass()
+fun MakeAndDeleteRole(navController: NavController, roleName: String, encryptClass: EncryptClass) {
     val makeAndDeleteRoleController = MakeAndDeleteRoleController()
     val userList = makeAndDeleteRoleController.userList.observeAsState()
     val auth = Firebase.auth
     val context = LocalContext.current
 
-    makeAndDeleteRoleController.getUserList(context)
+    makeAndDeleteRoleController.getUserList(context, encryptClass)
 
     Scaffold(
         topBar = {
@@ -90,7 +89,10 @@ fun MakeAndDeleteRole(navController: NavController, roleName: String) {
                                                     ) { isSuccess ->
                                                         if (isSuccess) {
                                                             Toast.makeText(context, "Role updated successfully", Toast.LENGTH_SHORT).show()
-                                                            makeAndDeleteRoleController.getUserList(context)
+                                                            makeAndDeleteRoleController.getUserList(
+                                                                context,
+                                                                encryptClass
+                                                            )
                                                         } else {
                                                             Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
                                                         }

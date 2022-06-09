@@ -8,15 +8,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.medi_sheba.controllers.BarChartController
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import me.bytebeats.views.charts.bar.BarChart
 import me.bytebeats.views.charts.bar.BarChartData
 
 
 @Composable
-fun BarChartContent(patient_uid: String, doctor_uid:String ) {
+fun BarChartContent(patient_uid: String, doctor_uid: String, encryptClass: EncryptClass) {
 
     val barChartController = BarChartController()
-    barChartController.getBarChartList(patient_uid, doctor_uid)
+    barChartController.getBarChartList(patient_uid, doctor_uid, encryptClass)
     val pointList = barChartController.barchartList.observeAsState()
 
     Column(

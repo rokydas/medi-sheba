@@ -11,16 +11,17 @@ import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class MakeAndDeleteRoleController: ViewModel() {
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
 
     private val _userList = MutableLiveData<List<User>>()
     val userList: LiveData<List<User>>
         get() = _userList
 
-    fun getUserList(context: Context) = viewModelScope.launch {
+
+    fun getUserList(context: Context, encryptClass: EncryptClass) = viewModelScope.launch {
         val docRef = db.collection("users")
         docRef.get()
             .addOnSuccessListener { result ->

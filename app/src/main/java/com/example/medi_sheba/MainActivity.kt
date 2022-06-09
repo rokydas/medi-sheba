@@ -2,6 +2,7 @@ package com.example.medi_sheba
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -11,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.prescription.PrescriptScreen
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
@@ -19,13 +21,20 @@ import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-const val EncryptUID = "jabedrokyabsarsaruj"
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var encryptClass : EncryptClass
     @RequiresApi(Build.VERSION_CODES.O)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d("enc", "onCreate: ${encryptClass.encrypt("Sarose")}")
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -42,10 +51,10 @@ class MainActivity : ComponentActivity() {
                         startDestination = ScreenItem.SplashScreenItem.route
                     ) {
                         composable(route = ScreenItem.HomeScreenItem.route) {
-                            HomeScreen(navController = navController, auth)
+                            HomeScreen(navController = navController, auth, encryptClass)
                         }
                         composable(route = ScreenItem.ProfileScreenItem.route) {
-                            ProfileScreen(navController = navController, auth)
+                            ProfileScreen(navController = navController, auth, encryptClass)
                         }
                         composable(route = ScreenItem.SplashScreenItem.route) {
                             SplashScreen(navController = navController, auth)
@@ -54,7 +63,7 @@ class MainActivity : ComponentActivity() {
                             IntroScreen(navController = navController)
                         }
                         composable(route = ScreenItem.RegistrationScreenItem.route) {
-                            RegistrationScreen(navController = navController, auth)
+                            RegistrationScreen(navController = navController, auth, encryptClass)
                         }
                         composable(route = ScreenItem.LoginScreenItem.route) {
                             LoginScreen(navController = navController, auth)
@@ -62,7 +71,7 @@ class MainActivity : ComponentActivity() {
                         composable(route = ScreenItem.UpdateProfileScreenItem.route) {
                             val userDetails = navController.previousBackStackEntry?.savedStateHandle?.get<User>("user")
                             userDetails?.let {
-                                UpdateProfileScreen(navController = navController, auth, userDetails)
+                                UpdateProfileScreen(navController = navController, auth, userDetails, encryptClass)
                             }
                         }
                         composable(route = ScreenItem.AppointmentScreenItem.route + "/{document_id}/{user_id}/{user_type}") { navBackStack ->
@@ -73,18 +82,19 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 document_id = document_id,
                                 user_id = user_id,
-                                userType = user_type
+                                userType = user_type,
+                                encryptClass = encryptClass
                             )
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
-                            AllAppointmentsScreen(navController = navController, auth)
+                            AllAppointmentsScreen(navController = navController, auth, encryptClass)
                         }
                         composable(route = ScreenItem.AllDoctorsScreenItem.route + "/{category}") { navBackStack ->
                             val category = navBackStack.arguments?.getString("category")
-                            AllDoctorsScreen(navController = navController, category)
+                            AllDoctorsScreen(navController = navController, category, encryptClass)
                         }
                         composable(route = ScreenItem.ChatUserListScreenItem.route) {
-                            ChatUserListScreen(navController = navController)
+                            ChatUserListScreen(navController = navController, encryptClass)
                         }
                         composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}/{receiverName}") { navBackStack ->
                             val receiverUid = navBackStack.arguments?.getString("receiverUid")
@@ -92,7 +102,8 @@ class MainActivity : ComponentActivity() {
                             ChatScreen(
                                 navController = navController,
                                 receiverUid = receiverUid,
-                                receiverName = receiverName
+                                receiverName = receiverName,
+                                encryptClass = encryptClass
                             )
                         }
                         composable(route = ScreenItem.DashboardScreenItem.route) {
@@ -100,7 +111,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = ScreenItem.MakeAndDeleteRoleItem.route + "/{roleName}") { navBackStack ->
                             val roleName = navBackStack.arguments?.getString("roleName")
-                            MakeAndDeleteRole(navController = navController, roleName!!)
+                            MakeAndDeleteRole(navController = navController, roleName!!, encryptClass)
                         }
                         composable(route = ScreenItem.AllCategoryScreen.route) {
                             AllCategoryScreen(navController = navController)
@@ -115,7 +126,8 @@ class MainActivity : ComponentActivity() {
                                 name = name,
                                 designation = designation,
                                 price = price,
-                                doctorUid = doctorUid
+                                doctorUid = doctorUid,
+                                encryptClass = encryptClass
                             )
                         }
                         composable(route = ScreenItem.PaymentScreenItem.route + "/{doctorUid}/{time}/{serial}/{date}/{name}/{designation}") { navBackStack ->
@@ -132,7 +144,8 @@ class MainActivity : ComponentActivity() {
                                 serial = serial,
                                 date = date,
                                 name = name,
-                                designation = designation
+                                designation = designation,
+                                encryptClass = encryptClass
                             )
                         }
                         composable(route = ScreenItem.NotificationScreenItem.route) {

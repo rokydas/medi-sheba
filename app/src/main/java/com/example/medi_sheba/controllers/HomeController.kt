@@ -8,17 +8,33 @@ import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class AllDoctorsController {
-    val encryptClass = EncryptClass()
-    private val db = Firebase.firestore
+class HomeController {
+    val db = Firebase.firestore
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User>
+        get() = _user
 
+
+
+    fun getHomeUser(userId: String, encryptClass: EncryptClass) {
+        val docRef = db.collection("users").document(userId)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val user = document.toObject(User::class.java)!!
+                    user.userType = encryptClass.decrypt(user.userType)
+                    _user.value = user
+                }
+            }
+    }
+
+
+    //load doctor list
     private val _doctors = MutableLiveData<List<User>>()
     val doctors: LiveData<List<User>>
         get() = _doctors
 
-
-
-    fun getDoctors(doctorCategory: String) {
+    fun getDoctors(doctorCategory: String, encryptClass: EncryptClass) {
         val docRef = db.collection("users")
         docRef.get()
             .addOnSuccessListener { result ->
@@ -27,12 +43,12 @@ class AllDoctorsController {
                     if(document != null){
                         if(doctorCategory == "All"){
                             if(encryptClass.decrypt(document.getString("userType")!!) == "Doctor" ){
-                                getObjectValue(document, doctors)
+                                getObjectValue(document, doctors, encryptClass)
                             }
                         }else{
                             if(encryptClass.decrypt(document.getString("userType")!!) == "Doctor" &&
                                 encryptClass.decrypt(document.getString("doctorCategory")!!) == doctorCategory ){
-                                getObjectValue(document, doctors)
+                                getObjectValue(document, doctors, encryptClass)
                             }
                         }
                     }
@@ -41,17 +57,19 @@ class AllDoctorsController {
                 _doctors.value = doctors
             }
     }
-
-
-    private fun getObjectValue(document: QueryDocumentSnapshot, doctors: MutableList<User>) {
+    private fun getObjectValue(
+        document: QueryDocumentSnapshot,
+        doctors: MutableList<User>,
+        encryptClass: EncryptClass
+    ) {
         val doctor = document.toObject(User::class.java)
         doctor.name = encryptClass.decrypt(doctor.name)
-        doctor.email = encryptClass.decrypt(doctor.email)
-        doctor.userType = encryptClass.decrypt(doctor.userType)
-        doctor.mobileNumber = encryptClass.decrypt(doctor.mobileNumber)
-        doctor.age = encryptClass.decrypt(doctor.age)
-        doctor.address = encryptClass.decrypt(doctor.address)
-        doctor.gender = encryptClass.decrypt(doctor.gender)
+//        doctor.email = encryptClassClass.decrypt(doctor.email)
+//        doctor.userType = encryptClassClass.decrypt(doctor.userType)
+//        doctor.mobileNumber = encryptClassClass.decrypt(doctor.mobileNumber)
+//        doctor.age = encryptClassClass.decrypt(doctor.age)
+//        doctor.address = encryptClassClass.decrypt(doctor.address)
+//        doctor.gender = encryptClassClass.decrypt(doctor.gender)
         doctor.image = encryptClass.decrypt(doctor.image)
         doctor.doctorCategory = encryptClass.decrypt(doctor.doctorCategory)
         doctor.doctorDesignation = encryptClass.decrypt(doctor.doctorDesignation)
@@ -59,24 +77,5 @@ class AllDoctorsController {
         doctor.doctorPrice = encryptClass.decrypt(doctor.doctorPrice.toString())
 
         doctors.add(doctor)
-    }
-
-    fun getDoctors1(doctorCategory: String) {
-        val docRef = if(doctorCategory == "All") db.collection("users")
-                .whereEqualTo("userType", "Doctor")
-            else db.collection("users")
-                .whereEqualTo("doctorCategory", doctorCategory)
-                .whereEqualTo("userType", "Doctor")
-        docRef.get()
-            .addOnSuccessListener { result ->
-                val doctors = mutableListOf<User>()
-                for (document in result) {
-                    if (document != null) {
-                        val doctor = document.toObject(User::class.java)
-                        doctors.add(doctor)
-                    }
-                }
-                _doctors.value = doctors
-            }
     }
 }

@@ -9,17 +9,17 @@ import com.example.medi_sheba.model.Message
 import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import javax.inject.Inject
 
 
 class ChatController {
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
 
     private val _messageLists = MutableLiveData<List<Message>>()
     val messageLists: LiveData<List<Message>>
         get() = _messageLists
 
-    fun getMessages(docName: String) {
+    fun getMessages(docName: String, encryptClass: EncryptClass) {
         val docRef = db.collection("messages").document(docName)
             .collection("texts")
         docRef.addSnapshotListener { data, e ->

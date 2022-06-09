@@ -2,10 +2,8 @@ package com.example.medi_sheba.presentation.screens
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -41,8 +37,12 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatScreen(navController: NavController, receiverUid: String?, receiverName: String?) {
-    val encryptClass = EncryptClass()
+fun ChatScreen(
+    navController: NavController,
+    receiverUid: String?,
+    receiverName: String?,
+    encryptClass: EncryptClass
+) {
     val chatController = ChatController()
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
@@ -50,7 +50,7 @@ fun ChatScreen(navController: NavController, receiverUid: String?, receiverName:
     val messageLists = chatController.messageLists.observeAsState()
     val dateFormatter = DateTimeFormatter.ofPattern("h:mm:s a")
 
-    chatController.getMessages(receiverUid + "_" + uid)
+    chatController.getMessages(receiverUid + "_" + uid, encryptClass)
 
     Scaffold { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
@@ -77,7 +77,7 @@ fun ChatScreen(navController: NavController, receiverUid: String?, receiverName:
                         uid = auth.currentUser!!.uid
                     )
                 }
-                MessageField(newMessage, chatController, uid, receiverUid, context, dateFormatter)
+                MessageField(newMessage, chatController, uid, receiverUid, context, dateFormatter, encryptClass)
             }
         }
     }
@@ -91,9 +91,9 @@ fun MessageField(
     uid: String?,
     receiverUid: String?,
     context: Context,
-    dateFormatter: DateTimeFormatter
+    dateFormatter: DateTimeFormatter,
+    encryptClass: EncryptClass
 ) {
-    val encryptClass = EncryptClass()
 
     Box(
         modifier = Modifier.fillMaxWidth()

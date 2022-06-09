@@ -14,9 +14,9 @@ import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDate
+import javax.inject.Inject
 
 class BookAppointmentController {
-    val encryptClass = EncryptClass()
     private val db = Firebase.firestore
     private val initialTimeSlots = listOf<TimeSlot>(
         TimeSlot("09.01 AM - 09.30 AM", true),
@@ -39,6 +39,7 @@ class BookAppointmentController {
     val timeSlots: LiveData<List<TimeSlot>>
         get() = _timeSlots
 
+
     fun bookAppointment(
         appointment: Appointment,
         context: Context,
@@ -57,7 +58,12 @@ class BookAppointmentController {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun loadAllAppointmentsForBooking(docUid: String, date: List<LocalDate>, context: Context) {
+    fun loadAllAppointmentsForBooking(
+        docUid: String,
+        date: List<LocalDate>,
+        context: Context,
+        encryptClass: EncryptClass
+    ) {
         if (date.isEmpty()) {
             _timeSlots.value = listOf()
             return
@@ -76,7 +82,7 @@ class BookAppointmentController {
                     val appointments = mutableListOf<Appointment>()
                     for (document in result) {
                         val appointment = document.toObject(Appointment::class.java)
-//                            appointment.doc_checked = encryptClass.decrypt(appointment.doc_checked)
+//                            appointment.doc_checked = encryptClassClass.decrypt(appointment.doc_checked)
                         appointment.time_slot = encryptClass.decrypt(appointment.time_slot)
                         appointment.serial = encryptClass.decrypt(appointment.serial)
 //                        appointment.date = encryptClass.decrypt(appointment.date)

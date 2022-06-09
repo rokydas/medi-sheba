@@ -1,5 +1,6 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,8 +41,8 @@ import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
-    val encryptClass = EncryptClass()
+fun ProfileScreen(navController: NavController, auth: FirebaseAuth, encryptClass: EncryptClass) {
+    Log.d("bottom", "ProfileScreen: ")
     val userId = auth.uid
     val profileController = ProfileController()
 
@@ -54,9 +55,6 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
         _user = user.value!!
     }
 
-    if(userId != null) {
-        profileController.getUser(userId)
-    }
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController, title = "Profile") },
@@ -66,6 +64,10 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            if(userId != null) {
+                profileController.getUser(userId, encryptClass)
+            }
+
             if(isLoading) {
                 Dialog(
                     onDismissRequest = {  },

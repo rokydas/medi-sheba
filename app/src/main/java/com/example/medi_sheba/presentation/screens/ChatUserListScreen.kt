@@ -1,4 +1,5 @@
 package com.example.medi_sheba.presentation.screens
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,53 +10,25 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.ChatUserListController
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
-import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun ChatUserListScreen(navController: NavController) {
+fun ChatUserListScreen(navController: NavController, encryptClass: EncryptClass) {
+    Log.d("bottom", "ChatUserListScreen: ")
 
-    val context = LocalContext.current
-    val chatUserListController = ChatUserListController()
-    val chatUserList = chatUserListController.chatUserList.observeAsState()
-    val auth = Firebase.auth
-
-    chatUserListController.getChatUserList(context)
-
-    if(chatUserList.value == null) {
-        Dialog(
-            onDismissRequest = {  },
-            DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
-        ) {
-            Box(
-                contentAlignment= Alignment.Center,
-                modifier = Modifier
-                    .size(100.dp)
-                    .background(Color.Transparent, shape = RoundedCornerShape(8.dp))
-            ) {
-                CircularProgressIndicator(color = PrimaryColor)
-            }
-        }
-    }else{
-        Scaffold(
+    Scaffold(
             topBar = {
                 AppBar(navController = navController, title = "Chat")
             },
@@ -67,6 +40,12 @@ fun ChatUserListScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(20.dp)
             ) {
+                //TODO:: change
+                val context = LocalContext.current
+                val chatUserListController = ChatUserListController()
+                val chatUserList = chatUserListController.chatUserList.observeAsState()
+                val auth = Firebase.auth
+                chatUserListController.getChatUserList(context, encryptClass)
                 when(chatUserList.value) {
                     null -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -108,7 +87,6 @@ fun ChatUserListScreen(navController: NavController) {
                 }
             }
         }
-    }
 
 
 }

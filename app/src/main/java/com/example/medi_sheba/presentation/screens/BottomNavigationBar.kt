@@ -60,8 +60,11 @@ fun BottomNavigationBar(navController: NavController, title: String) {
                 alwaysShowLabel = true,
                 selected = isSelected,
                 onClick = {
+                    Log.d("bottom", "BottomNavigationBar: ${item.title}")
                     navController.navigate(item.screen.route) {
+                        Log.d("bottom", "BottomNavigationBar: ${item.screen.route}")
                         navController.graph.startDestinationRoute?.let { screen_route ->
+                            Log.d("bottom", "BottomNavigationBar: ${screen_route}")
                             popUpTo(screen_route) {
                                 saveState = true
                             }

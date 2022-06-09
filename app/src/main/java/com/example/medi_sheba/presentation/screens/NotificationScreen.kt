@@ -1,5 +1,6 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,7 @@ import com.example.medi_sheba.ui.theme.PrimaryColorLight
 
 @Composable
 fun NotificationScreen(navController: NavController) {
+
     Scaffold {
         Column(
             modifier = Modifier

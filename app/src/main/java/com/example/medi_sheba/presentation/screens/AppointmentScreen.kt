@@ -44,6 +44,7 @@ import com.example.medi_sheba.presentation.BarChart.BarChartContent
 import com.example.medi_sheba.presentation.StaticScreen.InputField
 import com.example.medi_sheba.presentation.constant.Constant.DOCTOR
 import com.example.medi_sheba.presentation.constant.Constant.PATIENT
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.prescription.generatePDF
 import com.example.medi_sheba.presentation.prescription.getDirectory
 import com.example.medi_sheba.presentation.prescription.requestForegroundPermission
@@ -60,28 +61,22 @@ fun AppointmentScreen(
     navController: NavController,
     document_id: String?,
     user_id: String?,
-    userType: String?
+    userType: String?,
+    encryptClass: EncryptClass
 ) {
     val isNurseAssigned = remember { mutableStateOf(false) }
     val isCheckPatient = remember { mutableStateOf(false) }
     val appointmentController  = AppointmentController()
-    appointmentController.getAppointDocuData(document_id.toString())
     val appointmentData = appointmentController.appoint.observeAsState()
 
 
-    val profileController = ProfileController()
-    val appointmentUser = profileController.user.observeAsState()
-    profileController.getUser(userId = user_id.toString())
 
-    if(appointmentData.value != null && appointmentData.value?.nurse_uid != ""){
-            isNurseAssigned.value = true
-    }
+
+    val userController = ProfileController()
+    val appointUser = userController.user.observeAsState()
 
     val nurseProController = ProfileController()
     val nurseProfile = nurseProController.user.observeAsState()
-    if(isNurseAssigned.value){
-        nurseProController.getUser(userId = appointmentData.value?.nurse_uid.toString())
-    }
 
 
     val scrollState = rememberScrollState()
@@ -105,8 +100,14 @@ fun AppointmentScreen(
             )
         },
     ) {
-
-        if(appointmentUser.value != null){
+        //TODO:: change
+        userController.getUser(userId = user_id.toString(), encryptClass = encryptClass)
+        //TODO:: change
+        appointmentController.getAppointDocuData(document_id.toString(), encryptClass)
+        if(appointmentData.value != null && appointmentData.value?.nurse_uid != ""){
+            isNurseAssigned.value = true
+        }
+        if(appointUser.value != null && appointmentData.value!=null){
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -127,7 +128,7 @@ fun AppointmentScreen(
                         horizontalAlignment = Alignment.CenterHorizontally) {
 
                         SubcomposeAsyncImage(
-                            model = appointmentUser.value?.image,
+                            model = appointUser.value?.image,
                             contentDescription = "profile image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -155,16 +156,16 @@ fun AppointmentScreen(
                             }
                         }
 
-                        Text(text = "${appointmentUser.value?.name}", color = Color.White,
+                        Text(text = "${appointUser.value?.name}", color = Color.White,
                             modifier = Modifier.clickable {
                                 navController.navigate(ScreenItem.PrescriptScreenItem.route)
                             })
                         if(userType == PATIENT){
-                            Text(text = "${appointmentUser.value?.doctorCategory}", color = Color.White)
-                            Text(text = "${appointmentUser.value?.doctorDesignation}", color = Color.White)
+                            Text(text = "${appointUser.value?.doctorCategory}", color = Color.White)
+                            Text(text = "${appointUser.value?.doctorDesignation}", color = Color.White)
                         }else{
-                            Text(text = "Mobile No: ${appointmentUser.value?.mobileNumber}", color = Color.White)
-                            Text(text = "Address: ${appointmentUser.value?.address}", color = Color.White)
+                            Text(text = "Mobile No: ${appointUser.value?.mobileNumber}", color = Color.White)
+                            Text(text = "Address: ${appointUser.value?.address}", color = Color.White)
                         }
 
                     }
@@ -183,13 +184,27 @@ fun AppointmentScreen(
                             .padding(vertical = 20.dp, horizontal = 20.dp),
                     ) {
 
-                        if(isCheckPatient.value){
-                            appointmentController.getAppointDocuData(document_id.toString())
-                            InputPatientDetails(document_id, appointmentData.value, isCheckPatient)
-                        }else{
-                            appointmentController.getAppointDocuData(document_id.toString())
 
-                            if(appointmentData.value != null && appointmentUser.value != null){
+                        if(isCheckPatient.value){
+                            appointmentController.getAppointDocuData(
+                                document_id.toString(),
+                                encryptClass
+                            )
+                            InputPatientDetails(document_id, appointmentData.value, isCheckPatient, encryptClass)
+                        }else{
+                            appointmentController.getAppointDocuData(
+                                document_id.toString(),
+                                encryptClass
+                            )
+                            //TODO:: change
+                            if(isNurseAssigned.value){
+                                nurseProController.getUser(
+                                    userId = appointmentData.value?.nurse_uid.toString(),
+                                    encryptClass = encryptClass
+                                )
+                            }
+
+                            if(appointmentData.value != null && appointUser.value != null){
                                 ShowPatientDetails(
                                     user_id = user_id,
                                     isNurseAssigned = isNurseAssigned.value,
@@ -197,7 +212,8 @@ fun AppointmentScreen(
                                     userType = userType.toString(),
                                     isCheckPatient = isCheckPatient,
                                     appointment = appointmentData.value,
-                                    doctorDetails = appointmentUser.value
+                                    doctorDetails = appointUser.value,
+                                    encryptClass = encryptClass
                                 )
                             }
 
@@ -233,13 +249,14 @@ fun ShowPatientDetails(
     isCheckPatient: MutableState<Boolean>,
     appointment: Appointment?,
     doctorDetails: User?,
+    encryptClass: EncryptClass,
 
     ) {
     val context = LocalContext.current
     val patientController = ProfileController()
     val patientData = patientController.user.observeAsState()
     val ownUID = FirebaseAuth.getInstance().uid
-    patientController.getUser(userId = ownUID.toString())
+    patientController.getUser(userId = ownUID.toString(), encryptClass = encryptClass)
 
     Column(modifier = Modifier.padding(vertical = 20.dp)) {
 
@@ -301,13 +318,21 @@ fun ShowPatientDetails(
             val FB_UID = FirebaseAuth.getInstance().uid
             when (userType) {
                 DOCTOR -> {
-                    BarChartContent(patient_uid = user_id.toString(), doctor_uid = FB_UID.toString())
+                    BarChartContent(patient_uid = user_id.toString(), doctor_uid = FB_UID.toString(), encryptClass)
                 }
                 PATIENT -> {
-                    BarChartContent(patient_uid = FB_UID.toString(), doctor_uid = user_id.toString())
+                    BarChartContent(
+                        patient_uid = FB_UID.toString(),
+                        doctor_uid = user_id.toString(),
+                        encryptClass = encryptClass
+                    )
                 }
                 else -> {
-                    BarChartContent(patient_uid = user_id.toString(), doctor_uid = appointment?.doctor_uid.toString() )
+                    BarChartContent(
+                        patient_uid = user_id.toString(),
+                        doctor_uid = appointment?.doctor_uid.toString(),
+                        encryptClass = encryptClass
+                    )
                 }
             }
         }
@@ -397,22 +422,28 @@ fun NurseBoxRow(isNurseAssigned: Boolean, nurseName: String, userType: String) {
 
 
 @Composable
-fun InputPatientDetails(document_id: String?,
-                        appointment: Appointment?,
-                        isCheckPatient: MutableState<Boolean>) {
+fun InputPatientDetails(
+    document_id: String?,
+    appointment: Appointment?,
+    isCheckPatient: MutableState<Boolean>,
+    encryptClass: EncryptClass
+) {
     val context = LocalContext.current
     val nurseContoller = NurseController()
     val nurseList = nurseContoller.nurseList.observeAsState()
-    nurseContoller.getNurseList()
+    nurseContoller.getNurseList(encryptClass)
 
     val nurseProController = ProfileController()
-    val nurseProfile = nurseProController.user.observeAsState()
+    val nurseProfileInput = nurseProController.user.observeAsState()
     if(appointment?.nurse_uid != ""){
         Log.d("nurse", "InputPatientDetails: ${appointment?.nurse_uid}")
-        nurseProController.getUser(userId = appointment?.nurse_uid.toString())
+        nurseProController.getUser(
+            userId = appointment?.nurse_uid.toString(),
+            encryptClass = encryptClass
+        )
 
     }
-    Log.d("nurse", "InputPatientDetails: ${nurseProfile.value?.name}")
+    Log.d("nurse", "InputPatientDetails: ${nurseProfileInput.value?.name}")
 
 
 
@@ -543,7 +574,7 @@ fun InputPatientDetails(document_id: String?,
                     .padding(vertical = 15.dp, horizontal = 25.dp)
             ) {
                 Text(text = if(appointment?.nurse_uid != "" )
-                    "Nurse: ${nurseProfile.value?.name}"
+                    "Nurse: ${nurseProfileInput.value?.name}"
                 else if(selectedNurseName.value != ""){
                     "Nurse: ${selectedNurseName.value}"
                 } else "Assign Nurse" )
@@ -590,20 +621,21 @@ fun InputPatientDetails(document_id: String?,
                     if(disease.value == "" && prescription.value == "" ){
                         Toast.makeText(context, "Fill up all fields", Toast.LENGTH_SHORT).show()
                     } else {
+
                         val db = Firebase.firestore
                         val appointData: MutableMap<String, Any> = HashMap()
-                        appointData["cabin_no"] = cabin.value
-                        appointData["weight"] = weight.value
-                        appointData["date"] = appointment?.date.toString()
-                        appointData["disease_details"] = disease.value
+                        appointData["cabin_no"] = encryptClass.encrypt(cabin.value)
+                        appointData["weight"] = encryptClass.encrypt(weight.value)
+                        appointData["date"] = encryptClass.encrypt(appointment?.date.toString())
+                        appointData["disease_details"] = encryptClass.encrypt(disease.value)
                         appointData["doc_checked"] = true
                         appointData["doctor_uid"] = appointment?.doctor_uid.toString()
                         appointData["document_id"] = appointment?.document_id.toString()
                         appointData["nurse_uid"] = selectedNurseUid.value
                         appointData["patient_uid"] = appointment?.patient_uid.toString()
-                        appointData["prescription"] = prescription.value
-                        appointData["serial"] = appointment?.serial.toString()
-                        appointData["time_slot"] = appointment?.time_slot.toString()
+                        appointData["prescription"] = encryptClass.encrypt(prescription.value)
+                        appointData["serial"] = encryptClass.encrypt(appointment?.serial.toString())
+                        appointData["time_slot"] = encryptClass.encrypt(appointment?.time_slot.toString())
 
 
                         db.collection("appointment")

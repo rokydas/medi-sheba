@@ -9,15 +9,16 @@ import com.example.medi_sheba.presentation.constant.Constant.NURSE
 import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import javax.inject.Inject
 
 class NurseController {
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
     private val _nurseList = MutableLiveData<List<User>>()
     val nurseList: LiveData<List<User>>
         get() = _nurseList
 
-    fun getNurseList() {
+
+    fun getNurseList(encryptClass: EncryptClass) {
         val userCol = db.collection("users")
         val user = mutableListOf<User>()
 

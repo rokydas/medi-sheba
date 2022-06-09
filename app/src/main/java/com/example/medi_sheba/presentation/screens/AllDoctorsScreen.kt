@@ -30,26 +30,27 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
-import com.example.medi_sheba.controllers.AllDoctorsController
+import com.example.medi_sheba.controllers.HomeController
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun AllDoctorsScreen(navController: NavController, category: String?) {
+fun AllDoctorsScreen(navController: NavController, category: String?, encryptClass: EncryptClass) {
 
-    val allDoctorsController = AllDoctorsController()
-    allDoctorsController.getDoctors(category!!)
-    val doctors = allDoctorsController.doctors.observeAsState()
+    val allDoctorsController = HomeController()
+    allDoctorsController.getDoctors(category!!, encryptClass)
+    val doctorList = allDoctorsController.doctors.observeAsState()
 
     val profileController = ProfileController()
     val user = profileController.user.observeAsState()
     val auth = FirebaseAuth.getInstance()
 
-    profileController.getUser(auth.currentUser!!.uid)
+    profileController.getUser(auth.currentUser!!.uid, encryptClass)
 
     Scaffold(
         topBar = {
@@ -58,7 +59,7 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
         backgroundColor = background
     ) {
         when {
-            doctors.value == null -> {
+            doctorList.value == null -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -67,7 +68,7 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
                     CircularProgressIndicator()
                 }
             }
-            doctors.value!!.isEmpty() -> {
+            doctorList.value!!.isEmpty() -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -80,7 +81,7 @@ fun AllDoctorsScreen(navController: NavController, category: String?) {
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    items(doctors.value!!) { doctor ->
+                    items(doctorList.value!!) { doctor ->
                         DoctorHorizontalCard(doctor, navController, user.value)
                     }
                 }

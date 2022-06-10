@@ -6,15 +6,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.medi_sheba.presentation.encryption.EncryptClass
-import com.google.firebase.auth.FirebaseAuth
+import com.example.medi_sheba.presentation.util.decrypt
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import me.bytebeats.views.charts.bar.BarChartData
 import me.bytebeats.views.charts.bar.render.label.SimpleLabelDrawer
 
 class BarChartController {
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
 
     private val _barChartList = MutableLiveData<List<BarChartData.Bar>>()
@@ -39,12 +37,12 @@ class BarChartController {
                     for (doc in document) {
                         if(doc.getString("patient_uid") == patient_uid && count<4 && doc.getString("doctor_uid") == doctor_uid ){
                             val barchartModel = BarChartData.Bar(
-                                value = (if(encryptClass.decrypt(doc.getString("weight")!!) != "")
-                                    encryptClass.decrypt(doc.getString("weight")!!).toFloat()
+                                value = (if(decrypt(doc.getString("weight")!!) != "")
+                                    decrypt(doc.getString("weight")!!).toFloat()
                                 else
                                     0f)!!,
                                 color = Color(0XFF607D8B),
-                                label = encryptClass.decrypt(doc.getString("date")!!)
+                                label = decrypt(doc.getString("date")!!)
                             )
                             barChartData.add(barchartModel)
 

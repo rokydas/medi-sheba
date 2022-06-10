@@ -2,10 +2,8 @@ package com.example.medi_sheba.presentation.screens
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,13 +23,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.ChatController
 import com.example.medi_sheba.model.Message
-import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -42,7 +38,6 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatScreen(navController: NavController, receiverUid: String?, receiverName: String?) {
-    val encryptClass = EncryptClass()
     val chatController = ChatController()
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
@@ -93,7 +88,6 @@ fun MessageField(
     context: Context,
     dateFormatter: DateTimeFormatter
 ) {
-    val encryptClass = EncryptClass()
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -115,7 +109,7 @@ fun MessageField(
                             chatController.sendMessage(Message(
                                 senderUid = uid!!,
                                 receiverUid = receiverUid!!,
-                                message = encryptClass.encrypt(newMessage.value),
+                                message = encrypt(newMessage.value),
                                 time = formattedDate
                             ),
                                 context = context

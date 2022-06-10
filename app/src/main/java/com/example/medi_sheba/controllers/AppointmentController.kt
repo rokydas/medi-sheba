@@ -1,16 +1,17 @@
 package com.example.medi_sheba.controllers
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Appointment
-import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.example.medi_sheba.presentation.util.decrypt
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class AppointmentController {
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
     private val _appointLists = MutableLiveData<List<Appointment>>()
     val appointmentList: LiveData<List<Appointment>>
@@ -21,6 +22,7 @@ class AppointmentController {
         get() = _appointment
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getAppointment(uid: String?, userType: String?) {
         var uid_title= "user"
         var dataAccess = false
@@ -47,15 +49,15 @@ class AppointmentController {
                     for (doc in document) {
                         if(doc.getString(uid_title) == uid || dataAccess){
                             val appointment = doc.toObject(Appointment::class.java)
-                            appointment.document_id = doc.id
-//                            appointment.doc_checked = encryptClass.decrypt(appointment.doc_checked)
-                            appointment.time_slot = encryptClass.decrypt(appointment.time_slot)
-                            appointment.serial = encryptClass.decrypt(appointment.serial)
-                            appointment.date = encryptClass.decrypt(appointment.date)
-                            appointment.cabin_no = encryptClass.decrypt(appointment.cabin_no)
-                            appointment.weight = encryptClass.decrypt(appointment.weight)
-                            appointment.prescription = encryptClass.decrypt(appointment.prescription)
-                            appointment.disease_details = encryptClass.decrypt(appointment.disease_details)
+//                            appointment.document_id = doc.id
+////                            appointment.doc_checked = decrypt(appointment.doc_checked)
+//                            appointment.time_slot = appointment.time_slot
+//                            appointment.serial = appointment.serial
+//                            appointment.date = appointment.date
+//                            appointment.cabin_no = decrypt(appointment.cabin_no)
+//                            appointment.weight = decrypt(appointment.weight)
+//                            appointment.prescription = decrypt(appointment.prescription)
+//                            appointment.disease_details = decrypt(appointment.disease_details)
 
                             appointments.add(appointment)
                         }
@@ -66,6 +68,7 @@ class AppointmentController {
             }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getAppointDocuData(document_id: String) {
         val appointmentCol = db.collection("appointment").document(document_id)
 
@@ -75,14 +78,14 @@ class AppointmentController {
                     //1st step  encryptChange
                     val appointment = document.toObject(Appointment::class.java)
                     if (appointment != null) {
-//                        appointment.doc_checked = encryptClass.decrypt(appointment.doc_checked)
-                        appointment.time_slot = encryptClass.decrypt(appointment.time_slot)
-                        appointment.serial = encryptClass.decrypt(appointment.serial)
-                        appointment.date = encryptClass.decrypt(appointment.date)
-                        appointment.cabin_no = encryptClass.decrypt(appointment.cabin_no)
-                        appointment.weight = encryptClass.decrypt(appointment.weight)
-                        appointment.prescription = encryptClass.decrypt(appointment.prescription)
-                        appointment.disease_details = encryptClass.decrypt(appointment.disease_details)
+////                        appointment.doc_checked = decrypt(appointment.doc_checked)
+//                        appointment.time_slot = appointment.time_slot
+//                        appointment.serial = decrypt(appointment.serial)
+//                        appointment.date = appointment.date
+//                        appointment.cabin_no = decrypt(appointment.cabin_no)
+//                        appointment.weight = decrypt(appointment.weight)
+//                        appointment.prescription = decrypt(appointment.prescription)
+//                        appointment.disease_details = decrypt(appointment.disease_details)
                     }
                     _appointment.value = appointment!!
 

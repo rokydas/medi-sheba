@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.BookAppointmentController
 import com.example.medi_sheba.model.Appointment
-import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.ktx.auth
@@ -54,7 +54,6 @@ fun PaymentScreen(
     val bookAppointmentController = BookAppointmentController()
 //    bookAppointmentController.bookAppointment(bookAppointment, context)
     var isOpenModal = remember { mutableStateOf(false)}
-    val encryptClass = EncryptClass()
 
     Scaffold(
         backgroundColor = background,
@@ -137,8 +136,8 @@ fun PaymentScreen(
                                     Appointment(
                                         doctor_uid = doctorUid,
                                         patient_uid = uid,
-                                        time_slot = encryptClass.encrypt(time),
-                                        serial = encryptClass.encrypt(serial),
+                                        time_slot = encrypt(time),
+                                        serial = encrypt(serial),
                                         date = date
                                 ), context, navController)
                             },

@@ -2,12 +2,16 @@
 
 package com.example.medi_sheba.presentation.screens
 
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.*
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
@@ -32,8 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -43,12 +45,12 @@ import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.model.categoryList
 import com.example.medi_sheba.presentation.StaticScreen.CategoryCard
-import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
 
@@ -331,6 +333,7 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?
                                 if (user != null) {
                                     if (user.userType == "Patient") {
                                         if (doctor.doctorDesignation != "" && doctor.doctorCategory != "") {
+                                            Log.d("value", "DoctorHorizontalCard: ${doctor.name} ${doctor.doctorDesignation} ${doctor.doctorPrice} ")
                                             navController.navigate(
                                                 ScreenItem.BookAppointmentScreenItem.route +
                                                         "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid

@@ -1,11 +1,8 @@
 package com.example.medi_sheba.presentation.encryption
 
 import android.util.Base64
-import android.util.Log
 import com.example.medi_sheba.EncryptUID
-import com.google.protobuf.LazyStringArrayList
 import java.io.UnsupportedEncodingException
-import java.lang.RuntimeException
 import java.nio.charset.Charset
 import java.security.GeneralSecurityException
 import java.security.SecureRandom

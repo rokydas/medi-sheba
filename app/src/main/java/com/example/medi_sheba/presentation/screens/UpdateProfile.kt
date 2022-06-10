@@ -2,9 +2,11 @@ package com.example.medi_sheba.presentation.screens
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -33,10 +35,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
-import coil.compose.*
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
-import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
 import com.google.firebase.auth.FirebaseAuth
@@ -404,6 +408,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun saveDataFirestore(
     context: Context,
     navController: NavController,
@@ -422,22 +427,21 @@ fun saveDataFirestore(
 ) {
     var loading = isLoading
 
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
     val user = User(
         uid = authUser.uid,
-        name = encryptClass.encrypt(name),
-        email = encryptClass.encrypt(userDetails.email),
-        userType = encryptClass.encrypt(userDetails.userType),
-        mobileNumber = encryptClass.encrypt(mobileNumber),
-        age = encryptClass.encrypt(age),
-        address = encryptClass.encrypt(address),
-        gender = encryptClass.encrypt(gender.value),
-        image = encryptClass.encrypt(downloadUrL.value),
-        doctorCategory = encryptClass.encrypt(selectedCategory),
-        doctorDesignation = encryptClass.encrypt(designation),
-        doctorRating = encryptClass.encrypt(userDetails.doctorRating),
-        doctorPrice = encryptClass.encrypt(doctorPrice)
+        name = encrypt(name),
+        email = encrypt(userDetails.email),
+        userType = encrypt(userDetails.userType),
+        mobileNumber = encrypt(mobileNumber),
+        age = encrypt(age),
+        address = encrypt(address),
+        gender = encrypt(gender.value),
+        image = encrypt(downloadUrL.value),
+        doctorCategory = encrypt(selectedCategory),
+        doctorDesignation = encrypt(designation),
+        doctorRating = encrypt(userDetails.doctorRating),
+        doctorPrice = encrypt(doctorPrice)
     )
 
     db.collection("users")

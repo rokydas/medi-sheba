@@ -1,20 +1,13 @@
 package com.example.medi_sheba.presentation.screens
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -29,11 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -45,17 +36,15 @@ import androidx.navigation.NavController
 import coil.compose.*
 import com.example.medi_sheba.R
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.io.ByteArrayOutputStream
-import java.io.File
-import com.google.firebase.auth.FirebaseUser
-
 
 @Composable
 fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDetails: User) {
@@ -142,6 +131,7 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
             val gender = remember { mutableStateOf(userDetails.gender) }
             val downloadUrL  = rememberSaveable { mutableStateOf("") }
             var designation  by rememberSaveable { mutableStateOf(userDetails.doctorDesignation) }
+            var doctorPrice  by rememberSaveable { mutableStateOf(userDetails.doctorPrice) }
             var selectedCategory  by rememberSaveable { mutableStateOf(userDetails.doctorCategory) }
             var expanded by remember { mutableStateOf(false)}
 
@@ -287,7 +277,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
 
                     Box(Modifier.fillMaxWidth(),contentAlignment = Alignment.Center) {
                         Row(
-                            Modifier.padding(24.dp)
+                            Modifier
+                                .padding(24.dp)
                                 .clickable {
                                     expanded = !expanded
                                 }
@@ -315,6 +306,23 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    TextField(
+                        modifier = Modifier
+                            .background(Color.White),
+                        value = doctorPrice,
+                        onValueChange = { doctorPrice = it },
+                        placeholder = { Text("Doctor Fee") },
+                        maxLines = 1,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            cursorColor = Color.Gray,
+                            focusedIndicatorColor = Color.Gray
+                        )
+                    )
+
                 }
 
                 displayGenderRadio(gender)
@@ -330,7 +338,8 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                 val uploadTask = ref.putFile(imageUri!!)
 
                                 isLoading = true
-                                uploadTask.continueWithTask { task ->
+                                uploadTask
+                                    .continueWithTask {
                                         ref.downloadUrl
                                     }
                                     .addOnCompleteListener { task ->
@@ -352,15 +361,28 @@ fun UpdateProfileScreen(navController: NavController, auth: FirebaseAuth, userDe
                                                 downloadUrL,
                                                 authUser,
                                                 selectedCategory,
-                                                designation
+                                                designation,
+                                                doctorPrice
                                             )
                                         }
                                     }
                             } else {
                                 isLoading = true
                                 saveDataFirestore(
-                                    context, navController, isLoading, name,  userDetails,
-                                    mobileNumber, age, address, gender, downloadUrL, authUser!!, selectedCategory, designation
+                                    context,
+                                    navController,
+                                    isLoading,
+                                    name,
+                                    userDetails,
+                                    mobileNumber,
+                                    age,
+                                    address,
+                                    gender,
+                                    downloadUrL,
+                                    authUser!!,
+                                    selectedCategory,
+                                    designation,
+                                    doctorPrice
                                 )
                             }
 
@@ -395,28 +417,30 @@ fun saveDataFirestore(
     downloadUrL: MutableState<String>,
     authUser: FirebaseUser,
     selectedCategory: String,
-    designation: String
+    designation: String,
+    doctorPrice: String
 ) {
     var loading = isLoading
 
+    val encryptClass = EncryptClass()
     val db = Firebase.firestore
     val user = User(
         uid = authUser.uid,
-        name = name,
-        email = userDetails.email,
-        userType = userDetails.userType,
-        mobileNumber = mobileNumber,
-        age = age,
-        address = address,
-        gender = gender.value,
-        image = downloadUrL.value,
-        doctorCategory = selectedCategory,
-        doctorDesignation = designation,
-        doctorRating = userDetails.doctorRating
+        name = encryptClass.encrypt(name),
+        email = encryptClass.encrypt(userDetails.email),
+        userType = encryptClass.encrypt(userDetails.userType),
+        mobileNumber = encryptClass.encrypt(mobileNumber),
+        age = encryptClass.encrypt(age),
+        address = encryptClass.encrypt(address),
+        gender = encryptClass.encrypt(gender.value),
+        image = encryptClass.encrypt(downloadUrL.value),
+        doctorCategory = encryptClass.encrypt(selectedCategory),
+        doctorDesignation = encryptClass.encrypt(designation),
+        doctorRating = encryptClass.encrypt(userDetails.doctorRating),
+        doctorPrice = encryptClass.encrypt(doctorPrice)
     )
 
-    db
-        .collection("users")
+    db.collection("users")
         .document(authUser.uid)
         .set(user)
         .addOnSuccessListener {

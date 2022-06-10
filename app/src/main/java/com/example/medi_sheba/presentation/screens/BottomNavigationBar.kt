@@ -1,5 +1,6 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -68,6 +69,7 @@ fun BottomNavigationBar(navController: NavController, title: String) {
                         launchSingleTop = true
                         restoreState = true
                     }
+
                 }
             )
         }

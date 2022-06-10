@@ -9,15 +9,23 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.ChatUserListController
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -32,51 +40,67 @@ fun ChatUserListScreen(navController: NavController) {
 
     chatUserListController.getChatUserList(context)
 
-    Scaffold(
-        topBar = {
-            AppBar(navController = navController, title = "Chat")
-        },
-        bottomBar = { BottomNavigationBar(navController = navController,
-            title = "Chat") }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
+    if(chatUserList.value == null) {
+        Dialog(
+            onDismissRequest = {  },
+            DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
         ) {
-            when(chatUserList.value) {
-                null -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-                else -> {
-                    val userList = chatUserList.value!!.filter { user ->
-                        user.email != auth.currentUser?.email
-                    }
-                    if(userList.isEmpty()) {
+            Box(
+                contentAlignment= Alignment.Center,
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(Color.Transparent, shape = RoundedCornerShape(8.dp))
+            ) {
+                CircularProgressIndicator(color = PrimaryColor)
+            }
+        }
+    }else{
+        Scaffold(
+            topBar = {
+                AppBar(navController = navController, title = "Chat")
+            },
+            bottomBar = { BottomNavigationBar(navController = navController,
+                title = "Chat") }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+            ) {
+                when(chatUserList.value) {
+                    null -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(text = "There is no user")
+                            CircularProgressIndicator()
                         }
                     }
-                    else {
-                        LazyColumn {
-                            items(userList) { user ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 20.dp)
-                                        .clip(RoundedCornerShape(25.dp))
-                                        .background(PrimaryColorLight)
-                                        .padding(20.dp)
-                                        .clickable {
-                                            navController.navigate(
-                                                ScreenItem.ChatScreenItem.route
-                                                        + "/" + user.uid + "/" + user.name
-                                            )
-                                        }
-                                ) {
-                                    Text(text = user.name)
+                    else -> {
+                        val userList = chatUserList.value!!.filter { user ->
+                            user.email != auth.currentUser?.email
+                        }
+                        if(userList.isEmpty()) {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(text = "There is no user")
+                            }
+                        }
+                        else {
+                            LazyColumn {
+                                items(userList) { user ->
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 20.dp)
+                                            .clip(RoundedCornerShape(25.dp))
+                                            .background(PrimaryColorLight)
+                                            .padding(20.dp)
+                                            .clickable {
+                                                navController.navigate(
+                                                    ScreenItem.ChatScreenItem.route
+                                                            + "/" + user.uid + "/" + user.name
+                                                )
+                                            }
+                                    ) {
+                                        Text(text = user.name)
+                                    }
                                 }
                             }
                         }
@@ -85,4 +109,6 @@ fun ChatUserListScreen(navController: NavController) {
             }
         }
     }
+
+
 }

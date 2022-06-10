@@ -2,6 +2,7 @@ package com.example.medi_sheba.controllers
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
@@ -9,11 +10,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.model.TimeSlot
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDate
 
 class BookAppointmentController {
+    val encryptClass = EncryptClass()
     private val db = Firebase.firestore
     private val initialTimeSlots = listOf<TimeSlot>(
         TimeSlot("09.01 AM - 09.30 AM", true),
@@ -73,6 +76,15 @@ class BookAppointmentController {
                     val appointments = mutableListOf<Appointment>()
                     for (document in result) {
                         val appointment = document.toObject(Appointment::class.java)
+//                            appointment.doc_checked = encryptClass.decrypt(appointment.doc_checked)
+                        appointment.time_slot = encryptClass.decrypt(appointment.time_slot)
+                        appointment.serial = encryptClass.decrypt(appointment.serial)
+//                        appointment.date = encryptClass.decrypt(appointment.date)
+                        appointment.cabin_no = encryptClass.decrypt(appointment.cabin_no)
+                        appointment.weight = encryptClass.decrypt(appointment.weight)
+                        appointment.prescription = encryptClass.decrypt(appointment.prescription)
+                        appointment.disease_details = encryptClass.decrypt(appointment.disease_details)
+
                         appointments.add(appointment)
                     }
                     initialTimeSlots.forEach() { timeSlot ->

@@ -19,4 +19,5 @@ sealed class ScreenItem(val route: String) {
     object AllCategoryScreen : ScreenItem("all_category")
     object BookAppointmentScreenItem : ScreenItem("book_appointment_screen")
     object PaymentScreenItem : ScreenItem("payment_screen")
+    object PrescriptScreenItem : ScreenItem("prescript_screen")
 }

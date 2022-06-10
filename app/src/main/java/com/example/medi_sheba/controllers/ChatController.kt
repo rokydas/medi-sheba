@@ -6,12 +6,13 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Message
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 
 class ChatController {
-
+    val encryptClass = EncryptClass()
     val db = Firebase.firestore
 
     private val _messageLists = MutableLiveData<List<Message>>()
@@ -23,7 +24,6 @@ class ChatController {
             .collection("texts")
         docRef.addSnapshotListener { data, e ->
             if (e != null) {
-                Log.d("fireStoreListener", "Listen failed.", e)
                 return@addSnapshotListener
             }
 
@@ -31,7 +31,7 @@ class ChatController {
             for (doc in data!!) {
                 messages.add(
                     Message(
-                        message = doc.getString("message")!!,
+                        message = encryptClass.decrypt(doc.getString("message")!!),
                         senderUid = doc.getString("senderUid")!!,
                         receiverUid = doc.getString("receiverUid")!!,
                         time = doc.getString("time")!!

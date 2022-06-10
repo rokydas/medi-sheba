@@ -36,17 +36,24 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AppointmentController
-import com.example.medi_sheba.controllers.NurseContoller
+import com.example.medi_sheba.controllers.NurseController
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.Appointment
-import com.example.medi_sheba.presentation.LineChart.LineChartScreen
+import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.BarChart.BarChartContent
+import com.example.medi_sheba.presentation.StaticScreen.InputField
+import com.example.medi_sheba.presentation.constant.Constant.DOCTOR
+import com.example.medi_sheba.presentation.constant.Constant.PATIENT
+import com.example.medi_sheba.presentation.prescription.generatePDF
+import com.example.medi_sheba.presentation.prescription.getDirectory
+import com.example.medi_sheba.presentation.prescription.requestForegroundPermission
+import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
-import com.example.medi_sheba.presentation.StaticScreen.InputField
-import com.example.medi_sheba.presentation.constant.Constant
-import com.example.medi_sheba.presentation.constant.Constant.PATIENT
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+
 
 @Composable
 fun AppointmentScreen(
@@ -61,6 +68,7 @@ fun AppointmentScreen(
     appointmentController.getAppointDocuData(document_id.toString())
     val appointmentData = appointmentController.appoint.observeAsState()
 
+
     val profileController = ProfileController()
     val appointmentUser = profileController.user.observeAsState()
     profileController.getUser(userId = user_id.toString())
@@ -74,6 +82,7 @@ fun AppointmentScreen(
     if(isNurseAssigned.value){
         nurseProController.getUser(userId = appointmentData.value?.nurse_uid.toString())
     }
+
 
     val scrollState = rememberScrollState()
 
@@ -96,101 +105,119 @@ fun AppointmentScreen(
             )
         },
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(PrimaryColor)
-                .verticalScroll(scrollState)
 
-        ) {
-            Box(
+        if(appointmentUser.value != null){
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 15.dp, horizontal = 25.dp)
+                    .fillMaxSize()
+                    .background(PrimaryColor)
+                    .verticalScroll(scrollState)
+
             ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 15.dp, horizontal = 25.dp)
+                ) {
 
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxSize() ,
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxSize() ,
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally) {
 
-                    SubcomposeAsyncImage(
-                        model = appointmentUser.value?.image,
-                        contentDescription = "profile image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(70.dp)
-                            .clip(CircleShape)
-                            .border(2.dp, Color.Gray, CircleShape)
-                    ) {
-                        when (painter.state) {
-                            is AsyncImagePainter.State.Loading -> {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.padding(35.dp),
-                                    color = PrimaryColor
-                                )
-                            }
-                            is AsyncImagePainter.State.Error -> {
-                                Image(
-                                    painter = if (userType == PATIENT) painterResource(R.drawable.doctor2)
-                                    else painterResource(R.drawable.avartar),
-                                    contentDescription = "profile image"
-                                )
-                            }
-                            else -> {
-                                SubcomposeAsyncImageContent()
+                        SubcomposeAsyncImage(
+                            model = appointmentUser.value?.image,
+                            contentDescription = "profile image",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(70.dp)
+                                .clip(CircleShape)
+                                .border(2.dp, Color.Gray, CircleShape)
+                        ) {
+                            when (painter.state) {
+                                is AsyncImagePainter.State.Loading -> {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.padding(35.dp),
+                                        color = PrimaryColor
+                                    )
+                                }
+                                is AsyncImagePainter.State.Error -> {
+                                    Image(
+                                        painter = if (userType == PATIENT) painterResource(R.drawable.doctor2)
+                                        else painterResource(R.drawable.avartar),
+                                        contentDescription = "profile image"
+                                    )
+                                }
+                                else -> {
+                                    SubcomposeAsyncImageContent()
+                                }
                             }
                         }
-                    }
 
-                    Text(text = "${appointmentUser.value?.name}", color = Color.White)
-                    if(userType == PATIENT){
-                        Text(text = "${appointmentUser.value?.doctorCategory}", color = Color.White)
-                        Text(text = "${appointmentUser.value?.doctorDesignation}", color = Color.White)
-                    }else{
-                        Text(text = "Mobile No: ${appointmentUser.value?.mobileNumber}", color = Color.White)
-                        Text(text = "Address: ${appointmentUser.value?.address}", color = Color.White)
-                    }
+                        Text(text = "${appointmentUser.value?.name}", color = Color.White,
+                            modifier = Modifier.clickable {
+                                navController.navigate(ScreenItem.PrescriptScreenItem.route)
+                            })
+                        if(userType == PATIENT){
+                            Text(text = "${appointmentUser.value?.doctorCategory}", color = Color.White)
+                            Text(text = "${appointmentUser.value?.doctorDesignation}", color = Color.White)
+                        }else{
+                            Text(text = "Mobile No: ${appointmentUser.value?.mobileNumber}", color = Color.White)
+                            Text(text = "Address: ${appointmentUser.value?.address}", color = Color.White)
+                        }
 
+                    }
                 }
-            }
 
-            Surface(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-                color = background,
-                shape = RoundedCornerShape(topStart = 20.dp,
-                    topEnd = 20.dp )) {
-                Box(modifier = Modifier
+                Surface(modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(vertical = 20.dp, horizontal = 20.dp),
+                    .fillMaxHeight(),
+                    color = background,
+                    shape = RoundedCornerShape(topStart = 20.dp,
+                        topEnd = 20.dp )) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .padding(vertical = 20.dp, horizontal = 20.dp),
                     ) {
 
-                    if(isCheckPatient.value){
-                        appointmentController.getAppointDocuData(document_id.toString())
-                        InputPatientDetails(document_id, appointmentData.value, isCheckPatient)
-                    }else{
-                        appointmentController.getAppointDocuData(document_id.toString())
-                        ShowPatientDetails(
-                            isNurseAssigned = isNurseAssigned.value,
-                            nurseName = nurseProfile.value?.name.toString(),
-                            userType = userType.toString(),
-                            isCheckPatient = isCheckPatient,
-                            appointment = appointmentData.value
-                        )
-                    }
+                        if(isCheckPatient.value){
+                            appointmentController.getAppointDocuData(document_id.toString())
+                            InputPatientDetails(document_id, appointmentData.value, isCheckPatient)
+                        }else{
+                            appointmentController.getAppointDocuData(document_id.toString())
 
+                            if(appointmentData.value != null && appointmentUser.value != null){
+                                ShowPatientDetails(
+                                    user_id = user_id,
+                                    isNurseAssigned = isNurseAssigned.value,
+                                    nurseName = nurseProfile.value?.name.toString(),
+                                    userType = userType.toString(),
+                                    isCheckPatient = isCheckPatient,
+                                    appointment = appointmentData.value,
+                                    doctorDetails = appointmentUser.value
+                                )
+                            }
+
+                        }
+
+
+
+                    }
 
 
                 }
 
 
+
             }
-
-
-
+        }else{
+            Box(modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
     }
 
@@ -199,12 +226,20 @@ fun AppointmentScreen(
 
 @Composable
 fun ShowPatientDetails(
+    user_id: String?,
     isNurseAssigned: Boolean,
     nurseName: String,
     userType: String,
     isCheckPatient: MutableState<Boolean>,
-    appointment: Appointment?
-) {
+    appointment: Appointment?,
+    doctorDetails: User?,
+
+    ) {
+    val context = LocalContext.current
+    val patientController = ProfileController()
+    val patientData = patientController.user.observeAsState()
+    val ownUID = FirebaseAuth.getInstance().uid
+    patientController.getUser(userId = ownUID.toString())
 
     Column(modifier = Modifier.padding(vertical = 20.dp)) {
 
@@ -260,12 +295,28 @@ fun ShowPatientDetails(
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        LineChartScreen()
+        Log.d("nurse", "doc checked: ${appointment?.doc_checked}")
+        //barchart
+        if(appointment?.doc_checked == true){
+            val FB_UID = FirebaseAuth.getInstance().uid
+            when (userType) {
+                DOCTOR -> {
+                    BarChartContent(patient_uid = user_id.toString(), doctor_uid = FB_UID.toString())
+                }
+                PATIENT -> {
+                    BarChartContent(patient_uid = FB_UID.toString(), doctor_uid = user_id.toString())
+                }
+                else -> {
+                    BarChartContent(patient_uid = user_id.toString(), doctor_uid = appointment?.doctor_uid.toString() )
+                }
+            }
+        }
+
 
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        if(userType == Constant.DOCTOR){
+        if(userType == DOCTOR){
             Button(
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = PrimaryColor,
@@ -278,6 +329,40 @@ fun ShowPatientDetails(
                 Text(text = "Check Patient")
             }
         }
+
+        if(userType == PATIENT && appointment!!.doc_checked  ){
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = PrimaryColor,
+                    contentColor = Color.White
+                ),
+                onClick = {
+                    requestForegroundPermission(context)
+                    if(patientData.value != null){
+                        val data_map: HashMap<String, String> = HashMap()
+                        data_map["doctor_name"] = doctorDetails!!.name
+                        data_map["doctor_designation"] = doctorDetails.doctorDesignation
+                        data_map["doctor_category"] =  doctorDetails.doctorCategory
+                        data_map["doctor_phn"] =  doctorDetails.mobileNumber
+                        data_map["doctor_address"] =  doctorDetails.address
+                        data_map["name"] = patientData.value!!.name
+                        data_map["phn"] = patientData.value!!.mobileNumber
+                        data_map["address"] = patientData.value!!.address
+                        data_map["weight"] = appointment.weight
+                        data_map["nurse_name"] = nurseName
+                        data_map["disease"] = appointment.disease_details
+                        data_map["prescript"] = appointment.prescription
+
+                        generatePDF(context, getDirectory(context),  data_map)
+                    }
+
+
+                },
+                modifier = Modifier.align(Alignment.End)) {
+                Text(text = "Download Prescription")
+            }
+        }
+
     }
 
 }
@@ -316,7 +401,7 @@ fun InputPatientDetails(document_id: String?,
                         appointment: Appointment?,
                         isCheckPatient: MutableState<Boolean>) {
     val context = LocalContext.current
-    val nurseContoller = NurseContoller()
+    val nurseContoller = NurseController()
     val nurseList = nurseContoller.nurseList.observeAsState()
     nurseContoller.getNurseList()
 
@@ -481,7 +566,8 @@ fun InputPatientDetails(document_id: String?,
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            InputField(inputState = disease,
+            InputField(
+                inputState = disease,
                 labelId = "Disease Details",
             )
 

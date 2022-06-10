@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.ChatController
 import com.example.medi_sheba.model.Message
+import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -41,7 +42,7 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatScreen(navController: NavController, receiverUid: String?, receiverName: String?) {
-
+    val encryptClass = EncryptClass()
     val chatController = ChatController()
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
@@ -92,6 +93,7 @@ fun MessageField(
     context: Context,
     dateFormatter: DateTimeFormatter
 ) {
+    val encryptClass = EncryptClass()
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -113,7 +115,7 @@ fun MessageField(
                             chatController.sendMessage(Message(
                                 senderUid = uid!!,
                                 receiverUid = receiverUid!!,
-                                message = newMessage.value,
+                                message = encryptClass.encrypt(newMessage.value),
                                 time = formattedDate
                             ),
                                 context = context

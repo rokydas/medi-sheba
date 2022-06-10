@@ -1,5 +1,12 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.app.AlarmManager
+import android.app.Notification
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -24,10 +31,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.BookAppointmentController
 import com.example.medi_sheba.model.Appointment
+import com.example.medi_sheba.services.messageExtra
+import com.example.medi_sheba.services.notificationID
+import com.example.medi_sheba.services.titleExtra
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 @Composable
 fun PaymentScreen(
@@ -37,7 +48,8 @@ fun PaymentScreen(
     serial: String?,
     date: String?,
     name: String?,
-    designation: String?
+    designation: String?,
+    alarmManager: AlarmManager
 ) {
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
@@ -138,7 +150,7 @@ fun PaymentScreen(
                                         time_slot = time,
                                         serial = serial,
                                         date = date
-                                ), context, navController)
+                                ), context, navController, alarmManager)
                             },
                         ) {
                             Text(

@@ -1,5 +1,10 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.app.AlarmManager
+import android.app.Notification
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -32,16 +37,21 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.NavController
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.BookAppointmentController
 import com.example.medi_sheba.model.TimeSlot
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.example.medi_sheba.services.messageExtra
+import com.example.medi_sheba.services.notificationID
+import com.example.medi_sheba.services.titleExtra
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
 import java.time.LocalDate
+import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -174,7 +184,7 @@ fun BookAppointmentScreen(
                                             .clip(shape = CircleShape.copy(all = CornerSize(12.dp))),
                                         colors = ButtonDefaults.buttonColors(backgroundColor = PrimaryColor),
                                         onClick = {
-                                            // boot an appointment
+                                            // book an appointment
                                             navController.navigate(
                                                 ScreenItem.PaymentScreenItem.route
                                                         + "/" + doctorUid + "/" + timeSlot.time + "/" + (index + 1).toString()

@@ -39,9 +39,6 @@ fun generatePDF(
     directory: File,
     data_map: HashMap<String, String>
 ) {
-
-
-
     val pageHeight = 1120
     val pageWidth = 792
     val pdfDocument = PdfDocument()

@@ -231,7 +231,7 @@ fun AppointmentScreen(
                                         doctorDetails = appointmentUser.value
                                     )
                                     var rating by rememberSaveable { mutableStateOf(0f) }
-                                    if (appointmentData.value!!.rating == "") {
+                                    if (appointmentData.value!!.rating == "" && userType == PATIENT) {
                                         CustomRatingBar(
                                             value = rating,
                                             onValueChange = {
@@ -287,7 +287,11 @@ fun AppointmentScreen(
                                         }
                                     }
                                     else {
-                                        Text(text = "Given rating: ${appointmentData.value!!.rating}")
+                                        var value = appointmentData.value!!.rating
+                                        if(value ==""){
+                                            value = "0.0"
+                                        }
+                                        Text(text = "Given rating: ${value}")
                                     }
                                 }
                             }

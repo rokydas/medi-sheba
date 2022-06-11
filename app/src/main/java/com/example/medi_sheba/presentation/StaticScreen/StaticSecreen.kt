@@ -31,8 +31,6 @@ fun CategoryCard(
     name:String,
     contentName: String,
     painter: Painter,
-
-
     ){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,8 +67,6 @@ fun InputField(
         onValueChange = { inputState.value = it},
         label = { Text(text = labelId)},
         singleLine = false,
-
-
         textStyle = TextStyle(fontSize = 18.sp,
             color = MaterialTheme.colors.onBackground),
         modifier = modifier

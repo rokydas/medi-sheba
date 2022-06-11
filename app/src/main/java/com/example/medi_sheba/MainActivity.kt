@@ -1,5 +1,9 @@
 package com.example.medi_sheba
 
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,6 +19,7 @@ import com.example.medi_sheba.presentation.prescription.PrescriptScreen
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
 import com.example.medi_sheba.presentation.screens.*
+import com.example.medi_sheba.services.channelID
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -28,6 +33,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        createNotificationChannel()
 
         setContent {
             medi_shebaTheme {
@@ -132,7 +139,8 @@ class MainActivity : ComponentActivity() {
                                 serial = serial,
                                 date = date,
                                 name = name,
-                                designation = designation
+                                designation = designation,
+                                alarmManager = alarmManager
                             )
                         }
                         composable(route = ScreenItem.NotificationScreenItem.route) {
@@ -145,5 +153,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel() {
+        val name = "Notif Channel"
+        val desc = "A Description of the Channel"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(channelID, name, importance)
+        channel.description = desc
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 }

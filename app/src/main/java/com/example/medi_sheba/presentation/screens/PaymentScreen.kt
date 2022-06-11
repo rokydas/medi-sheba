@@ -32,6 +32,8 @@ import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+
+@RequiresApi(Build.VERSION_CODES.M)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentScreen(
@@ -41,7 +43,8 @@ fun PaymentScreen(
     serial: String?,
     date: String?,
     name: String?,
-    designation: String?
+    designation: String?,
+    alarmManager: AlarmManager
 ) {
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
@@ -142,7 +145,7 @@ fun PaymentScreen(
                                         time_slot = encrypt(time),
                                         serial = encrypt(serial),
                                         date = date
-                                ), context, navController)
+                                ), context, navController, alarmManager)
                             },
                         ) {
                             Text(

@@ -1,5 +1,7 @@
 package com.example.medi_sheba.presentation.BarChart
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +14,7 @@ import me.bytebeats.views.charts.bar.BarChart
 import me.bytebeats.views.charts.bar.BarChartData
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BarChartContent(patient_uid: String, doctor_uid:String ) {
 

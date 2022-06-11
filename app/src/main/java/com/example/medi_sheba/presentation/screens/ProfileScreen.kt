@@ -1,7 +1,8 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.content.Context
 import android.os.Build
-import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,22 +35,28 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.util.decrypt
-import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import org.json.JSONException
+import org.json.JSONObject
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
+    val context = LocalContext.current
     val userId = auth.uid
     val profileController = ProfileController()
     val db = Firebase.firestore
@@ -254,6 +262,23 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                                 appointment.time_slot = decrypt(appointment.time_slot)
 
                                 appointments.add(appointment)
+
+
+                                //=================
+
+                                getData(context)
+
+                                //============
+
+
+
+
+
+
+
+
+
+
                             }
                         }
                 }) {
@@ -284,4 +309,32 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
             }
         }
     }
+}
+fun getData(context: Context) {
+    val myUrl = "https://snakehumanconflict.org/venom_resource_center/vrc_image/sendPushNotification.php"
+    val stringRequest: StringRequest = object : StringRequest( Method.POST, myUrl,
+        Response.Listener { response ->
+            try {
+                //Parse your api responce here
+                val jsonObject = JSONObject(response)
+//                Toast.makeText(context, response, Toast.LENGTH_LONG).show()
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+        },
+        Response.ErrorListener { error ->
+//            Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show()
+        }) {
+        override fun getParams(): Map<String, String> {
+            val params: MutableMap<String, String> = HashMap()
+            //Change with your post params
+//            params["username"] = username
+//            params["password"] = password
+            return params
+        }
+    }
+    val requestQueue = Volley.newRequestQueue(context)
+    requestQueue.add(stringRequest)
+
+
 }

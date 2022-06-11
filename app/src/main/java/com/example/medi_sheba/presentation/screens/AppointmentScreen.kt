@@ -683,6 +683,7 @@ fun InputPatientDetails(document_id: String?,
                         appointData["prescription"] = encrypt(prescription.value)
                         appointData["serial"] = encrypt(appointment?.serial.toString())
                         appointData["time_slot"] = encrypt(appointment?.time_slot.toString())
+                        appointData["rating"] = appointment?.rating.toString()
 
 
                         db.collection("appointment")

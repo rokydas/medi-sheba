@@ -34,8 +34,6 @@ class NurseController {
                             userValue.image = decrypt(userValue.image)
                             userValue.doctorCategory = decrypt(userValue.doctorCategory)
                             userValue.doctorDesignation = decrypt(userValue.doctorDesignation)
-                            userValue.doctorRating = decrypt(userValue.doctorRating.toString())
-                            userValue.doctorPrice = decrypt(userValue.doctorPrice.toString())
                             user.add(userValue)
                         }
                     }

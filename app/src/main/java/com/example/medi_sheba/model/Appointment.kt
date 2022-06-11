@@ -12,5 +12,6 @@ data class Appointment(
     var weight: String = "",
     var prescription: String = "",
     var disease_details: String = "",
-    var document_id: String = ""
+    var document_id: String = "",
+    var rating: String = ""
 )

@@ -440,8 +440,8 @@ fun saveDataFirestore(
         image = encrypt(downloadUrL.value),
         doctorCategory = encrypt(selectedCategory),
         doctorDesignation = encrypt(designation),
-        doctorRating = encrypt(userDetails.doctorRating),
-        doctorPrice = encrypt(doctorPrice)
+        doctorRating = userDetails.doctorRating,
+        doctorPrice = doctorPrice
     )
 
     db.collection("users")

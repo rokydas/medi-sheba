@@ -1,6 +1,8 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,6 +51,7 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 val appointmentController  = AppointmentController()
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
     val profileController = ProfileController()
@@ -144,6 +147,7 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SingleAppointment(
     appointment: Appointment,

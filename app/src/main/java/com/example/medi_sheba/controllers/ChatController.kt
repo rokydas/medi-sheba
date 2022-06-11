@@ -1,24 +1,25 @@
 package com.example.medi_sheba.controllers
 
 import android.content.Context
-import android.util.Log
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.medi_sheba.model.Message
-import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.example.medi_sheba.presentation.util.decrypt
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 
 class ChatController {
-    val encryptClass = EncryptClass()
     val db = Firebase.firestore
 
     private val _messageLists = MutableLiveData<List<Message>>()
     val messageLists: LiveData<List<Message>>
         get() = _messageLists
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getMessages(docName: String) {
         val docRef = db.collection("messages").document(docName)
             .collection("texts")
@@ -31,7 +32,7 @@ class ChatController {
             for (doc in data!!) {
                 messages.add(
                     Message(
-                        message = encryptClass.decrypt(doc.getString("message")!!),
+                        message = decrypt(doc.getString("message")!!),
                         senderUid = doc.getString("senderUid")!!,
                         receiverUid = doc.getString("receiverUid")!!,
                         time = doc.getString("time")!!

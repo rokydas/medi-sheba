@@ -1,5 +1,6 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.app.AlarmManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -33,7 +34,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 
-@RequiresApi(Build.VERSION_CODES.M)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentScreen(

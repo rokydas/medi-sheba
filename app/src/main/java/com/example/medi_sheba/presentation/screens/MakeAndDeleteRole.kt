@@ -9,7 +9,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -20,7 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.medi_sheba.controllers.MakeAndDeleteRoleController
-import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.google.firebase.auth.ktx.auth
@@ -28,7 +31,6 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun MakeAndDeleteRole(navController: NavController, roleName: String) {
-    val encryptClass = EncryptClass()
     val makeAndDeleteRoleController = MakeAndDeleteRoleController()
     val userList = makeAndDeleteRoleController.userList.observeAsState()
     val auth = Firebase.auth
@@ -84,8 +86,8 @@ fun MakeAndDeleteRole(navController: NavController, roleName: String) {
                                                 .padding(horizontal = 10.dp, vertical = 5.dp)
                                                 .clickable {
                                                     makeAndDeleteRoleController.changeRole(
-                                                        roleName = if (user.userType == roleName) encryptClass.encrypt("Patient")
-                                                        else encryptClass.encrypt(roleName),
+                                                        roleName = if (user.userType == roleName) encrypt("Patient")
+                                                        else encrypt(roleName),
                                                         uid = user.uid
                                                     ) { isSuccess ->
                                                         if (isSuccess) {

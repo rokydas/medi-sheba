@@ -1,6 +1,7 @@
 package com.example.medi_sheba.presentation.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,18 +35,23 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.ProfileController
+import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.example.medi_sheba.presentation.util.decrypt
+import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
     val userId = auth.uid
     val profileController = ProfileController()
-
+    val db = Firebase.firestore
     var isLoading by rememberSaveable { mutableStateOf(true) }
     var _user by rememberSaveable { mutableStateOf(User()) }
 
@@ -235,6 +241,25 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+
+                Button(onClick = {
+                    val docRef = db.collection("appointment")
+                        .whereEqualTo("reminderStatus", false)
+                    docRef.get()
+                        .addOnSuccessListener { result ->
+                            val appointments = mutableListOf<Appointment>()
+                            for (document in result) {
+                                val appointment = document.toObject(Appointment::class.java)
+                                appointment.document_id = document.id
+                                appointment.time_slot = decrypt(appointment.time_slot)
+
+                                appointments.add(appointment)
+                            }
+                        }
+                }) {
+                    Text(text = "Notification")
+                }
+
                 Row(
                     modifier = Modifier
                         .padding(start = 30.dp)

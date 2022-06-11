@@ -4,11 +4,12 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.medi_sheba.R
 
-const val notificationID = 1
-const val channelID = "channel1"
+const val notificationID = 10
+const val channelID = "channel10"
 const val titleExtra = "titleExtra"
 const val messageExtra = "messageExtra"
 

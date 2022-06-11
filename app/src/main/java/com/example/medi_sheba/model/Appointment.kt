@@ -12,5 +12,8 @@ data class Appointment(
     var weight: String = "",
     var prescription: String = "",
     var disease_details: String = "",
-    var document_id: String = ""
+    var document_id: String = "",
+    val fcmToken: String = "",
+    val reminderStatus: Boolean = false,
+    var reminderTime: String = ""
 )

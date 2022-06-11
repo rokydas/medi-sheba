@@ -25,7 +25,6 @@ class ProfileController() : ViewModel() {
         docRef.get()
             .addOnSuccessListener { document ->
                 if (document != null) {
-                    //2nd step encrupt-decrypt
                     val user = document.toObject(User::class.java)!!
                     user.name = decrypt(user.name)
                     user.email = decrypt(user.email)
@@ -41,16 +40,7 @@ class ProfileController() : ViewModel() {
                     user.doctorPrice = decrypt(user.doctorPrice)
 
                     _user.value = user
-
-
-
-                    //1st step
-//                    val user = document.toObject(User::class.java)!!
-//                    _user.value = user
                 }
             }
     }
-
-
-
 }

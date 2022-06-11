@@ -49,6 +49,9 @@ import com.example.medi_sheba.presentation.constant.Constant.PATIENT
 import com.example.medi_sheba.presentation.prescription.generatePDF
 import com.example.medi_sheba.presentation.prescription.getDirectory
 import com.example.medi_sheba.presentation.prescription.requestForegroundPermission
+import com.example.medi_sheba.presentation.ratingbar.CustomRatingBar
+import com.example.medi_sheba.presentation.ratingbar.RatingBarConfig
+import com.example.medi_sheba.presentation.ratingbar.RatingBarStyle
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
@@ -166,6 +169,21 @@ fun AppointmentScreen(
                         if(userType == PATIENT){
                             Text(text = "${appointmentUser.value?.doctorCategory}", color = Color.White)
                             Text(text = "${appointmentUser.value?.doctorDesignation}", color = Color.White)
+
+                            val initialRating = 1f
+                            var rating by rememberSaveable { mutableStateOf(initialRating) }
+
+                            CustomRatingBar(
+                                value = rating,
+                                onValueChange = {
+                                    rating = it
+                                },
+                                onRatingChanged = {
+                                    Log.d("Rating Value", "RatingBarView: $it")
+                                },
+                                config = RatingBarConfig()
+                                    .style(RatingBarStyle.HighLighted)
+                            )
                         }else{
                             Text(text = "Mobile No: ${appointmentUser.value?.mobileNumber}", color = Color.White)
                             Text(text = "Address: ${appointmentUser.value?.address}", color = Color.White)
@@ -414,11 +432,8 @@ fun InputPatientDetails(document_id: String?,
     val nurseProController = ProfileController()
     val nurseProfile = nurseProController.user.observeAsState()
     if(appointment?.nurse_uid != ""){
-        Log.d("nurse", "InputPatientDetails: ${appointment?.nurse_uid}")
         nurseProController.getUser(userId = appointment?.nurse_uid.toString())
-
     }
-    Log.d("nurse", "InputPatientDetails: ${nurseProfile.value?.name}")
 
 
 

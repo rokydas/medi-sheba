@@ -12,10 +12,10 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 
 private const val strokeWidth = 1f
-
 @Composable
 fun RatingStar(
     @FloatRange(from = 0.0, to = 1.0) fraction: Float,

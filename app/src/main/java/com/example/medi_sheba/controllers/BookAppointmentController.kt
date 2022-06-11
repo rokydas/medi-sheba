@@ -75,13 +75,13 @@ class BookAppointmentController {
                     for (document in result) {
                         val appointment = document.toObject(Appointment::class.java)
 //                            appointment.doc_checked = decrypt(appointment.doc_checked)
-//                        appointment.time_slot = decrypt(appointment.time_slot)
-//                        appointment.serial = decrypt(appointment.serial)
-////                        appointment.date = decrypt(appointment.date)
-//                        appointment.cabin_no = decrypt(appointment.cabin_no)
-//                        appointment.weight = decrypt(appointment.weight)
-//                        appointment.prescription = decrypt(appointment.prescription)
-//                        appointment.disease_details = decrypt(appointment.disease_details)
+                        appointment.time_slot = decrypt(appointment.time_slot)
+                        appointment.serial = decrypt(appointment.serial)
+//                        appointment.date = decrypt(appointment.date)
+                        appointment.cabin_no = decrypt(appointment.cabin_no)
+                        appointment.weight = decrypt(appointment.weight)
+                        appointment.prescription = decrypt(appointment.prescription)
+                        appointment.disease_details = decrypt(appointment.disease_details)
 
                         appointments.add(appointment)
                     }

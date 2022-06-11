@@ -49,15 +49,15 @@ class AppointmentController {
                     for (doc in document) {
                         if(doc.getString(uid_title) == uid || dataAccess){
                             val appointment = doc.toObject(Appointment::class.java)
-//                            appointment.document_id = doc.id
-////                            appointment.doc_checked = decrypt(appointment.doc_checked)
-//                            appointment.time_slot = appointment.time_slot
-//                            appointment.serial = appointment.serial
-//                            appointment.date = appointment.date
-//                            appointment.cabin_no = decrypt(appointment.cabin_no)
-//                            appointment.weight = decrypt(appointment.weight)
-//                            appointment.prescription = decrypt(appointment.prescription)
-//                            appointment.disease_details = decrypt(appointment.disease_details)
+                            appointment.document_id = doc.id
+//                            appointment.doc_checked = decrypt(appointment.doc_checked)
+                            appointment.time_slot = decrypt(appointment.time_slot)
+                            appointment.serial = decrypt(appointment.serial)
+                            appointment.date = appointment.date
+                            appointment.cabin_no = decrypt(appointment.cabin_no)
+                            appointment.weight = decrypt(appointment.weight)
+                            appointment.prescription = decrypt(appointment.prescription)
+                            appointment.disease_details = decrypt(appointment.disease_details)
 
                             appointments.add(appointment)
                         }
@@ -78,14 +78,14 @@ class AppointmentController {
                     //1st step  encryptChange
                     val appointment = document.toObject(Appointment::class.java)
                     if (appointment != null) {
-////                        appointment.doc_checked = decrypt(appointment.doc_checked)
-//                        appointment.time_slot = appointment.time_slot
-//                        appointment.serial = decrypt(appointment.serial)
-//                        appointment.date = appointment.date
-//                        appointment.cabin_no = decrypt(appointment.cabin_no)
-//                        appointment.weight = decrypt(appointment.weight)
-//                        appointment.prescription = decrypt(appointment.prescription)
-//                        appointment.disease_details = decrypt(appointment.disease_details)
+//                        appointment.doc_checked = decrypt(appointment.doc_checked)
+                        appointment.time_slot = decrypt(appointment.time_slot)
+                        appointment.serial = decrypt(appointment.serial)
+                        appointment.date = appointment.date
+                        appointment.cabin_no = decrypt(appointment.cabin_no)
+                        appointment.weight = decrypt(appointment.weight)
+                        appointment.prescription = decrypt(appointment.prescription)
+                        appointment.disease_details = decrypt(appointment.disease_details)
                     }
                     _appointment.value = appointment!!
 

@@ -1,5 +1,7 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +32,7 @@ import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PaymentScreen(
     navController: NavController,

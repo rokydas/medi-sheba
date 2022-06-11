@@ -1,5 +1,7 @@
 package com.example.medi_sheba.controllers
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,6 +26,7 @@ class BarChartController {
         private set
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getBarChartList(patient_uid: String, doctor_uid:String) {
         val appointmentCol = db.collection("appointment")
         val barChartData = mutableListOf<BarChartData.Bar>()
@@ -42,7 +45,7 @@ class BarChartController {
                                 else
                                     0f)!!,
                                 color = Color(0XFF607D8B),
-                                label = decrypt(doc.getString("date")!!)
+                                label = doc.getString("date")!!
                             )
                             barChartData.add(barchartModel)
 

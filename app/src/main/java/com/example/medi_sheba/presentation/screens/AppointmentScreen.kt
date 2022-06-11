@@ -50,6 +50,7 @@ import com.example.medi_sheba.presentation.prescription.generatePDF
 import com.example.medi_sheba.presentation.prescription.getDirectory
 import com.example.medi_sheba.presentation.prescription.requestForegroundPermission
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
@@ -597,18 +598,18 @@ fun InputPatientDetails(document_id: String?,
                     } else {
                         val db = Firebase.firestore
                         val appointData: MutableMap<String, Any> = HashMap()
-                        appointData["cabin_no"] = cabin.value
-                        appointData["weight"] = weight.value
+                        appointData["cabin_no"] = encrypt(cabin.value)
+                        appointData["weight"] = encrypt(weight.value)
                         appointData["date"] = appointment?.date.toString()
-                        appointData["disease_details"] = disease.value
+                        appointData["disease_details"] = encrypt(disease.value)
                         appointData["doc_checked"] = true
                         appointData["doctor_uid"] = appointment?.doctor_uid.toString()
                         appointData["document_id"] = appointment?.document_id.toString()
                         appointData["nurse_uid"] = selectedNurseUid.value
                         appointData["patient_uid"] = appointment?.patient_uid.toString()
-                        appointData["prescription"] = prescription.value
-                        appointData["serial"] = appointment?.serial.toString()
-                        appointData["time_slot"] = appointment?.time_slot.toString()
+                        appointData["prescription"] = encrypt(prescription.value)
+                        appointData["serial"] = encrypt(appointment?.serial.toString())
+                        appointData["time_slot"] = encrypt(appointment?.time_slot.toString())
 
 
                         db.collection("appointment")

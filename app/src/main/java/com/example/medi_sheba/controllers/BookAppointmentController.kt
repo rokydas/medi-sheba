@@ -1,6 +1,10 @@
 package com.example.medi_sheba.controllers
 
+import android.app.AlarmManager
+import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -11,9 +15,13 @@ import androidx.navigation.NavController
 import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.model.TimeSlot
 import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.example.medi_sheba.services.messageExtra
+import com.example.medi_sheba.services.notificationID
+import com.example.medi_sheba.services.titleExtra
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDate
+import java.util.*
 
 class BookAppointmentController {
     val encryptClass = EncryptClass()
@@ -39,16 +47,29 @@ class BookAppointmentController {
     val timeSlots: LiveData<List<TimeSlot>>
         get() = _timeSlots
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun bookAppointment(
         appointment: Appointment,
         context: Context,
-        navController: NavController
+        navController: NavController,
+        alarmManager: AlarmManager
     ) {
         db.collection("appointment")
             .document()
             .set(appointment)
             .addOnSuccessListener {
                 Toast.makeText(context, "Your appointment booking is successful", Toast.LENGTH_SHORT).show()
+                scheduleNotification(
+                    context = context,
+                    title = "Your appointment is in 30 minutes",
+                    message = "",
+                    minute = 8,
+                    hour = 12,
+                    day = 11,
+                    month = 6,
+                    year = 2022,
+                    alarmManager = alarmManager
+                )
                 navController.popBackStack()
             }
             .addOnFailureListener {
@@ -101,4 +122,38 @@ class BookAppointmentController {
         }
 
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.M)
+private fun scheduleNotification(
+    context: Context,
+    title: String,
+    message: String,
+    minute: Int,
+    hour: Int,
+    day: Int,
+    month: Int,
+    year: Int,
+    alarmManager: AlarmManager
+)
+{
+    val intent = Intent(context, Notification::class.java)
+    intent.putExtra(titleExtra, title)
+    intent.putExtra(messageExtra, message)
+
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        notificationID,
+        intent,
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
+    val calendar = Calendar.getInstance()
+    calendar.set(year, month, day, hour, minute)
+    val time = calendar.timeInMillis
+    alarmManager.setExactAndAllowWhileIdle(
+        AlarmManager.RTC_WAKEUP,
+        time,
+        pendingIntent
+    )
 }

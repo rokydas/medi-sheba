@@ -1,5 +1,8 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.app.AlarmManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +33,7 @@ import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+@RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun PaymentScreen(
     navController: NavController,
@@ -38,7 +42,8 @@ fun PaymentScreen(
     serial: String?,
     date: String?,
     name: String?,
-    designation: String?
+    designation: String?,
+    alarmManager: AlarmManager
 ) {
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
@@ -140,7 +145,7 @@ fun PaymentScreen(
                                         time_slot = encryptClass.encrypt(time),
                                         serial = encryptClass.encrypt(serial),
                                         date = date
-                                ), context, navController)
+                                ), context, navController, alarmManager)
                             },
                         ) {
                             Text(

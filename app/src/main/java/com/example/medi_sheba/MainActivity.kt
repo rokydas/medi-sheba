@@ -2,6 +2,7 @@ package com.example.medi_sheba
 
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -13,16 +14,20 @@ import androidx.navigation.compose.rememberNavController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.prescription.PrescriptScreen
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
-import com.example.medi_sheba.presentation.screens.ProfileScreen
 import com.example.medi_sheba.presentation.screens.*
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
 import com.sslwireless.sslcommerzlibrary.model.initializer.SSLCommerzInitialization
+import com.sslwireless.sslcommerzlibrary.model.response.SSLCTransactionInfoModel
+import com.sslwireless.sslcommerzlibrary.model.util.SSLCCurrencyType
+import com.sslwireless.sslcommerzlibrary.model.util.SSLCSdkType
+import com.sslwireless.sslcommerzlibrary.view.singleton.IntegrateSSLCommerz
+import com.sslwireless.sslcommerzlibrary.viewmodel.listener.SSLCTransactionResponseListener
 
 const val EncryptUID = "jabedrokyabsarsaruj"
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), SSLCTransactionResponseListener {
     @RequiresApi(Build.VERSION_CODES.O)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,14 +35,18 @@ class MainActivity : ComponentActivity() {
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-        val storeId = "testrokydzhl6"
-        val storePassword = "18701035"
+        val storeId = "rokyd627e94d5d2749"
+        val storePassword = "rokyd627e94d5d2749@ssl"
 
-        val sslCommerzInitialization = SSLCommerzInitialization(storeId, storePassword, )
+        val sslCommerzInitialization = SSLCommerzInitialization(
+            storeId, storePassword, 10.0, SSLCCurrencyType.BDT, "123456789098765",
+            "appointment", SSLCSdkType.TESTBOX,
+        )
 
-//        final SSLCommerzInitialization sslCommerzInitialization = new SSLCommerzInitialization
-//                (&quot;yourStoreID&quot;,&quot;yourPassword&quot;, amount, SSLCCurrencyType.BDT,&quot;123456789098765&quot;,
-//        &quot;yourProductType&quot;, SSLCSdkType.TESTBOX).addMultiCardName(“”).addIpnUrl(“”);
+        IntegrateSSLCommerz
+            .getInstance(this)
+            .addSSLCommerzInitialization(sslCommerzInitialization)
+            .buildApiCall(this);
 
         setContent {
             medi_shebaTheme {
@@ -155,5 +164,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun transactionSuccess(p0: SSLCTransactionInfoModel?) {
+        Toast.makeText(this, "Transaction successful", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun transactionFail(p0: String?) {
+        Toast.makeText(this, "Transaction failed", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun merchantValidationError(p0: String?) {
+        Toast.makeText(this, "Merchant validation error", Toast.LENGTH_SHORT).show()
     }
 }

@@ -174,7 +174,7 @@ fun DoctorCard(
                     .padding(horizontal = 10.dp, vertical = 5.dp)
                     .clickable {
                         if (user.userType == "Patient") {
-                            if (doctor.doctorDesignation != "" && doctor.doctorCategory != "") {
+                            if (doctor.doctorDesignation != "" && doctor.doctorCategory != "" && doctor.doctorPrice != "") {
                                 navController.navigate(
                                     ScreenItem.BookAppointmentScreenItem.route +
                                             "/" + doctor.name + "/" + doctor.doctorDesignation + "/" + doctor.doctorPrice + "/" + doctor.uid

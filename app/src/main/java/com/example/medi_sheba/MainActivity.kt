@@ -1,14 +1,11 @@
 package com.example.medi_sheba
 
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
 import android.content.Context
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
@@ -17,24 +14,25 @@ import androidx.navigation.compose.rememberNavController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.prescription.PrescriptScreen
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
-import com.example.medi_sheba.presentation.screens.ProfileScreen
 import com.example.medi_sheba.presentation.screens.*
 import com.example.medi_sheba.services.channelID
+import com.example.medi_sheba.services.messageExtra
+import com.example.medi_sheba.services.notificationID
+import com.example.medi_sheba.services.titleExtra
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
+import java.util.*
 
 const val EncryptUID = "jabedrokyabsarsaruj"
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        createNotificationChannel()
 
         setContent {
             medi_shebaTheme {
@@ -125,9 +123,10 @@ class MainActivity : ComponentActivity() {
                                 doctorUid = doctorUid
                             )
                         }
-                        composable(route = ScreenItem.PaymentScreenItem.route + "/{doctorUid}/{time}/{serial}/{date}/{name}/{designation}") { navBackStack ->
+                        composable(route = ScreenItem.PaymentScreenItem.route + "/{doctorUid}/{time}/{reminderTime}/{serial}/{date}/{name}/{designation}") { navBackStack ->
                             val doctorUid = navBackStack.arguments?.getString("doctorUid")
                             val time = navBackStack.arguments?.getString("time")
+                            val reminderTime = navBackStack.arguments?.getString("reminderTime")
                             val serial = navBackStack.arguments?.getString("serial")
                             val date = navBackStack.arguments?.getString("date")
                             val name = navBackStack.arguments?.getString("name")
@@ -136,11 +135,11 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 doctorUid = doctorUid,
                                 time = time,
+                                reminderTime = reminderTime,
                                 serial = serial,
                                 date = date,
                                 name = name,
                                 designation = designation,
-                                alarmManager = alarmManager
                             )
                         }
                         composable(route = ScreenItem.NotificationScreenItem.route) {
@@ -155,8 +154,62 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel() {
+    private fun scheduleNotification()
+    {
+        val intent = Intent(applicationContext, Notification::class.java)
+        val title = "hello"
+        val message = "message"
+        intent.putExtra(titleExtra, title)
+        intent.putExtra(messageExtra, message)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            notificationID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val time = getTime()
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            time,
+            pendingIntent
+        )
+        showAlert(time, title, message)
+    }
+
+    private fun showAlert(time: Long, title: String, message: String)
+    {
+        val date = Date(time)
+        val dateFormat = android.text.format.DateFormat.getLongDateFormat(applicationContext)
+        val timeFormat = android.text.format.DateFormat.getTimeFormat(applicationContext)
+
+        AlertDialog.Builder(this)
+            .setTitle("Notification Scheduled")
+            .setMessage(
+                "Title: " + title +
+                        "\nMessage: " + message +
+                        "\nAt: " + dateFormat.format(date) + " " + timeFormat.format(date))
+            .setPositiveButton("Okay"){_,_ ->}
+            .show()
+    }
+
+    private fun getTime(): Long
+    {
+        val minute = 14
+        val hour = 19
+        val day = 11
+        val month = 5
+        val year = 2022
+
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day, hour, minute)
+        return calendar.timeInMillis
+    }
+
+    private fun createNotificationChannel()
+    {
         val name = "Notif Channel"
         val desc = "A Description of the Channel"
         val importance = NotificationManager.IMPORTANCE_DEFAULT

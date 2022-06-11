@@ -39,6 +39,8 @@ class BarChartController {
                 if (document != null) {
                     for (doc in document) {
                         if(doc.getString("patient_uid") == patient_uid && count<4 && doc.getString("doctor_uid") == doctor_uid ){
+
+
                             val barchartModel = BarChartData.Bar(
                                 value = (if(decrypt(doc.getString("weight")!!) != "")
                                     decrypt(doc.getString("weight")!!).toFloat()

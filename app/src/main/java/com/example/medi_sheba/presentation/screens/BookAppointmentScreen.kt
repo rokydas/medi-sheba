@@ -171,7 +171,7 @@ fun BookAppointmentScreen(
                                             // boot an appointment
                                             navController.navigate(
                                                 ScreenItem.PaymentScreenItem.route
-                                                        + "/" + doctorUid + "/" + timeSlot.time + "/" + (index + 1).toString()
+                                                        + "/" + doctorUid + "/" + timeSlot.time + "/" + timeSlot.reminderTime + "/" + (index + 1).toString()
                                                         + "/" + calendarState.selectionState.selection[0].toString() + "/" + name + "/" + designation
                                             )
                                         },

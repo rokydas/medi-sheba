@@ -30,8 +30,10 @@ import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -44,7 +46,7 @@ fun PaymentScreen(
     date: String?,
     name: String?,
     designation: String?,
-    alarmManager: AlarmManager
+    reminderTime: String?,
 ) {
     val auth = Firebase.auth
     val uid = auth.currentUser?.uid
@@ -54,7 +56,9 @@ fun PaymentScreen(
         patient_uid = uid!!,
         time_slot = time!!,
         serial = serial!!,
-        date = date!!
+        date = date!!,
+        reminderTime = reminderTime!!,
+        reminderStatus = false
     )
 
     val bookAppointmentController = BookAppointmentController()
@@ -132,6 +136,16 @@ fun PaymentScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
+
+                        var token = ""
+                        FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                            OnCompleteListener { task ->
+                            if (!task.isSuccessful) {
+                                return@OnCompleteListener
+                            }
+                            token = task.result
+                        })
+
                         Button(
                             modifier = Modifier
                                 .padding(horizontal = 10.dp, vertical = 5.dp)
@@ -144,8 +158,11 @@ fun PaymentScreen(
                                         patient_uid = uid,
                                         time_slot = encrypt(time),
                                         serial = encrypt(serial),
-                                        date = date
-                                ), context, navController, alarmManager)
+                                        date = date,
+                                        reminderTime = reminderTime,
+                                        fcmToken = token,
+                                        reminderStatus = false
+                                ), context, navController)
                             },
                         ) {
                             Text(

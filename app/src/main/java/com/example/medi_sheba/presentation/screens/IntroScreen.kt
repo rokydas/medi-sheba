@@ -24,7 +24,8 @@ import com.example.medi_sheba.ui.theme.SecondaryColor
 fun IntroScreen(navController: NavController = NavController(LocalContext.current)) {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

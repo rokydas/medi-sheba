@@ -306,7 +306,7 @@ fun DoctorHorizontalCard(doctor: User, navController: NavController, user: User?
                         contentDescription = "star"
                     )
                     Text(
-                        text = doctor.doctorRating.toString(),
+                        text = doctor.doctorRating,
                         style = MaterialTheme.typography.body1
                     )
                     Spacer(modifier = Modifier.width(10.dp))

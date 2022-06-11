@@ -13,7 +13,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.medi_sheba.model.Appointment
 import com.example.medi_sheba.model.TimeSlot
-import com.example.medi_sheba.presentation.encryption.EncryptClass
 import com.example.medi_sheba.services.messageExtra
 import com.example.medi_sheba.services.notificationID
 import com.example.medi_sheba.services.titleExtra

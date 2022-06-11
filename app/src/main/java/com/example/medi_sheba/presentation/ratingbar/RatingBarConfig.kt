@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 class RatingBarConfig {
-    var size: Dp = 50.dp
+    var size: Dp = 20.dp
         private set
     var padding: Dp = 2.dp
         private set

@@ -25,7 +25,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
-const val EncryptUID = "jabedrokyabsarsaruj"
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +32,7 @@ class MainActivity : ComponentActivity() {
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        createNotificationChannel()
 
         setContent {
             medi_shebaTheme {

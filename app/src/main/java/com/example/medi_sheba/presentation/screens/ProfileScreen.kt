@@ -2,7 +2,7 @@ package com.example.medi_sheba.presentation.screens
 
 import android.content.Context
 import android.os.Build
-import android.widget.Toast
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,10 +47,14 @@ import com.example.medi_sheba.presentation.util.decrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import org.json.JSONException
-import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.*
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -247,43 +251,47 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                             style = MaterialTheme.typography.h6
                         )
                     }
+
+
+                    //TODO:: notification
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 30.dp)
+                            .clickable {
+                                val docRef = db.collection("appointment")
+                                    .whereEqualTo("reminderStatus", false)
+                                docRef.get()
+                                    .addOnSuccessListener { result ->
+                                        val appointments = mutableListOf<Appointment>()
+                                        for (document in result) {
+                                            val appointment = document.toObject(Appointment::class.java)
+                                            appointment.document_id = document.id
+                                            appointment.time_slot = decrypt(appointment.time_slot)
+                                            appointments.add(appointment)
+
+                                            if(appointment.fcmToken != ""){
+                                                getData(context, db, appointment.document_id, appointment.fcmToken)
+                                            }
+
+
+                                        }
+                                    }
+                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications, contentDescription = "",
+                            tint = Color.Gray,
+                        )
+                        Spacer(modifier = Modifier.width(30.dp))
+                        Text(
+                            text = "Notification Push",
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.h6
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-
-                Button(onClick = {
-                    val docRef = db.collection("appointment")
-                        .whereEqualTo("reminderStatus", false)
-                    docRef.get()
-                        .addOnSuccessListener { result ->
-                            val appointments = mutableListOf<Appointment>()
-                            for (document in result) {
-                                val appointment = document.toObject(Appointment::class.java)
-                                appointment.document_id = document.id
-                                appointment.time_slot = decrypt(appointment.time_slot)
-
-                                appointments.add(appointment)
-
-
-                                //=================
-
-                                getData(context)
-
-                                //============
-
-
-
-
-
-
-
-
-
-
-                            }
-                        }
-                }) {
-                    Text(text = "Notification")
-                }
 
                 Row(
                     modifier = Modifier
@@ -310,26 +318,36 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
         }
     }
 }
-fun getData(context: Context) {
+fun getData(context: Context, db: FirebaseFirestore, documentId: String, fcmToken: String) {
+    Log.d("res", "getData fcmToken: $fcmToken")
     val myUrl = "https://snakehumanconflict.org/venom_resource_center/vrc_image/sendPushNotification.php"
     val stringRequest: StringRequest = object : StringRequest( Method.POST, myUrl,
         Response.Listener { response ->
             try {
-                //Parse your api responce here
-                val jsonObject = JSONObject(response)
-//                Toast.makeText(context, response, Toast.LENGTH_LONG).show()
+                Log.d("res", "getData: $response")
+                db.collection("appointment").document(documentId)
+                    .update("reminderStatus", true)
+                    .addOnSuccessListener {
+                        return@addOnSuccessListener
+                    }
+
             } catch (e: JSONException) {
+                Log.d("res", "getData: $e")
+
                 e.printStackTrace()
             }
         },
         Response.ErrorListener { error ->
+            Log.d("res", "getData: $error")
+
 //            Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show()
         }) {
         override fun getParams(): Map<String, String> {
             val params: MutableMap<String, String> = HashMap()
             //Change with your post params
-//            params["username"] = username
-//            params["password"] = password
+            params["title"] = "Appointment"
+            params["message"] = "Please Check your appointment"
+            params["fcm_token"] = fcmToken
             return params
         }
     }

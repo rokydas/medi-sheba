@@ -15,6 +15,6 @@ data class Appointment(
     var document_id: String = "",
     val fcmToken: String = "",
     val reminderStatus: Boolean = false,
-    var reminderTime: String = ""
+    var reminderTime: String = "",
     var rating: String = ""
 )

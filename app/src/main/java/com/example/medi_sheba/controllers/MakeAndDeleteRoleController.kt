@@ -36,8 +36,6 @@ class MakeAndDeleteRoleController: ViewModel() {
                     user.image = decrypt(user.image)
                     user.doctorCategory = decrypt(user.doctorCategory)
                     user.doctorDesignation = decrypt(user.doctorDesignation)
-                    user.doctorRating = decrypt(user.doctorRating.toString())
-                    user.doctorPrice = decrypt(user.doctorPrice.toString())
 
                     users.add(user)
                 }

@@ -16,4 +16,5 @@ data class Appointment(
     val fcmToken: String = "",
     val reminderStatus: Boolean = false,
     var reminderTime: String = ""
+    var rating: String = ""
 )

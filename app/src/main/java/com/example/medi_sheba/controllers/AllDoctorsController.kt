@@ -61,8 +61,6 @@ class AllDoctorsController {
         doctor.image = decrypt(doctor.image)
         doctor.doctorCategory = decrypt(doctor.doctorCategory)
         doctor.doctorDesignation = decrypt(doctor.doctorDesignation)
-        doctor.doctorRating = decrypt(doctor.doctorRating.toString())
-        doctor.doctorPrice = decrypt(doctor.doctorPrice.toString())
 
         doctors.add(doctor)
     }

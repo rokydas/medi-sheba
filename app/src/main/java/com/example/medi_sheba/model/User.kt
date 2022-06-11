@@ -17,7 +17,8 @@ data class User(
     var doctorCategory: String = "",
     var doctorDesignation: String = "",
     var doctorPrice: String = "0",
-    var doctorRating: String = "0.0f"
+    var doctorRating: String = "0",
+    var ratingCount: String = "0",
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -31,7 +32,8 @@ data class User(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readString()!!
+        parcel.readString()!!,
+        parcel.readString()!!,
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -47,6 +49,7 @@ data class User(
         parcel.writeString(gender)
         parcel.writeString(doctorCategory)
         parcel.writeString(doctorDesignation)
+        parcel.writeString(ratingCount)
     }
 
     override fun describeContents(): Int {

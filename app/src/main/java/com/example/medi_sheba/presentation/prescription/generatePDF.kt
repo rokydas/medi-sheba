@@ -39,9 +39,6 @@ fun generatePDF(
     directory: File,
     data_map: HashMap<String, String>
 ) {
-
-
-
     val pageHeight = 1120
     val pageWidth = 792
     val pdfDocument = PdfDocument()
@@ -79,7 +76,7 @@ fun generatePrescript(
     paint.textSize = 40f
     paint.color = ContextCompat.getColor(context, R.color.primary_color)
     paint.textAlign = Paint.Align.LEFT
-    canvas.drawText("Medi Sheva", 320f, 175f, paint)
+    canvas.drawText("Medi Sheba", 320f, 175f, paint)
     paint.textAlign = Paint.Align.LEFT
     paint.textSize = 15f
 

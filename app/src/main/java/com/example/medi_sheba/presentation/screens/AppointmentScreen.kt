@@ -49,11 +49,16 @@ import com.example.medi_sheba.presentation.constant.Constant.PATIENT
 import com.example.medi_sheba.presentation.prescription.generatePDF
 import com.example.medi_sheba.presentation.prescription.getDirectory
 import com.example.medi_sheba.presentation.prescription.requestForegroundPermission
+import com.example.medi_sheba.presentation.ratingbar.CustomRatingBar
+import com.example.medi_sheba.presentation.ratingbar.RatingBarConfig
+import com.example.medi_sheba.presentation.ratingbar.RatingBarStyle
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.example.medi_sheba.presentation.util.decrypt
 import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -72,6 +77,9 @@ fun AppointmentScreen(
     appointmentController.getAppointDocuData(document_id.toString())
     val appointmentData = appointmentController.appoint.observeAsState()
 
+    var isLoading by rememberSaveable { mutableStateOf(false) }
+    val db = Firebase.firestore
+    val uid = Firebase.auth.currentUser?.uid
 
     val profileController = ProfileController()
     val appointmentUser = profileController.user.observeAsState()
@@ -109,6 +117,22 @@ fun AppointmentScreen(
             )
         },
     ) {
+
+        if(isLoading) {
+            Dialog(
+                onDismissRequest = {  },
+                DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+            ) {
+                Box(
+                    contentAlignment= Alignment.Center,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .background(Color.Transparent, shape = RoundedCornerShape(8.dp))
+                ) {
+                    CircularProgressIndicator(color = PrimaryColor)
+                }
+            }
+        }
 
         if(appointmentUser.value != null){
             Column(
@@ -193,29 +217,87 @@ fun AppointmentScreen(
                         }else{
                             appointmentController.getAppointDocuData(document_id.toString())
 
-                            if(appointmentData.value != null && appointmentUser.value != null){
-                                ShowPatientDetails(
-                                    user_id = user_id,
-                                    isNurseAssigned = isNurseAssigned.value,
-                                    nurseName = nurseProfile.value?.name.toString(),
-                                    userType = userType.toString(),
-                                    isCheckPatient = isCheckPatient,
-                                    appointment = appointmentData.value,
-                                    doctorDetails = appointmentUser.value
-                                )
+                            if(appointmentData.value != null && appointmentUser.value != null) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    ShowPatientDetails(
+                                        user_id = user_id,
+                                        isNurseAssigned = isNurseAssigned.value,
+                                        nurseName = nurseProfile.value?.name.toString(),
+                                        userType = userType.toString(),
+                                        isCheckPatient = isCheckPatient,
+                                        appointment = appointmentData.value,
+                                        doctorDetails = appointmentUser.value
+                                    )
+                                    var rating by rememberSaveable { mutableStateOf(0f) }
+                                    if (appointmentData.value!!.rating == "" && userType == PATIENT) {
+                                        CustomRatingBar(
+                                            value = rating,
+                                            onValueChange = {
+                                                rating = it
+                                            },
+                                            onRatingChanged = {
+                                                Log.d("Rating Value", "RatingBarView: $it")
+                                            },
+                                            config = RatingBarConfig()
+                                                .style(RatingBarStyle.HighLighted)
+                                        )
+                                        val context = LocalContext.current
+                                        Button(onClick = {
+                                            isLoading = true
+                                            val docRef = db.collection("appointment").document(document_id.toString())
+                                            docRef.update("rating", rating.toString())
+                                                .addOnSuccessListener {
+                                                    val userDocRef = db.collection("users").document(
+                                                        appointmentData.value!!.doctor_uid)
+                                                    userDocRef.get()
+                                                        .addOnSuccessListener { document ->
+                                                            val user = document.toObject(User::class.java)!!
+                                                            user.doctorRating = user.doctorRating
+                                                            user.ratingCount = user.ratingCount
+
+                                                            val totalRating = (user.doctorRating.toFloat() * user.ratingCount.toInt()) + rating
+                                                            val newRating = totalRating / (user.ratingCount.toInt() + 1)
+                                                            Log.d("ekhane", totalRating.toString())
+                                                            Log.d("ekhane", newRating.toString())
+                                                            userDocRef.update(mapOf(
+                                                                "doctorRating" to newRating.toString(),
+                                                                "ratingCount" to (user.ratingCount.toInt() + 1).toString()
+                                                            ))
+                                                                .addOnSuccessListener {
+                                                                    isLoading = false
+                                                                    Toast.makeText(
+                                                                        context,
+                                                                        "Rating submitted successfully",
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
+                                                                }
+                                                                .addOnFailureListener {
+                                                                    Toast.makeText(
+                                                                        context,
+                                                                        "Something went wrong",
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
+                                                                }
+                                                        }
+                                                }
+                                        }) {
+                                            Text(text = "Submit Rating")
+                                        }
+                                    }
+                                    else {
+                                        var value = appointmentData.value!!.rating
+                                        if(value ==""){
+                                            value = "0.0"
+                                        }
+                                        Text(text = "Given rating: ${value}")
+                                    }
+                                }
                             }
-
                         }
-
-
-
                     }
-
-
                 }
-
-
-
             }
         }else{
             Box(modifier = Modifier.fillMaxSize(),
@@ -224,8 +306,6 @@ fun AppointmentScreen(
             }
         }
     }
-
-
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -414,11 +494,8 @@ fun InputPatientDetails(document_id: String?,
     val nurseProController = ProfileController()
     val nurseProfile = nurseProController.user.observeAsState()
     if(appointment?.nurse_uid != ""){
-        Log.d("nurse", "InputPatientDetails: ${appointment?.nurse_uid}")
         nurseProController.getUser(userId = appointment?.nurse_uid.toString())
-
     }
-    Log.d("nurse", "InputPatientDetails: ${nurseProfile.value?.name}")
 
 
 
@@ -610,6 +687,7 @@ fun InputPatientDetails(document_id: String?,
                         appointData["prescription"] = encrypt(prescription.value)
                         appointData["serial"] = encrypt(appointment?.serial.toString())
                         appointData["time_slot"] = encrypt(appointment?.time_slot.toString())
+                        appointData["rating"] = appointment?.rating.toString()
 
 
                         db.collection("appointment")

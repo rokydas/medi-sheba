@@ -19,6 +19,7 @@ import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
+import com.sslwireless.sslcommerzlibrary.model.initializer.SSLCommerzInitialization
 
 const val EncryptUID = "jabedrokyabsarsaruj"
 class MainActivity : ComponentActivity() {
@@ -28,6 +29,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
+        val storeId = "testrokydzhl6"
+        val storePassword = "18701035"
+
+        val sslCommerzInitialization = SSLCommerzInitialization(storeId, storePassword, )
+
+//        final SSLCommerzInitialization sslCommerzInitialization = new SSLCommerzInitialization
+//                (&quot;yourStoreID&quot;,&quot;yourPassword&quot;, amount, SSLCCurrencyType.BDT,&quot;123456789098765&quot;,
+//        &quot;yourProductType&quot;, SSLCSdkType.TESTBOX).addMultiCardName(“”).addIpnUrl(“”);
 
         setContent {
             medi_shebaTheme {

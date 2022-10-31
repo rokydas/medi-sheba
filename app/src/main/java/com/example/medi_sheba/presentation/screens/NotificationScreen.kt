@@ -19,11 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.medi_sheba.model.Notification
 import com.example.medi_sheba.ui.theme.PrimaryColorLight
 
 @Composable
-fun NotificationScreen() {
+fun NotificationScreen(navController: NavController) {
     Scaffold {
         Column(
             modifier = Modifier
@@ -55,7 +56,6 @@ fun NotificationScreen() {
                                 modifier = Modifier
                                     .weight(0.95f)
                             ) {
-                                Text(text = notification.time)
                                 Text(text = notification.title)
                                 Text(text = notification.description)
                             }
@@ -110,8 +110,4 @@ val notifications = mutableListOf<Notification>(
         description = "this is first description",
         time = "1.17 AM"
     ),
-
-
-
-
 )

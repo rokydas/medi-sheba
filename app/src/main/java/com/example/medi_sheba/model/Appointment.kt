@@ -9,6 +9,7 @@ data class Appointment(
     val serial: String = "",
     val date: String = "",
     val cabin_no: String = "",
+    val weight: String = "",
     val prescription: String = "",
     val disease_details: String = "",
     var document_id: String = ""

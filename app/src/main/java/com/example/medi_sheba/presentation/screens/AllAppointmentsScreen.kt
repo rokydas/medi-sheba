@@ -1,5 +1,6 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +29,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
+import com.example.medi_sheba.EncryptClass
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AppointmentController
 import com.example.medi_sheba.controllers.ProfileController
@@ -59,7 +64,7 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
             TopAppBar(
                 title = {
                     Text(text = if(user.value != null)
-                        "${user.value?.name}'s Appointments List"
+                        "${EncryptClass.decrypt(user.value?.name!!)}'s Appointments List"
                     else "Appointments List")
                 },
                 navigationIcon = {
@@ -78,7 +83,7 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
             title = "Appointment") }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            Column {
+            Column{
                 if(appointmentList.value != null){
                     val appointments = when (user.value?.userType) {
                         PATIENT -> {
@@ -102,16 +107,27 @@ fun AllAppointmentsScreen(navController: NavController,  auth: FirebaseAuth ) {
                         }
                     }
                     LazyColumn {
-                        items(appointments) { appointment ->
-                            SingleAppointment(
-                                appointment = appointment,
-                                navController = navController,
-                                otherPersonUid =
-                                if(user.value?.userType == PATIENT) {
-                                    appointment.doctor_uid
-                                } else appointment.patient_uid,
-                                userType = user.value?.userType.toString()
-                            )
+                        if (user.value != null) {
+                            items(appointments) { appointment ->
+                                SingleAppointment(
+                                    appointment = appointment,
+                                    navController = navController,
+                                    otherPersonUid =
+                                    if(user.value?.userType == PATIENT) {
+                                        appointment.doctor_uid
+                                    } else appointment.patient_uid,
+                                    userType = user.value?.userType.toString()
+                                )
+                            }
+                        }
+                    }
+
+                    if(appointments.isEmpty()){
+                        Box(modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(text = "There is no appointment",
+                                fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -131,15 +147,16 @@ fun SingleAppointment(
     profileController.getUser(otherPersonUid)
     val appointmentUser = profileController.user.observeAsState()
 
-
     if(appointmentUser.value != null){
         Box(
             modifier = Modifier
                 .background(background)
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate(ScreenItem.AppointmentScreenItem.route+
-                            "/"+appointment.document_id+"/"+otherPersonUid+"/"+userType)
+                    navController.navigate(
+                        ScreenItem.AppointmentScreenItem.route +
+                                "/" + appointment.document_id + "/" + otherPersonUid + "/" + userType
+                    )
                 }
         ) {
 
@@ -148,7 +165,8 @@ fun SingleAppointment(
                     .fillMaxWidth()
                     .background(background)
                     .padding(horizontal = 15.dp, vertical = 10.dp)
-                    .shadow(5.dp, shape = RoundedCornerShape(10.dp))
+                    .shadow(5.dp, RoundedCornerShape(10.dp))
+                    .background(Color.White)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -157,16 +175,34 @@ fun SingleAppointment(
                         .padding(20.dp)
 
                 ) {
-                    Image(
-                        painter = if (userType.equals(PATIENT)) painterResource(R.drawable.doctor2)
-                        else painterResource(R.drawable.avartar),
-                        contentDescription = "profile_picture",
+                    SubcomposeAsyncImage(
+                        model = appointmentUser.value?.image,
+                        contentDescription = "profile image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(70.dp)
                             .clip(CircleShape)
                             .border(2.dp, Color.Gray, CircleShape)
-                    )
+                    ) {
+                        when (painter.state) {
+                            is AsyncImagePainter.State.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(35.dp),
+                                    color = PrimaryColor
+                                )
+                            }
+                            is AsyncImagePainter.State.Error -> {
+                                Image(
+                                    painter = if (userType == PATIENT) painterResource(R.drawable.doctor2)
+                                    else painterResource(R.drawable.avartar),
+                                    contentDescription = "profile image"
+                                )
+                            }
+                            else -> {
+                                SubcomposeAsyncImageContent()
+                            }
+                        }
+                    }
                     Spacer(modifier = Modifier.width(15.dp))
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -174,31 +210,20 @@ fun SingleAppointment(
                             style = MaterialTheme.typography.h6,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(
-                            text = when(userType) {
-                                DOCTOR -> {
-                                    if(appointment.doc_checked == false)
-                                        "Nurse not yet assigned "
-                                    else ""
+                        when(userType) {
+                            DOCTOR -> {
+                                if (!appointment.doc_checked)
+                                    TextSubTitle("Nurse not yet assigned ")
+                            }
+                            PATIENT -> {
+                                TextSubTitle("${appointmentUser.value?.doctorCategory}")
 
-                                }
-                                PATIENT -> {
-                                    "Heart Surgeon"
-                                }
-                                NURSE ->{
-                                    "Cabin No: ${appointment.cabin_no}"
-                                }
-                                else ->{
-                                    ""
-                                }
-                            },
-                            style = MaterialTheme.typography.body1,
-                            color = Color.Gray,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(start = 10.dp),
+                            }
+                            NURSE -> {
+                                TextSubTitle(title = "Cabin No: ${appointment.cabin_no}")
 
-
-                            )
+                            }
+                        }
 
                         Text(
                             text = "Time: ${appointment.time_slot}",
@@ -207,39 +232,6 @@ fun SingleAppointment(
                             fontSize = 14.sp
                         )
 
-                        /*when(userType){
-                            "Doctor" -> {
-                                Surface(
-                                    modifier = Modifier
-                                        .align(Alignment.End)
-                                        .clip(
-                                            shape =
-                                            CircleShape.copy(all = CornerSize(5.dp))
-                                        )
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(PrimaryColor)
-                                            .padding(horizontal = 10.dp, vertical = 5.dp)
-                                            .clip(
-                                                shape = CircleShape
-                                                    .copy(all = CornerSize(12.dp))
-                                            ),
-                                        contentAlignment = Alignment.Center,
-
-                                        ) {
-                                        Text(
-                                            text = "Assign Nurse",
-                                            color = Color.White,
-                                            style = TextStyle(fontSize = 14.sp),
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            }
-                        }*/
-
-
                     }
                 }
             }
@@ -247,6 +239,17 @@ fun SingleAppointment(
         }
     }
 
+}
+
+@Composable
+fun TextSubTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.body1,
+        color = Color.Gray,
+        fontSize = 12.sp,
+        modifier = Modifier.padding(start = 10.dp),
+        )
 }
 
 

@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -33,17 +31,23 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.example.medi_sheba.R
 import com.example.medi_sheba.controllers.AppointmentController
 import com.example.medi_sheba.controllers.NurseContoller
 import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.Appointment
+import com.example.medi_sheba.presentation.BarChart.BarChartContent
 import com.example.medi_sheba.ui.theme.PrimaryColor
-import com.example.medi_sheba.ui.theme.PrimaryColorLight
 import com.example.medi_sheba.ui.theme.background
 import com.example.medi_sheba.presentation.StaticScreen.InputField
 import com.example.medi_sheba.presentation.constant.Constant
+import com.example.medi_sheba.presentation.constant.Constant.DOCTOR
 import com.example.medi_sheba.presentation.constant.Constant.PATIENT
+import com.example.medi_sheba.presentation.screenItem.ScreenItem
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -52,7 +56,7 @@ fun AppointmentScreen(
     navController: NavController,
     document_id: String?,
     user_id: String?,
-    user_type: String?
+    userType: String?
 ) {
     val isNurseAssigned = remember { mutableStateOf(false) }
     val isCheckPatient = remember { mutableStateOf(false) }
@@ -73,6 +77,9 @@ fun AppointmentScreen(
     if(isNurseAssigned.value){
         nurseProController.getUser(userId = appointmentData.value?.nurse_uid.toString())
     }
+
+    Log.d("bar", "user_id---: $user_id")
+    Log.d("bar", "document_id: $document_id")
 
     val scrollState = rememberScrollState()
 
@@ -98,6 +105,7 @@ fun AppointmentScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(PrimaryColor)
                 .verticalScroll(scrollState)
 
         ) {
@@ -112,25 +120,46 @@ fun AppointmentScreen(
                     .fillMaxSize() ,
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = if(user_type == "Doctor")
-                            painterResource(R.drawable.avartar)
-                        else painterResource(R.drawable.doctor2),
-                        contentDescription = "profile_picture",
+
+                    SubcomposeAsyncImage(
+                        model = appointmentUser.value?.image,
+                        contentDescription = "profile image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(70.dp)
                             .clip(CircleShape)
                             .border(2.dp, Color.Gray, CircleShape)
-                    )
+                    ) {
+                        when (painter.state) {
+                            is AsyncImagePainter.State.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(35.dp),
+                                    color = PrimaryColor
+                                )
+                            }
+                            is AsyncImagePainter.State.Error -> {
+                                Image(
+                                    painter = if (userType == PATIENT) painterResource(R.drawable.doctor2)
+                                    else painterResource(R.drawable.avartar),
+                                    contentDescription = "profile image"
+                                )
+                            }
+                            else -> {
+                                SubcomposeAsyncImageContent()
+                            }
+                        }
+                    }
 
-                    Text(text = "${appointmentUser.value?.name}")
-                    if(user_type == PATIENT){
-                        Text(text = "${appointmentUser.value?.doctorCategory}")
-                        Text(text = "${appointmentUser.value?.doctorDesignation}")
+                    Text(text = "${appointmentUser.value?.name}", color = Color.White,
+                        modifier = Modifier.clickable {
+                        navController.navigate(ScreenItem.PrescriptScreenItem.route)
+                    })
+                    if(userType == PATIENT){
+                        Text(text = "${appointmentUser.value?.doctorCategory}", color = Color.White)
+                        Text(text = "${appointmentUser.value?.doctorDesignation}", color = Color.White)
                     }else{
-                        Text(text = "Mobile No: ${appointmentUser.value?.mobileNumber}")
-                        Text(text = "Address: ${appointmentUser.value?.address}")
+                        Text(text = "Mobile No: ${appointmentUser.value?.mobileNumber}", color = Color.White)
+                        Text(text = "Address: ${appointmentUser.value?.address}", color = Color.White)
                     }
 
                 }
@@ -139,7 +168,7 @@ fun AppointmentScreen(
             Surface(modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(),
-                color = PrimaryColor,
+                color = background,
                 shape = RoundedCornerShape(topStart = 20.dp,
                     topEnd = 20.dp )) {
                 Box(modifier = Modifier
@@ -154,9 +183,10 @@ fun AppointmentScreen(
                     }else{
                         appointmentController.getAppointDocuData(document_id.toString())
                         ShowPatientDetails(
+                            user_id = user_id,
                             isNurseAssigned = isNurseAssigned.value,
                             nurseName = nurseProfile.value?.name.toString(),
-                            userType = user_type.toString(),
+                            userType = userType.toString(),
                             isCheckPatient = isCheckPatient,
                             appointment = appointmentData.value
                         )
@@ -179,11 +209,13 @@ fun AppointmentScreen(
 
 @Composable
 fun ShowPatientDetails(
+    user_id: String?,
     isNurseAssigned: Boolean,
     nurseName: String,
     userType: String,
     isCheckPatient: MutableState<Boolean>,
-    appointment: Appointment?
+    appointment: Appointment?,
+
 ) {
 
     Column(modifier = Modifier.padding(vertical = 20.dp)) {
@@ -192,7 +224,7 @@ fun ShowPatientDetails(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(5.dp, shape = RoundedCornerShape(10.dp))
-                .background(background)
+                .background(Color.White)
                 .padding(vertical = 15.dp, horizontal = 25.dp)
         ) {
             Column {
@@ -215,7 +247,7 @@ fun ShowPatientDetails(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(5.dp, shape = RoundedCornerShape(10.dp))
-                .background(background)
+                .background(Color.White)
                 .padding(vertical = 15.dp, horizontal = 25.dp)
         ) {
             Column {
@@ -238,13 +270,31 @@ fun ShowPatientDetails(
             userType = userType)
 
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(15.dp))
+
+        //barchart
+        val FB_UID = FirebaseAuth.getInstance().uid
+        when (userType) {
+            DOCTOR -> {
+                BarChartContent(patient_uid = user_id.toString(), doctor_uid = FB_UID.toString())
+            }
+            PATIENT -> {
+                BarChartContent(patient_uid = FB_UID.toString(), doctor_uid = user_id.toString())
+            }
+            else -> {
+                BarChartContent(patient_uid = user_id.toString(), doctor_uid = appointment?.doctor_uid.toString() )
+            }
+        }
+
+
+
+        Spacer(modifier = Modifier.height(30.dp))
 
         if(userType == Constant.DOCTOR){
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = background,
-                    contentColor = Color.Black
+                    backgroundColor = PrimaryColor,
+                    contentColor = Color.White
                 ),
                 onClick = {
                     isCheckPatient.value = true
@@ -263,7 +313,7 @@ fun NurseBoxRow(isNurseAssigned: Boolean, nurseName: String, userType: String) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .shadow(5.dp, shape = RoundedCornerShape(10.dp))
-        .background(background)
+        .background(Color.White)
         .padding(vertical = 15.dp, horizontal = 25.dp)) {
 
         Text(text = "Assigned Nurse: ",
@@ -281,23 +331,6 @@ fun NurseBoxRow(isNurseAssigned: Boolean, nurseName: String, userType: String) {
             modifier = Modifier.padding(start = 10.dp)
 
         )
-
-//            if(!isNurseAssigned && userType == "Doctor"){
-//                Spacer(modifier = Modifier.height(20.dp))
-//                Button(
-//                    colors = ButtonDefaults.buttonColors(
-//                        backgroundColor = PrimaryColor,
-//                        contentColor = Color.White
-//                    ),
-//                    onClick = {
-////                                            isNurseAssigned.value = true
-//                    },
-//                    modifier = Modifier.align(Alignment.End)
-//                ) {
-//                    Text(text = "Assign Nurse")
-//                }
-//            }
-
     }
 }
 
@@ -312,6 +345,17 @@ fun InputPatientDetails(document_id: String?,
     val nurseList = nurseContoller.nurseList.observeAsState()
     nurseContoller.getNurseList()
 
+    val nurseProController = ProfileController()
+    val nurseProfile = nurseProController.user.observeAsState()
+    if(appointment?.nurse_uid != ""){
+        Log.d("nurse", "InputPatientDetails: ${appointment?.nurse_uid}")
+        nurseProController.getUser(userId = appointment?.nurse_uid.toString())
+
+    }
+    Log.d("nurse", "InputPatientDetails: ${nurseProfile.value?.name}")
+
+
+
     var isDialogShow by rememberSaveable { mutableStateOf(false) }
     val selectedNurseName = rememberSaveable{ mutableStateOf("") }
     val selectedNurseUid = rememberSaveable{ mutableStateOf("") }
@@ -320,6 +364,7 @@ fun InputPatientDetails(document_id: String?,
     val disease = rememberSaveable{ mutableStateOf("") }
     val prescription = rememberSaveable{ mutableStateOf("") }
     val cabin = rememberSaveable{ mutableStateOf("") }
+    val weight = rememberSaveable{ mutableStateOf("") }
     //TODO: data checked
     if(appointment?.disease_details != ""){
         disease.value = appointment?.disease_details.toString()
@@ -329,6 +374,9 @@ fun InputPatientDetails(document_id: String?,
     }
     if(appointment?.cabin_no != ""){
         cabin.value = appointment?.cabin_no.toString()
+    }
+    if(appointment?.weight != ""){
+        weight.value = appointment?.weight.toString()
     }
 
 
@@ -434,9 +482,11 @@ fun InputPatientDetails(document_id: String?,
                     .fillMaxWidth()
                     .padding(vertical = 15.dp, horizontal = 25.dp)
             ) {
-                Text(text = if(selectedNurseName.value != "")
+                Text(text = if(appointment?.nurse_uid != "" )
+                    "Nurse: ${nurseProfile.value?.name}"
+                else if(selectedNurseName.value != ""){
                     "Nurse: ${selectedNurseName.value}"
-                else "Assign Nurse" )
+                } else "Assign Nurse" )
             }
 
 
@@ -444,6 +494,13 @@ fun InputPatientDetails(document_id: String?,
 
             InputField(inputState = cabin,
                 labelId = "Cabin No:",
+                keyboardType = KeyboardType.Number
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            InputField(inputState = weight,
+                labelId = "Weight:",
                 keyboardType = KeyboardType.Number
             )
 
@@ -475,6 +532,7 @@ fun InputPatientDetails(document_id: String?,
                         val db = Firebase.firestore
                         val appointData: MutableMap<String, Any> = HashMap()
                         appointData["cabin_no"] = cabin.value
+                        appointData["weight"] = weight.value
                         appointData["date"] = appointment?.date.toString()
                         appointData["disease_details"] = disease.value
                         appointData["doc_checked"] = true
@@ -512,291 +570,6 @@ fun InputPatientDetails(document_id: String?,
 
 }
 
-@Composable
-fun InputPatientDetails1(isCheckPatient: MutableState<Boolean>) {
-    val context = LocalContext.current
-    val nurseContoller = NurseContoller()
-    val nurseList = nurseContoller.nurseList.observeAsState()
-    nurseContoller.getNurseList()
-
-    var isDialogShow by rememberSaveable { mutableStateOf(false) }
-    val selectedNurseName = rememberSaveable{ mutableStateOf("") }
-    val selectedNurseUid = rememberSaveable{ mutableStateOf("") }
-
-    if(isDialogShow) {
-        Dialog(
-            onDismissRequest = {
-                               isDialogShow = false
-            },
-            DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
-        ) {
-            Box(
-                contentAlignment= Alignment.Center,
-                modifier = Modifier
-                    .size(300.dp)
-                    .background(Color.White, shape = RoundedCornerShape(8.dp))
-            ) {
-                Column {
-                    if(nurseList.value != null){
-                        LazyColumn {
-                            items(nurseList.value!!) { nurseUser ->
-                                Text(text = "Nurse Name: ${nurseUser.name}",
-                                    fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxSize()
-        .background(background)
-        .padding(vertical = 15.dp)
-        .shadow(0.dp, shape = RoundedCornerShape(10.dp))
-    ) {
-        Column(modifier = Modifier.fillMaxWidth())  {
-            val disease = rememberSaveable{ mutableStateOf("") }
-            val prescription = rememberSaveable{ mutableStateOf("") }
-
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = PrimaryColor,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(20.dp),
-                onClick = {
-                    isDialogShow = true
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 15.dp, horizontal = 25.dp)
-            ) {
-                Text(text = "Assign Nurse")
-            }
 
 
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            InputField(inputState = disease,
-                labelId = "Disease Details",
-            )
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            InputField(
-                modifier = Modifier ,
-                inputState = prescription,
-                labelId = "Prescription",
-            )
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = PrimaryColor,
-                    contentColor = Color.White
-                ),
-                onClick = {
-
-                          if(disease.value == "" && prescription.value == ""){
-                              Toast.makeText(context, "Fill up all fields", Toast.LENGTH_SHORT).show()
-                          }else{
-                              Toast.makeText(context, "${disease.value} , prescription: ${prescription.value}", Toast.LENGTH_SHORT).show()
-                          }
-                    isCheckPatient.value = false ;
-                },
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(horizontal = 10.dp, vertical = 10.dp)
-            ) {
-                Text(text = "Submit")
-            }
-        }
-    }
-
-}
-
-
-
-@Composable
-fun AppointmentScreen1(
-    navController: NavController,
-    bottomNavController: NavController?,
-    document_id: String?,
-    user_id: String?
-
-    ) {
-//    Log.e("usertype", "SingleAppointment: ${document_id}", )
-//    val appointmentController  = AppointmentController()
-//    appointmentController.getAppointDocuData(document_id.toString())
-//    val appoint = appointmentController.appoint.observeAsState()
-
-    val profileController = ProfileController()
-    val appointmentUser = profileController.user.observeAsState()
-    profileController.getUser(userId = user_id.toString())
-
-    val scrollState = rememberScrollState()
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Appointment Details")
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Icon(Icons.Filled.ArrowBack, "backIcon")
-                    }
-                },
-                backgroundColor = PrimaryColor,
-                contentColor = Color.White,
-                elevation = 10.dp
-            )
-        },
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(20.dp)
-        ) {
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-                    .shadow(5.dp, shape = RoundedCornerShape(10.dp))
-                    .background(PrimaryColorLight)
-                    .padding(vertical = 15.dp, horizontal = 25.dp)
-            ) {
-                Row {
-                    Icon(imageVector = Icons.Default.MedicalServices, contentDescription = "")
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = "Doctor: ")
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Text(text = "Dr. ${appointmentUser.value?.name}")
-                        Text(text = "Medicine specialist")
-                        Text(text = "MBBS (CMC), FCPS (CMC)")
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-                    .shadow(5.dp, shape = RoundedCornerShape(10.dp))
-                    .background(PrimaryColorLight)
-                    .padding(vertical = 15.dp, horizontal = 25.dp)
-            ) {
-                Row {
-                    Icon(imageVector = Icons.Default.MedicalServices, contentDescription = "")
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = "Doctor: ")
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Text(text = "Dr. ${appointmentUser.value?.name}")
-                        Text(text = "Medicine specialist")
-                        Text(text = "MBBS (CMC), FCPS (CMC)")
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-                    .shadow(5.dp, shape = RoundedCornerShape(10.dp))
-                    .background(PrimaryColorLight)
-                    .padding(vertical = 15.dp, horizontal = 25.dp)
-            ) {
-                Row {
-                    Icon(imageVector = Icons.Default.MedicalServices, contentDescription = "")
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = "Patient: ")
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Text(text = "Hannan")
-                        Text(text = "Age: 50")
-                        Text(text = "Gender: Male")
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            val isNurseAssigned = remember { mutableStateOf(false) }
-
-            Row {
-                Text(text = "Assigned Nurse: ")
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(
-                        text = if (isNurseAssigned.value) "Amina Begum"
-                        else "not assigned yet"
-                    )
-                    if(!isNurseAssigned.value) {
-                        Button(
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = PrimaryColor,
-                                contentColor = Color.White
-                            ),
-                            onClick = {
-                                isNurseAssigned.value = true
-                            }
-                        ) {
-                            Text(text = "Assign a nurse")
-                        }
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-                    .shadow(5.dp, shape = RoundedCornerShape(10.dp))
-                    .background(PrimaryColorLight)
-                    .padding(vertical = 15.dp, horizontal = 25.dp)
-            ) {
-                Column {
-                    Text(
-                        text = "Disease details:",
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(text = stringResource(R.string.lorem_ipsum_small))
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-                    .shadow(5.dp, shape = RoundedCornerShape(10.dp))
-                    .background(PrimaryColorLight)
-                    .padding(vertical = 15.dp, horizontal = 25.dp)
-            ) {
-                Column {
-                    Text(
-                        text = "Prescription:",
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(text = stringResource(R.string.prescription))
-                }
-            }
-        }
-    }
-
-
-}
 

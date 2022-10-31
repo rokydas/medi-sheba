@@ -2,20 +2,17 @@ package com.example.medi_sheba
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.medi_sheba.FirestoreAll.DataOrException
-import com.example.medi_sheba.FirestoreAll.Product
 import com.example.medi_sheba.model.User
+import com.example.medi_sheba.presentation.encryption.EncryptClass
+import com.example.medi_sheba.presentation.prescription.PrescriptScreen
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
 import com.example.medi_sheba.presentation.screens.*
@@ -24,6 +21,8 @@ import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
 
+const val EncryptUID = "jabedrokyabsarsaruj"
+val EncryptClass = EncryptClass()
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
 
@@ -76,7 +75,7 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 document_id = document_id,
                                 user_id = user_id,
-                                user_type = user_type
+                                userType = user_type
                             )
                         }
                         composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
@@ -106,13 +105,14 @@ class MainActivity : ComponentActivity() {
                             MakeAndDeleteRole(navController = navController, roleName!!)
                         }
                         composable(route = ScreenItem.AllTopDoctorScreenItem.route) {
-                            AllTopDoctorsScreen(navController = navController)
+//                            AllTopDoctorsScreen(navController = navController)
                         }
                         composable(route = ScreenItem.AllCategoryScreenItem.route) {
                             AllCategoryScreen(navController = navController)
                         }
                         composable(route = ScreenItem.NotificationScreenItem.route) {
-                            NotificationScreen()
+                            NotificationScreen(navController = navController)
+                        }
                         composable(route = ScreenItem.AllCategoryScreen.route) {
                             AllCategoryScreen(navController = navController)
                         }
@@ -145,6 +145,12 @@ class MainActivity : ComponentActivity() {
                                 name = name,
                                 designation = designation
                             )
+                        }
+                        composable(route = ScreenItem.NotificationScreenItem.route) {
+                            NotificationScreen(navController = navController)
+                        }
+                        composable(route = ScreenItem.PrescriptScreenItem.route) {
+                            PrescriptScreen()
                         }
                     }
                 }

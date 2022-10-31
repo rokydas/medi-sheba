@@ -1,14 +1,5 @@
 package com.example.medi_sheba.presentation.screens
 
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,16 +10,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,12 +30,13 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
-import coil.compose.rememberImagePainter
+import com.example.medi_sheba.EncryptClass
 import com.example.medi_sheba.R
+import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
-import com.example.medi_sheba.controllers.ProfileController
 import com.example.medi_sheba.ui.theme.PrimaryColor
+import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -66,7 +59,8 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
     }
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController, title = "Profile") }
+        bottomBar = { BottomNavigationBar(navController = navController, title = "Profile") },
+        backgroundColor = background
     ) {
         Column(
             modifier = Modifier
@@ -92,7 +86,6 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(PrimaryColor)
                         .padding(30.dp)
                 ) {
                     Icon(
@@ -149,7 +142,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
 
                     Column {
                         Text(
-                            text = _user.name,
+                            text = EncryptClass.decrypt(_user.name),
                             style = MaterialTheme.typography.h5,
                             fontWeight = FontWeight.Bold
                         )
@@ -170,7 +163,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = "Mobile: " + _user.mobileNumber,
+                        text = "Mobile: " + EncryptClass.decrypt(_user.mobileNumber),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -185,7 +178,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = "Email: " + _user.email,
+                        text = "Email: " + EncryptClass.decrypt(_user.email),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -200,7 +193,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = "Age: " + _user.age,
+                        text = "Age: " + EncryptClass.decrypt(_user.age),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -215,7 +208,7 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(
-                        text = "Address: " + _user.address,
+                        text = "Address: " + EncryptClass.decrypt(_user.address),
                         style = MaterialTheme.typography.body1
                     )
                 }

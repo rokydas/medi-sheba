@@ -26,9 +26,7 @@ data class BottomNavItem(
 @Composable
 fun BottomNavigationBar(navController: NavController, title: String) {
     val items = listOf(
-        BottomNavItem(ScreenItem.AllAppointmentsScreenItem, R.drawable.appointment, "Appointment"),
         BottomNavItem(ScreenItem.HomeScreenItem, R.drawable.home, "Home"),
-        BottomNavItem(ScreenItem.ChatUserListScreenItem, R.drawable.chat_icon, "Chat"),
         BottomNavItem(ScreenItem.ProfileScreenItem, R.drawable.profile_icon, "Profile"),
     )
 

@@ -18,7 +18,6 @@ import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
 import com.example.medi_sheba.presentation.screens.ProfileScreen
 import com.example.medi_sheba.presentation.screens.*
-import com.example.medi_sheba.services.channelID
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.medi_shebaTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -29,10 +28,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        createNotificationChannel()
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         setContent {
             medi_shebaTheme {
@@ -70,94 +66,9 @@ class MainActivity : ComponentActivity() {
                                 UpdateProfileScreen(navController = navController, auth, userDetails)
                             }
                         }
-                        composable(route = ScreenItem.AppointmentScreenItem.route + "/{document_id}/{user_id}/{user_type}") { navBackStack ->
-                            val document_id = navBackStack.arguments?.getString("document_id")
-                            val user_id = navBackStack.arguments?.getString("user_id")
-                            val user_type = navBackStack.arguments?.getString("user_type")
-                            AppointmentScreen(
-                                navController = navController,
-                                document_id = document_id,
-                                user_id = user_id,
-                                userType = user_type
-                            )
-                        }
-                        composable(route = ScreenItem.AllAppointmentsScreenItem.route) {
-                            AllAppointmentsScreen(navController = navController, auth)
-                        }
-                        composable(route = ScreenItem.AllDoctorsScreenItem.route + "/{category}") { navBackStack ->
-                            val category = navBackStack.arguments?.getString("category")
-                            AllDoctorsScreen(navController = navController, category)
-                        }
-                        composable(route = ScreenItem.ChatUserListScreenItem.route) {
-                            ChatUserListScreen(navController = navController)
-                        }
-                        composable(route = ScreenItem.ChatScreenItem.route + "/{receiverUid}/{receiverName}") { navBackStack ->
-                            val receiverUid = navBackStack.arguments?.getString("receiverUid")
-                            val receiverName = navBackStack.arguments?.getString("receiverName")
-                            ChatScreen(
-                                navController = navController,
-                                receiverUid = receiverUid,
-                                receiverName = receiverName
-                            )
-                        }
-                        composable(route = ScreenItem.DashboardScreenItem.route) {
-                            DashboardScreen(navController = navController)
-                        }
-                        composable(route = ScreenItem.MakeAndDeleteRoleItem.route + "/{roleName}") { navBackStack ->
-                            val roleName = navBackStack.arguments?.getString("roleName")
-                            MakeAndDeleteRole(navController = navController, roleName!!)
-                        }
-                        composable(route = ScreenItem.AllCategoryScreen.route) {
-                            AllCategoryScreen(navController = navController)
-                        }
-                        composable(route = ScreenItem.BookAppointmentScreenItem.route + "/{name}/{designation}/{price}/{doctorUid}") { navBackStack ->
-                            val name = navBackStack.arguments?.getString("name")
-                            val designation = navBackStack.arguments?.getString("designation")
-                            val price = navBackStack.arguments?.getString("price")
-                            val doctorUid = navBackStack.arguments?.getString("doctorUid")
-                            BookAppointmentScreen(
-                                navController = navController,
-                                name = name,
-                                designation = designation,
-                                price = price,
-                                doctorUid = doctorUid
-                            )
-                        }
-                        composable(route = ScreenItem.PaymentScreenItem.route + "/{doctorUid}/{time}/{serial}/{date}/{name}/{designation}") { navBackStack ->
-                            val doctorUid = navBackStack.arguments?.getString("doctorUid")
-                            val time = navBackStack.arguments?.getString("time")
-                            val serial = navBackStack.arguments?.getString("serial")
-                            val date = navBackStack.arguments?.getString("date")
-                            val name = navBackStack.arguments?.getString("name")
-                            val designation = navBackStack.arguments?.getString("designation")
-                            PaymentScreen(
-                                navController = navController,
-                                doctorUid = doctorUid,
-                                time = time,
-                                serial = serial,
-                                date = date,
-                                name = name,
-                                designation = designation,
-                                alarmManager = alarmManager
-                            )
-                        }
-                        composable(route = ScreenItem.NotificationScreenItem.route) {
-                            NotificationScreen(navController = navController)
-                        }
                     }
                 }
             }
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel() {
-        val name = "Notif Channel"
-        val desc = "A Description of the Channel"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(channelID, name, importance)
-        channel.description = desc
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
     }
 }

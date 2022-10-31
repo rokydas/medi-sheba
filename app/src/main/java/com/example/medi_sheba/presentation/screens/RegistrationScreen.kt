@@ -1,5 +1,6 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.app.Notification
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -36,7 +37,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.medi_sheba.model.User
 import com.example.medi_sheba.presentation.screenItem.ScreenItem
-import com.example.medi_sheba.presentation.util.encrypt
 import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.SecondaryColor
 import com.google.firebase.auth.FirebaseAuth
@@ -274,13 +274,12 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
 
                                             val user = User(
                                                 uid = authUser!!.uid,
-                                                name = encrypt(name),
-                                                email = encrypt(email),
-                                                userType = encrypt("Patient"),
-                                                mobileNumber = encrypt(mobileNumber),
-                                                age = encrypt(age),
-                                                address = encrypt(address),
-                                                gender = encrypt(gender.value)
+                                                name = name,
+                                                email = email,
+                                                mobileNumber = mobileNumber,
+                                                age = age,
+                                                address = address,
+                                                gender = gender.value
                                             )
                                             db.collection("users")
                                                 .document(authUser.uid)
@@ -290,9 +289,9 @@ fun RegistrationScreen(navController: NavController, auth: FirebaseAuth) {
                                                         popUpTo(0)
                                                     }
                                                 }
-                                                .addOnFailureListener {
+                                                .addOnFailureListener { e ->
                                                     isLoading = false
-                                                    Toast.makeText(context, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                                                 }
                                         } else {
                                             isLoading = false

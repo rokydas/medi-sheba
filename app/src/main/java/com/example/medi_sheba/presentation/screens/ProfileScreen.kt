@@ -1,5 +1,7 @@
 package com.example.medi_sheba.presentation.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,6 +40,7 @@ import com.example.medi_sheba.ui.theme.PrimaryColor
 import com.example.medi_sheba.ui.theme.background
 import com.google.firebase.auth.FirebaseAuth
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
 
@@ -145,10 +148,6 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                             style = MaterialTheme.typography.h5,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(
-                            text = _user.userType,
-                            style = MaterialTheme.typography.body1
-                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(30.dp))
@@ -210,27 +209,6 @@ fun ProfileScreen(navController: NavController, auth: FirebaseAuth) {
                         text = "Address: " + _user.address,
                         style = MaterialTheme.typography.body1
                     )
-                }
-                if(_user.userType == "Admin") {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier
-                            .padding(start = 30.dp)
-                            .clickable {
-                                navController.navigate(ScreenItem.DashboardScreenItem.route)
-                            }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Logout, contentDescription = "",
-                            tint = Color.Gray,
-                        )
-                        Spacer(modifier = Modifier.width(30.dp))
-                        Text(
-                            text = "Dashboard",
-                            color = Color.Gray,
-                            style = MaterialTheme.typography.h6
-                        )
-                    }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(

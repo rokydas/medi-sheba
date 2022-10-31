@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">medi_sheba</string>
+    <string name="app_name">Ethnic Group</string>
     <string name="lorem_ipsum_small">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s</string>
     <string name="prescription">Tab A -> 1 + 0 + 1\nTab B -> 1 + 1 + 1\nTab C -> 0 + 1 + 0\nTab A -> 1 + 0 + 1\nTab B -> 1 + 1 + 1\nTab C -> 0 + 1 + 0\nTab A -> 1 + 0 + 1\nTab B -> 1 + 1 + 1\nTab C -> 0 + 1 + 0\nTab A -> 1 + 0 + 1\nTab B -> 1 + 1 + 1\nTab C -> 0 + 1 + 0</string>
 </resources>
